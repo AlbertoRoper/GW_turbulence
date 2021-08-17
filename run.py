@@ -105,7 +105,7 @@ class run():
         self.name_run = name_run
         self.dir_run = dir_run
         print('Reading run ' + name_run + '\n')
-        self.spectra = re.read_spectra_runs(self.dir_run, dir0)
+        self.spectra = re.read_spectra_runs(dir0, self.dir_run)
         keys = self.spectra.keys()
         self.spectra_avail = [s for s in self.spectra.keys() if not s=="k"]
         self.spectra_avail = [s for s in self.spectra_avail if not s=="k0"]
@@ -489,3 +489,65 @@ class run():
                     self.spectra_avail.append('helEGW_tot')
                 if 'helOmGW_tot' not in self.spectra_avail:
                     self.spectra_avail.append('helOmGW_tot')
+
+    def min_max_stat(self, sp='GWs', indt=0, plot=False):
+
+        """
+        Function that computes the minimum, the maximum, and the
+        averaged functions over time of a spectral function of the run.
+
+        Arguments:
+            sp -- string that indicates the spectral function
+            indt -- index of time array to perform the average
+                    from t[indt] to t[-1]
+            plot -- option to overplot all spectral functions
+                    from t[indt] to t[-1]
+
+        The updated spectral functions within the run.spectra dictionary
+        are:
+            #sp_min_sp -- minimum of the spectral function #sp over times
+            #sp_max_sp -- maximum of the spectral function #sp over times
+            #sp_stat_sp -- average of the spectral function #sp over times
+                           from t[indt] to t[-1]
+        """
+
+        import spectra
+
+        if sp in self.spectra_avail:
+            t = self.spectra.get('t_' + sp)
+            E = self.spectra.get(sp)[:, 1:]
+            k = self.spectra.get('k')[1:]
+            min_sp, max_sp, stat_sp = \
+                    spectra.min_max_stat(t, k, E, indt=indt, plot=plot)
+            self.spectra.update({sp + '_min_sp':min_sp})
+            self.spectra.update({sp + '_max_sp':max_sp})
+            self.spectra.update({sp + '_stat_sp':stat_sp})
+        else: print(sp, 'spectrum is not available!')
+
+    def save(self, dir0='.'):
+
+        """
+        Function that saves the run in a pickle variable.
+
+        Arguments:
+            dir0 -- directory where to save the variable
+                    (default is the current directory)
+        """
+
+        import os
+        import pickle
+
+        # change to dir0 if it is given, otherwise stay current directory
+        if dir0 != '.':
+            cwd = os.getcwd()
+            os.chdir(dir0)
+
+        name_f = self.name_run + '.pckl'
+        f = open(name_f, 'wb')
+        print('Saved ' + self.name_run)
+        print('Output file is ' + name_f + ' in \n' + os.getcwd())
+        pickle.dump(self, f)
+        f.close()
+
+        # return to initial directory
+        if dir0 != '.': os.chdir(cwd)
