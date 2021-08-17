@@ -73,3 +73,43 @@ def characteristic_k(k, E, exp=1):
     kch = (int/spec_mean)**(1/exp)
 
     return kch
+
+def min_max_stat(t, k, E, indt=0, plot=False):
+
+    """
+    Function that computes the minimum, the maximum, and the averaged
+    functions over time of a spectral function.
+
+    Arguments:
+        t -- time array
+        k -- wave number array
+        E -- spectrum 2d array (first index t, second index k)
+        indt -- index of time array to perform the average
+                from t[indt] to t[-1]
+        plot -- option to overplot all spectral functions
+                from t[indt] to t[-1]
+
+    Returns:
+        min_E -- maximum values of the spectral function over time
+        max_E -- maximum values of the spectral function over time
+        stat_E -- averaged values of the spectral function over time
+                   from t[indt] to t[-1]
+    """
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    min_E = np.zeros(len(k)) + 1
+    max_E = np.zeros(len(k))
+    for i in range(indt, len(t)):
+        if plot: plt.plot(k, E[i,:])
+        min_E = np.minimum(E[i,:], min_E)
+        max_E = np.maximum(E[i,:], max_E)
+    # averaged spectrum
+    stat_E = np.trapz(E[indt:,:], t[indt:], axis=0)/(t[-1] - t[indt])
+    if plot:
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('$k$')
+        
+    return min_E, max_E, stat_E
