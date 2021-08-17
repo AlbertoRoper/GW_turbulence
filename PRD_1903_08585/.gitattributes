@@ -1,0 +1,12 @@
+E1152e_t11_M4e_double filter=lfs diff=lfs merge=lfs -text
+F1152a_k10_sig1 filter=lfs diff=lfs merge=lfs -text
+F1152a_sig0_t11b filter=lfs diff=lfs merge=lfs -text
+F1152a_sig1 filter=lfs diff=lfs merge=lfs -text
+F1152b_sig0_t11_M4 filter=lfs diff=lfs merge=lfs -text
+F1152d2_sig1_t11_M2c_double filter=lfs diff=lfs merge=lfs -text
+E1152e_t11_M4a_double filter=lfs diff=lfs merge=lfs -text
+E1152e_t11_M4d_double filter=lfs diff=lfs merge=lfs -text
+M1152e_exp6k4_M4b filter=lfs diff=lfs merge=lfs -text
+M1152e_exp6k4_k60b filter=lfs diff=lfs merge=lfs -text
+F1152a_sig1_t11d_double filter=lfs diff=lfs merge=lfs -text
+M1152e_exp6k4 filter=lfs diff=lfs merge=lfs -text
