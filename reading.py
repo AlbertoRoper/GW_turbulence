@@ -205,9 +205,9 @@ def read_spectrum(spectrum, dir_data='.', hel=False):
         print('The number of points in time does not coincide with the ',
               'number of spectra values in time')
 
-    # read the array read for spec and rewrite it as a 2D array as a function
-    # of time (first index) and as a function of k (second index).
-    # Note that previously spec had the format of the data file (chunks of
+    # rewrite spec as a 2D array, function of time (first index) and
+    # k (second index)
+    # note that previously spec had the format of the data file (chunks of
     # values at every time)
     sps = []
     test = False
@@ -259,8 +259,8 @@ def read_k(dir_data='.'):
         cwd = os.getcwd()
         os.chdir(dir_data)
 
-    # The values of the wave numbers are stored in power_krms.dat
-    # Read file and store in numpy array k
+    # the values of the wave numbers are stored in power_krms.dat
+    # read file and store in numpy array k
     ak = np.loadtxt('power_krms.dat')
     a, b = np.shape(ak)
     k = np.zeros(a*b)
