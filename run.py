@@ -54,6 +54,40 @@ def characterize_runs(runs, quiet=True):
         run = runs.get(i)
         run.characterize_run(quiet=quiet)
 
+def load_runs(R, dir0, dirs, quiet=True):
+
+    """
+    Function to initialize the dictionary with the list of runs pointing to
+    the variables of the class run, which contains the spectra, the time
+    series, and direct calculations.
+    It reads the stored pickle variable containing the data in run.
+
+    Arguments:
+        R -- array with the name of the runs to be read
+        dir0 -- directory that contains the pickle variables
+        dirs -- dictionary with the name of the directories where the runs
+                are contained
+        quiet -- prints the list of read runs if False (default True)
+
+    Returns:
+        runs -- dictionary with the values of the runs read from the pickle
+                variables
+    """
+
+    import pickle
+
+    runs = {}
+    for i in R:
+        dir_run = dirs.get(i)
+        f = open(dir0 + i + '.pckl', 'rb')
+        run_var = pickle.load(f)
+        f.close()
+        runs.update({i:run_var})
+    if not quiet:
+        print('The runs that have been read are:')
+        print([s for s in runs.keys()])
+    return runs
+
 class run():
 
     """
@@ -540,7 +574,7 @@ class run():
         # change to dir0 if it is given, otherwise stay current directory
         if dir0 != '.':
             cwd = os.getcwd()
-            os.chdir(dir0)
+            os.chdir(dir0 + self.dir_run)
 
         name_f = self.name_run + '.pckl'
         f = open(name_f, 'wb')
