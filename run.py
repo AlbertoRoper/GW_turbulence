@@ -580,8 +580,9 @@ class run():
 
         name_f = self.name_run + '.pckl'
         f = open(name_f, 'wb')
-        print('Saved ' + self.name_run)
-        print('Output file is ' + name_f + ' in \n' + os.getcwd())
+        print('Saving ' + self.name_run + '\n')
+        print('The output file is ' + name_f + '\n saved in the directory',
+              os.getcwd() + '\n')
         pickle.dump(self, f)
         f.close()
 
