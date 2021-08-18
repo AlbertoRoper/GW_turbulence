@@ -79,7 +79,7 @@ def load_runs(R, dir0, dirs, quiet=True):
     runs = {}
     for i in R:
         dir_run = dirs.get(i)
-        f = open(dir0 + i + '.pckl', 'rb')
+        f = open(dir0 + dir_run + '/' + i + '.pckl', 'rb')
         run_var = pickle.load(f)
         f.close()
         runs.update({i:run_var})
