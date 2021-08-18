@@ -28,7 +28,8 @@ def read_dirs(proj, dirs={}):
 
         'PRR_2021' -- runs of T. Kahniashvili et al., "Circular polarization of
                       gravitational waves from early-universe helical
-                      turbulence", Phys. Rev. Research 3, 013193 (2021)
+                      turbulence", Phys. Rev. Research 3, 013193 (2021),
+                      arxiv:2011.05556.
 
                       The options are: 'PRR_2021_K', 'PRR_2021_M', and
                           'PRR_2021_nohel', for the different types of runs
