@@ -415,7 +415,9 @@ class run():
             sp = self.spectra.get('Str')
             tij, kij = np.meshgrid(t, k, indexing='ij')
             kij[np.where(kij == 0)] = 1.
-            Pi = sp/kij**2
+            # Factor t^2/36 is needed because Str refers to the the term
+            # 6 Tij/t
+            Pi = sp/kij**2*tij**2/36
             Pi[np.where(kij == 0)] = 0.
             self.spectra.update({'Pi':Pi})
             self.spectra.update({'t_Pi':t})
