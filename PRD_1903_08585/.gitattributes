@@ -10,3 +10,15 @@ M1152e_exp6k4_M4b filter=lfs diff=lfs merge=lfs -text
 M1152e_exp6k4_k60b filter=lfs diff=lfs merge=lfs -text
 F1152a_sig1_t11d_double filter=lfs diff=lfs merge=lfs -text
 M1152e_exp6k4 filter=lfs diff=lfs merge=lfs -text
+ac3.pckl filter=lfs diff=lfs merge=lfs -text
+hel1.pckl filter=lfs diff=lfs merge=lfs -text
+hel2.pckl filter=lfs diff=lfs merge=lfs -text
+hel4.pckl filter=lfs diff=lfs merge=lfs -text
+ini2.pckl filter=lfs diff=lfs merge=lfs -text
+ini3.pckl filter=lfs diff=lfs merge=lfs -text
+ac1.pckl filter=lfs diff=lfs merge=lfs -text
+ac2.pckl filter=lfs diff=lfs merge=lfs -text
+noh1.pckl filter=lfs diff=lfs merge=lfs -text
+noh2.pckl filter=lfs diff=lfs merge=lfs -text
+hel3.pckl filter=lfs diff=lfs merge=lfs -text
+ini1.pckl filter=lfs diff=lfs merge=lfs -text
