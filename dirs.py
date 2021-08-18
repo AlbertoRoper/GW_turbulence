@@ -17,14 +17,21 @@ def read_dirs(proj, dirs={}):
                 (default is empty directory)
 
     The available projects proj are:
-        'PRD_1903_08585' -- runs of A. Roper Pol et al., "Numerical
-                            simulations of gravitational waves from
-                            early-universe turbulence",
-                            Phys. Rev. D 102, 083512 (2020),
-                            arXiv:1903.08585.
+
+        'PRD_2020' -- runs of A. Roper Pol et al., "Numerical simulations
+                      of gravitational waves from early-universe turbulence",
+                      Phys. Rev. D 102, 083512 (2020), arXiv:1903.08585.
+
+                      The options are: 'PRD_2020_ini', 'PRD_2020_hel',
+                          'PRD_2020_noh', and 'PRD_2020_ac' for the different
+                          types of runs
+
         'PRR_2021' -- runs of T. Kahniashvili et al., "Circular polarization of
                       gravitational waves from early-universe helical
                       turbulence", Phys. Rev. Research 3, 013193 (2021)
+
+                      The options are: 'PRR_2021_K', 'PRR_2021_M', and
+                          'PRR_2021_nohel', for the different types of runs
 
     Returns:
         dirs -- updated dictionary of directories
