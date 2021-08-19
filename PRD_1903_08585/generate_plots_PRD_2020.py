@@ -14,6 +14,7 @@ The function run() executes the code.
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import astropy.units as u
 
 # get working directory, where the runs and routines should be stored
 dir0 = os.getcwd() + '/'
@@ -23,6 +24,8 @@ os.chdir(HOME)
 from dirs import read_dirs as rd
 import plot_sets
 import run as r
+import interferometry as int
+import cosmoGW
 
 def run():
 
@@ -263,4 +266,147 @@ def plot_OmGW_vs_OmMK(runs, save=True, show=True):
     plt.text(3.5e-3, 5e-10, '(noh)', color='red')
 
     if save: plt.savefig('plots/OmGW_vs_OmMK.pdf', bbox_inches='tight')
+    if not show: plt.close()
+
+def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100,
+                             save=True, show=True):
+
+    """
+    Function that generates the plot of the GW energy density spectrum
+    of some of the initially driven runs (ac1, hel1, hel2, hel3, and noh1),
+    compared to the LISA sensitivity and power law sensitivity (PLS).
+
+    It corresponds to figure 6 of A. Roper Pol, S. Mandal, A. Brandenburg,
+    T. Kahniashvili, and A. Kosowsky, "Numerical simulations of gravitational
+    waves from early-universe turbulence," Phys. Rev. D 102, 083512 (2020),
+    https://arxiv.org/abs/1903.08585.
+
+    Arguments:
+        runs -- dictionary that includes the run variables
+        T -- temperature scale (in natural units) at the time of turbulence
+             generation (default 100 GeV, i.e., electroweak scale)
+        g -- number of relativistic degrees of freedom at the time of
+             turbulence generation (default 100, i.e., electroweak scale)
+        save -- option to save the resulting figure (default True)
+        show -- option to show the resulting figure (default True)
+    """
+
+    # read LISA and Taiji sensitivities
+    CWD = os.getcwd()
+    os.chdir('..')
+    f_LISA, f_LISA_Taiji, LISA_sensitivity, LISA_OmPLS, LISA_XiPLS, \
+    Taiji_OmPLS, Taiji_XiPLS, LISA_Taiji_XiPLS = int.read_sens()
+    os.chdir(CWD)
+
+    # chose the runs to be shown
+    rrs = ['ac1', 'hel1', 'hel2', 'hel3', 'noh1']
+    # chose the colors of each run
+    col = ['black', 'red', 'blue', 'blue', 'blue']
+    # chose the line style for the plots
+    ls = ['solid', 'solid', 'solid', 'dotted', 'dashed']
+
+    plt.figure(1, figsize=(12,5))
+    plt.figure(2, figsize=(12,5))
+
+    j = 0
+    for i in rrs:
+        run = runs.get(i)
+        k = run.spectra.get('k')[1:]
+        EGW_stat = run.spectra.get('EGW_stat_sp')
+        f, OmGW_stat = cosmoGW.shift_OmGW_today(k, EGW_stat*k, T, g)
+        OmGW_stat = np.array(OmGW_stat, dtype='float')
+        hc_stat = cosmoGW.hc_OmGW(f, OmGW_stat)
+
+        plt.figure(1)
+        # omit largest frequencies where there is not enough numerical accuracy
+        if i == 'hel3':
+            OmGW_stat = OmGW_stat[np.where(f.value<3e-2)]
+            hc_stat = hc_stat[np.where(f.value<3e-2)]
+            f = f[np.where(f.value<3e-2)]
+        if i=='hel3' or i=='hel2' or i=='noh1' or i=='hel1':
+            plt.plot(f, OmGW_stat, color=col[j],
+                     ls=ls[j], lw=.8, label=i)
+        else:
+            plt.plot(f, OmGW_stat, color=col[j], ls=ls[j], lw=.8)
+            plt.text(5e-2, 2e-19, i, fontsize=20, color='black')
+
+        plt.figure(2)
+        if i=='hel3' or i=='hel2' or i=='noh1'or i=='hel1':
+            plt.plot(f, hc_stat, color=col[j], ls=ls[j], lw=.8, label=i)
+        else:
+            plt.plot(f, hc_stat, color=col[j], ls=ls[j], lw=.8)
+            plt.text(3e-3, 5e-22, i, fontsize=20, color='black')
+        j += 1
+
+    plt.figure(1)
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlim(1e-4, 1e-1)
+    plt.ylim(1e-26, 1e-9)
+    plt.xlabel('$f$ [Hz]')
+    plt.ylabel(r'$h_0^2 \Omega_{\rm GW} (f)$')
+    plt.legend(loc='lower left', frameon=False)
+    plt.plot(f_LISA, LISA_OmPLS, color='lime', ls='dashdot')
+    plt.plot(f_LISA, LISA_sensitivity, color='lime')
+
+    # plot f^(-5) line
+    fk0 = np.logspace(-2.2, -1.6, 5)
+    plt.plot(fk0, 1e-14*(fk0/1e-2)**(-5), color='black',
+             ls='dashdot', lw=.7)
+    plt.text(1.3e-2, 1e-14, '$\sim f^{-5}$', fontsize=20)
+
+    # plot f line
+    fk0 = np.logspace(-3.3, -2.8, 5)
+    plt.plot(fk0, 2e-16*(fk0/1e-3)**(1), color='black',
+             ls='dashdot', lw=.7)
+    plt.text(6e-4, 1e-17, '$\sim f$', fontsize=20)
+
+    ax = plt.gca()
+    ytics2 = 10**np.array(np.linspace(-25, -9, 16))
+    yticss = ['$10^{-25}$', '', '$10^{-23}$', '',  '$10^{-21}$', '',
+              '$10^{-19}$','', '$10^{-17}$', '','$10^{-15}$','',
+              '$10^{-13}$', '','$10^{-11}$','']
+    ax.set_yticks(ytics2)
+    ax.set_yticklabels(yticss)
+    plot_sets.axes_lines()
+
+    if save: plt.savefig('plots/OmGW_vs_f_driven.pdf', bbox_inches='tight')
+    if not show: plt.close()
+
+    plt.figure(2)
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlim(1e-4, 1e-1)
+    plt.ylim(1e-28, 1e-20)
+    plt.xlabel('$f$ [Hz]')
+    plt.ylabel('$h_c(f)$')
+    plt.legend(loc='lower left', frameon=False)
+
+    hc_LISA = cosmoGW.hc_OmGW(f_LISA, LISA_OmPLS)
+    hc_LISA_s = cosmoGW.hc_OmGW(f_LISA, LISA_sensitivity)
+    plt.plot(f_LISA, hc_LISA, color='lime', ls='dashdot')
+    plt.plot(f_LISA, hc_LISA_s, color='lime')
+
+    # plot f^(-7/2) line
+    fk0 = np.logspace(-2.2, -1.6, 5)
+    plt.plot(fk0, 1e-23*(fk0/1e-2)**(-7/2), color='black',
+             ls='dashdot', lw=.7)
+    plt.text(1.3e-2, 1e-23, '$\sim f^{-7/2}$', fontsize=20)
+
+    # plot f^(-1/2) line
+    fk0 = np.logspace(-3.3, -2.8, 5)
+    plt.plot(fk0, 2e-23*(fk0/1e-3)**(-1/2), color='black',
+             ls='dashdot', lw=.7)
+    plt.text(6e-4, 3e-24, '$\sim f^{-1/2}$', fontsize=20)
+
+    ax = plt.gca()
+    ytics2 = 10**np.array(np.linspace(-28, -20, 9))
+    ytics2 = 10**np.array(np.linspace(-28, -20, 9))
+    yticss = ['', '$10^{-27}$', '',  '$10^{-25}$', '',
+              '$10^{-23}$', '', '$10^{-21}$', '']
+    ax.set_yticks(ytics2)
+    ax.set_yticklabels(yticss)
+    plot_sets.axes_lines()
+
+    if save: plt.savefig('plots/hc_vs_f_driven.pdf', bbox_inches='tight')
     if not show: plt.close()
