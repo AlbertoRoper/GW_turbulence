@@ -1,5 +1,0 @@
-PRD_1903_08585 filter=lfs diff=lfs merge=lfs -text
-PRD_1903_08585/plots/OmM_vs_t.pdf filter=lfs diff=lfs merge=lfs -text
-PRD_1903_08585/plots/EGW_EM_vs_k_ini1.pdf filter=lfs diff=lfs merge=lfs -text
-PRD_1903_08585/plots/EGW_EM_vs_k_ini2.pdf filter=lfs diff=lfs merge=lfs -text
-PRD_1903_08585/plots/OmGW_vs_t.pdf filter=lfs diff=lfs merge=lfs -text
