@@ -3,6 +3,10 @@ cosmoGW.py is a Python routine that contains functions relevant for
 cosmological gravitational waves (GW).
 """
 
+import astropy.constants as const
+import astropy.units as u
+import numpy as np
+
 def shift_OmGW_today(k, OmGW, T, g):
 
     """
@@ -26,10 +30,6 @@ def shift_OmGW_today(k, OmGW, T, g):
         f -- shifted wave number to frequency as a present time observable
         OmGW0 -- shifted OmGW spectrum to a present time observable
     """
-
-    import astropy.constants as const
-    import astropy.units as u
-    import numpy as np
 
     Hs_aux = np.sqrt(4*np.pi**3*const.G/45/const.c**5/const.hbar**3)
     Hs_aux = Hs_aux.to(u.Hz/u.MeV**2)*u.MeV**2
@@ -72,10 +72,6 @@ def shift_hc_today(k, hc, T, g):
         OmGW0 -- shifted OmGW spectrum to a present time observable
     """
 
-    import astropy.constants as const
-    import astropy.units as u
-    import numpy as np
-
     Hs_aux = np.sqrt(4*np.pi**3*const.G/45/const.c**5/const.hbar**3)
     Hs_aux = Hs_aux.to(u.Hz/u.MeV**2)*u.MeV**2
     T0 = 2.72548*u.K*const.k_B
@@ -91,3 +87,46 @@ def shift_hc_today(k, hc, T, g):
     f = k*f_aux*g**(1/6)*T.value
 
     return f, hc0
+
+def fac_hc_OmGW(d=1):
+
+    """
+    Function that returns the factor to transform the strain function
+    hc(f) to the GW energy density Omega_GW (f).
+
+    Arguments:
+        d -- option to give the factor to convert from energy density to
+             strain if set to -1 (default 1)
+
+    Returns:
+        fac -- factor to convert from the strain function
+               hc(f) to the GW energy density Omega_GW (f)
+    """
+
+    H0 = 100*u.km/u.s/u.Mpc
+    H0 = H0.to(u.Hz)
+    fac = H0.value*np.sqrt(3/2)/np.pi
+    if d == -1: fac = 1/fac**2
+
+    return fac
+
+def hc_OmGW(f, OmGW, d=1):
+
+    """
+    Function that transforms the strain function hc(f) to the GW energy
+    density Omega_GW (f).
+
+    Arguments:
+        f -- frequency array (given in Hz units)
+        OmGW -- GW energy density spectrum Omega_GW (f)
+        d -- option to convert from energy density to strain if set
+             to -1 (default 1)
+
+    Returns:
+        hc -- strain spectrum
+    """
+
+    hc = fac_hc_OmGW()/f.value*np.sqrt(OmGW)
+    if d==-1: hc = fac_hc_OmGW(d=-1)*f.value**2*OmGW**2
+
+    return hc
