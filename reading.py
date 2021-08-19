@@ -312,3 +312,52 @@ def read_L(dir_data='.'):
     if dir_data != '.': os.chdir(dir0)
 
     return L
+
+def sensitivity(file, dir='detector_sensitivity'):
+
+    """
+    Function that reads the sensitivity .csv files.
+
+    Arguments:
+        file -- name of the file to be read
+        dir -- directory where the file is stored
+               (default is 'detector_sensitivity')
+
+    Returns:
+        f -- array of frequencies
+        OmGW -- spectrum of GW energy density
+    """
+
+    import os
+    import numpy as np
+
+    # move to directory where the detector files are stored
+    cwd = os.getcwd()
+    os.chdir(dir)
+
+    f = []
+    OmGW = []
+    with open(file) as fp:
+        line = fp.readline()
+        x = line.split(';')
+        f.append(x[0].replace(',', '.'))
+        x1_aux = x[1].replace('\n', '')
+        x1_aux = x1_aux.replace(',', '.')
+        OmGW.append(x1_aux)
+        while line:
+            line = fp.readline()
+            x = line.split(';')
+            try:
+                x1_aux = x[1].replace('\n', '')
+                x1_aux = x1_aux.replace(',', '.')
+                OmGW.append(x1_aux)
+                f.append(x[0].replace(',', '.'))
+            except: print('end')
+    f = np.array(f, dtype='float')
+    OmGW = np.array(OmGW, dtype='float')
+    inds = np.argsort(f)
+    f = f[inds]
+    OmGW = OmGW[inds]
+    os.chdir(cwd)
+
+    return f, OmGW
