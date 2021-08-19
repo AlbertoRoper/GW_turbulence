@@ -318,7 +318,7 @@ class run():
             indmax = np.argmax(mean)
             kpeak = self.spectra.get(E + '_kpeak')
             if mean[indmax] > max:
-                max = EEm[indmax]
+                max = mean[indmax]
                 tmax = t[indmax]
                 kf = kpeak[indmax]
             else: kf = np.interp(self.ts.get('t'), t, kpeak)[indmax]
