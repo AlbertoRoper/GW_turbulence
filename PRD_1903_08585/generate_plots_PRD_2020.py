@@ -659,3 +659,70 @@ def plot_EGW_vs_k_initial_ts(runs, rr='ini2', save=True, show=True):
     ax.set_yticks(yticks)
     plot_sets.axes_lines()
     ax.tick_params(axis='x', pad=12)
+
+    if save: plt.savefig('plots/EGW_vs_k_initial_ts.pdf',
+                         bbox_inches='tight')
+    if not show: plt.close()
+
+def plot_efficiency(runs, save=True, show=True, sqrt=False):
+
+    """
+    Function that generates the plot of the total GW energy density
+    compensated by EM^2/kf^2 (efficiency).
+
+    It corresponds to the runs presented in A. Roper Pol, S. Mandal,
+    A. Brandenburg, T. Kahniashvili, and A. Kosowsky, "Numerical simulations of gravitational waves from
+    early-universe turbulence," Phys. Rev. D 102, 083512 (2020),
+    https://arxiv.org/abs/1903.08585.
+
+    This plot is analogous to figure 10 of A. Roper Pol, S. Mandal,
+    A. Brandenburg, and T. Kahniashvili, "Polarization of gravitational waves
+    from helical MHD turbulent sources", https://arxiv.org/abs/2107.05356.
+
+    Arguments:
+        runs -- dictionary that includes the run variables
+        save -- option to save the resulting figure (default True)
+        show -- option to show the resulting figure (default True)
+        sqrt -- option to plot the efficiency defined as the square root of
+                the compensated GW energy density (default False)
+    """
+
+    exp = 1
+    if sqrt: exp = 1/2
+    plt.figure(1, figsize=(12,8))
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlim(6e-3, 1)
+    plt.ylim(1e-1**exp, 2e2**exp)
+    plt.xlabel('$\delta t = t - 1$')
+    plt.ylabel(r'$q^2 (t) = k_*^2\, \Omega_{\rm GW}$' + \
+               r'$(t)/({\cal E}_{\rm M, K}^{\rm max})^2$')
+    if sqrt:
+        plt.ylabel(r'$q (t) = k_* \left[\Omega_{\rm GW} (t)\right]^{1/2}$' + \
+                   r'$/{\cal E}_{\rm M, K}^{\rm max}$')
+    for i in runs:
+        # chose colors
+        if 'ini' in i: col = 'green'
+        elif 'hel4' in i: col = 'red'
+        elif 'noh' in i: col = 'black'
+        elif 'ac' in i: col = 'blue'
+        else: col = 'orange'
+        run = runs.get(i)
+        t = run.ts.get('t')
+        EGW = run.ts.get('EEGW')
+        plt.plot(t-1, (EGW/run.Ommax**2*run.kf**2)**exp,
+                 color=col)
+
+    plot_sets.axes_lines()
+    plt.text(3e-1, 70**exp, 'acoustic', color='blue')
+    plt.text(3e-1, 1.5**exp, 'initial', color='green')
+    plt.text(1.3e-1, 2.8**exp, r'helical 1--3', color='orange')
+    plt.text(3e-1, 15**exp, 'helical 4', color='red')
+    plt.text(4e-1, 8.6**exp, 'non-helical', color='black')
+
+    if save:
+        if sqrt: plt.savefig('plots/efficiency_sqrt.pdf',
+                         bbox_inches='tight')
+        else: plt.savefig('plots/efficiency.pdf',
+                         bbox_inches='tight')
+    if not show: plt.close()
