@@ -34,6 +34,14 @@ def read_dirs(proj, dirs={}):
                       The options are: 'PRR_2021_K', 'PRR_2021_M', and
                           'PRR_2021_nohel', for the different types of runs
 
+        'JCAP_2021' -- runs of A. Roper Pol et al., "Polarization of
+                       gravitational waves from helical MHD turbulent sources",
+                       arXiv:2107.05356.
+
+                       The options are: 'JCAP_2021_ini' and 'JCAP_2021_dri'
+                           for the initially given (ini) or driven (dri)
+                           fields.
+
     Returns:
         dirs -- updated dictionary of directories
     """
@@ -75,5 +83,24 @@ def read_dirs(proj, dirs={}):
         dirs.update({'nohel_tau05':'F1152a_sig0_t11_M4_ramp05a'})
         dirs.update({'nohel_tau1':'F1152a_sig0_t11_M4_ramp1a'})
         dirs.update({'nohel_tau2':'F1152a_sig0_t11_M4_ramp2a'})
+
+'i_s05', 'i_s03',  'i_s1'
+
+'M1152e_exp6k4_sig05', 'M1152e_exp6k4_sig03',
+'M1152e_exp6k4'
+
+    if proj == 'JCAP_2021_ini':
+        dirs.update({'i_s01':'M1152e_exp6k4_sig01'})
+        dirs.update({'i_s03':'M1152e_exp6k4_sig03'})
+        dirs.update({'i_s05':'M1152e_exp6k4_sig05'})
+        dirs.update({'i_s07':'M1152e_exp6k4_sig07'})
+        dirs.update({'i_s1':'M1152e_exp6k4'})
+    if proj == 'JCAP_2021_dri':
+        dirs.update({'f_s001_neg':'F1152sigm001a'})
+        dirs.update({'f_s001':'F1152sig001a'})
+        dirs.update({'f_s03':'F1152sig03a'})
+        dirs.update({'f_s05':'F1152sig05a'})
+        dirs.update({'f_s07':'F1152sig07c'})
+        dirs.update({'f_s1_neg':'F1152sigm1a'})
 
     return dirs
