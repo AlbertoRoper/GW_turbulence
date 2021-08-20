@@ -84,11 +84,6 @@ def read_dirs(proj, dirs={}):
         dirs.update({'nohel_tau1':'F1152a_sig0_t11_M4_ramp1a'})
         dirs.update({'nohel_tau2':'F1152a_sig0_t11_M4_ramp2a'})
 
-'i_s05', 'i_s03',  'i_s1'
-
-'M1152e_exp6k4_sig05', 'M1152e_exp6k4_sig03',
-'M1152e_exp6k4'
-
     if proj == 'JCAP_2021_ini':
         dirs.update({'i_s01':'M1152e_exp6k4_sig01'})
         dirs.update({'i_s03':'M1152e_exp6k4_sig03'})
