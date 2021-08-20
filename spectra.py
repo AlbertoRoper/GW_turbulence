@@ -111,5 +111,31 @@ def min_max_stat(t, k, E, indt=0, plot=False):
         plt.xscale('log')
         plt.yscale('log')
         plt.xlabel('$k$')
-        
+
     return min_E, max_E, stat_E
+
+def local_max(k, E, order=1):
+
+    """
+    Function that computes the local maxima of a spectrum.
+
+    Arguments:
+        k -- array of wave numbers
+        E -- spectrum E
+        order -- order of the local maximum solver, which uses
+                 scipy.signal.argrelextrema
+
+    Returns:
+        kmax -- position of the local maxima
+        Emax -- values of the local maxima
+    """
+
+    from scipy.signal import argrelextrema
+    import numpy as np
+
+    inds_model_max = argrelextrema(E,
+                 np.greater, order=order)
+    kmax = k[inds_model_max]
+    Emax = E[inds_model_max]
+
+    return kmax, Emax
