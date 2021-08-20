@@ -26,6 +26,7 @@ import plot_sets
 import run as r
 import interferometry as int
 import cosmoGW
+import spectra as sp
 
 def run():
 
@@ -584,3 +585,77 @@ def plot_OmGW_vs_OmMK(runs, save=True, show=True):
 
     if save: plt.savefig('plots/OmGW_vs_OmMK.pdf', bbox_inches='tight')
     if not show: plt.close()
+
+def plot_EGW_vs_k_initial_ts(runs, rr='ini2', save=True, show=True):
+
+    """
+    Function that generates the plot of the amplitudes of the GW energy
+    density at the first time step, to show the evolution from k^2 to k^0
+    slopes.
+
+    It corresponds to a plot generated for a presentation, related to the
+    work A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili,
+    and A. Kosowsky, "Numerical simulations of gravitational waves from
+    early-universe turbulence," Phys. Rev. D 102, 083512 (2020),
+    https://arxiv.org/abs/1903.08585.
+
+    Arguments:
+        runs -- dictionary that includes the run variables
+        rr -- string that selects which run to plot (default 'ini2')
+        save -- option to save the resulting figure (default True)
+        show -- option to show the resulting figure (default True)
+    """
+
+    run = runs.get(rr)
+    EGW = run.spectra.get('EGW')[:, 1:]
+    k = run.spectra.get('k')[1:]
+    t = run.spectra.get('t_GWs')
+    max_sp_EGW = run.spectra.get('EGW_max_sp')
+
+    plt.figure(figsize=(10,6))
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('$k$')
+    plt.ylabel(r'$\Omega_{\rm GW} (k)/k$')
+    # initial time step GW spectrum
+    plt.plot(k, EGW[0, :], color='black', lw=.7, ls='dashed')
+    # local maximum amplitudes of oscillations at next time step
+    kmax, EGWmax = sp.local_max(k, EGW[1, :])
+    plt.plot(kmax, EGWmax, color='black', lw=.7, ls='dashed')
+    plt.plot(k[:10], EGW[1, :10], color='black', lw=.7, ls='dashed')
+    # maximum over all times of the GW energy density (amplitude of the
+    # oscillations)
+    plt.plot(k, max_sp_EGW, color='black', lw=1.5)
+    # 6th time step
+    kmax, EGWmax = sp.local_max(k, EGW[5, :])
+    plt.plot(kmax, EGWmax, color='black', lw=.7, ls='dashed')
+    plt.plot(k[:4], EGW[5, :4], color='black', lw=.7, ls='dashed')
+
+    # line k^(2.5)
+    k0s = np.linspace(250, 1000)
+    plt.plot(k0s, 3e-19*(k0s/100)**2.5, color='black',
+             ls='dashdot', lw=.7)
+    plt.text(500, 5e-18, '$k^{2.5}$', fontsize=20)
+
+    # line k^(1/2)
+    k0s = np.linspace(200, 800)
+    plt.plot(k0s, 7e-14*(k0s/100)**0.5, color='black',
+             ls='dashdot', lw=.7)
+    plt.text(500, 3e-13, '$k^{0.5}$', fontsize=20)
+
+    # line k^(-11/3)
+    k0s = np.linspace(3000, 10000)
+    plt.text(5000, 1e-14, '$k^{-11/3}$', fontsize=20)
+    plt.plot(k0s, 1e-14*(k0s/4e3)**(-11/3), color='black',
+             ls='dashdot', lw=.7)
+
+    plt.text(3000, 1e-17, r'$t-1=4 \times 10^{-5}$', fontsize=14)
+    plt.text(250, 2e-15, '$t-1=10^{-3}$', fontsize=14)
+    plt.text(130, 8e-15, r'$5 \times 10^{-3}$', fontsize=14)
+
+    plt.ylim(1e-19, 2e-12)
+    yticks = np.logspace(-19, -12, 8)
+    ax = plt.gca()
+    ax.set_yticks(yticks)
+    plot_sets.axes_lines()
+    ax.tick_params(axis='x', pad=12)
