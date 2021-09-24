@@ -59,6 +59,8 @@ def read_runs():
         runs -- dictionary that contains the run variables
     """
 
+    os.chdir(HOME)
+
     # dictionary with the name identifying
     # the runs and pointing to the corresponding directory
     dirs = rd('PRD_2020_ini')
@@ -71,6 +73,8 @@ def read_runs():
     # and some characteristic info of the run
     runs = r.initialize_runs(R, dir0, dirs, quiet=False)
     r.characterize_runs(runs, quiet=False)
+
+    os.chdir(dir0)
 
     return runs
 
