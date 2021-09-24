@@ -24,7 +24,7 @@ os.chdir(HOME)
 from dirs import read_dirs as rd
 import plot_sets
 import run as r
-import interferometry as int
+import interferometry as inte
 import cosmoGW
 import spectra as sp
 
@@ -253,7 +253,7 @@ def plot_OmMK_OmGW_vs_t(runs, save=True, show=True):
     if save: plt.savefig('plots/OmM_vs_t.pdf', bbox_inches='tight')
     if not show: plt.close()
 
-def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100,
+def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100, SNR=10, Td=4,
                              save=True, show=True):
 
     """
@@ -272,6 +272,9 @@ def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100,
              generation (default 100 GeV, i.e., electroweak scale)
         g -- number of relativistic degrees of freedom at the time of
              turbulence generation (default 100, i.e., electroweak scale)
+        SNR -- signal-to-noise ratio (SNR) of the resulting PLS (default 10)
+        Td -- duration of the mission (in years) of the resulting PLS
+             (default 4)
         save -- option to save the resulting figure (default True)
         show -- option to show the resulting figure (default True)
     """
@@ -279,8 +282,10 @@ def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100,
     # read LISA and Taiji sensitivities
     CWD = os.getcwd()
     os.chdir('..')
-    f_LISA, f_LISA_Taiji, LISA_sensitivity, LISA_OmPLS, LISA_XiPLS, \
-    Taiji_OmPLS, Taiji_XiPLS, LISA_Taiji_XiPLS = int.read_sens()
+    #f_LISA, f_LISA_Taiji, LISA_sensitivity, LISA_OmPLS, LISA_XiPLS, \
+    #       Taiji_OmPLS, Taiji_XiPLS, LISA_Taiji_XiPLS = inte.read_sens()
+    fs, LISA_Om, LISA_OmPLS = inte.read_sens(SNR=SNR, T=Td)
+    fs = fs*u.Hz
     os.chdir(CWD)
 
     # chose the runs to be shown
@@ -318,8 +323,10 @@ def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100,
     plt.ylim(1e-19, 1e-9)
     plt.xlabel('$f$ [Hz]')
     plt.ylabel(r'$h_0^2 \Omega_{\rm GW} (f)$')
-    plt.plot(f_LISA, LISA_OmPLS, color='lime', ls='dashdot')
-    plt.plot(f_LISA, LISA_sensitivity, color='lime')
+    #plt.plot(f_LISA, LISA_OmPLS, color='lime', ls='dashdot')
+    #plt.plot(f_LISA, LISA_sensitivity, color='lime')
+    plt.plot(fs, LISA_OmPLS, color='lime', ls='dashdot')
+    plt.plot(fs, LISA_Om, color='lime')
 
     # plot f^(-8/3) line
     fs0 = np.logspace(-2.1, -1.5, 5)
@@ -352,10 +359,10 @@ def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100,
     plt.xlabel('$f$ [Hz]')
     plt.ylabel(r'$h_{\rm c}(f)$')
 
-    hc_LISA = cosmoGW.hc_OmGW(f_LISA, LISA_OmPLS)
-    hc_LISA_s = cosmoGW.hc_OmGW(f_LISA, LISA_sensitivity)
-    plt.plot(f_LISA, hc_LISA, color='lime', ls='dashdot')
-    plt.plot(f_LISA, hc_LISA_s, color='lime')
+    LISA_hc_PLS = cosmoGW.hc_OmGW(fs, LISA_OmPLS)
+    LISA_hc = cosmoGW.hc_OmGW(fs, LISA_Om)
+    plt.plot(fs, LISA_hc_PLS, color='lime', ls='dashdot')
+    plt.plot(fs, LISA_hc, color='lime')
 
     # plot f^(-1/2) line
     fs0 = np.logspace(-3.4, -2.6, 5)
@@ -377,7 +384,7 @@ def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100,
     if save: plt.savefig('plots/hc_vs_f_ini.pdf', bbox_inches='tight')
     if not show: plt.close()
 
-def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100,
+def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100, SNR=10, Td=4,
                              save=True, show=True):
 
     """
@@ -396,6 +403,9 @@ def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100,
              generation (default 100 GeV, i.e., electroweak scale)
         g -- number of relativistic degrees of freedom at the time of
              turbulence generation (default 100, i.e., electroweak scale)
+        SNR -- signal-to-noise ratio (SNR) of the resulting PLS (default 10)
+        Td -- duration of the mission (in years) of the resulting PLS
+             (default 4)
         save -- option to save the resulting figure (default True)
         show -- option to show the resulting figure (default True)
     """
@@ -403,8 +413,10 @@ def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100,
     # read LISA and Taiji sensitivities
     CWD = os.getcwd()
     os.chdir('..')
-    f_LISA, f_LISA_Taiji, LISA_sensitivity, LISA_OmPLS, LISA_XiPLS, \
-    Taiji_OmPLS, Taiji_XiPLS, LISA_Taiji_XiPLS = int.read_sens()
+    #f_LISA, f_LISA_Taiji, LISA_sensitivity, LISA_OmPLS, LISA_XiPLS, \
+    #        Taiji_OmPLS, Taiji_XiPLS, LISA_Taiji_XiPLS = inte.read_sens()
+    fs, LISA_Om, LISA_OmPLS = inte.read_sens(SNR=SNR, T=Td)
+    fs = fs*u.Hz
     os.chdir(CWD)
 
     # chose the runs to be shown
@@ -455,8 +467,8 @@ def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100,
     plt.xlabel('$f$ [Hz]')
     plt.ylabel(r'$h_0^2 \Omega_{\rm GW} (f)$')
     plt.legend(loc='lower left', frameon=False, fontsize=20)
-    plt.plot(f_LISA, LISA_OmPLS, color='lime', ls='dashdot')
-    plt.plot(f_LISA, LISA_sensitivity, color='lime')
+    plt.plot(fs, LISA_OmPLS, color='lime', ls='dashdot')
+    plt.plot(fs, LISA_Om, color='lime')
 
     # plot f^(-5) line
     fk0 = np.logspace(-2.2, -1.6, 5)
@@ -491,10 +503,10 @@ def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100,
     plt.ylabel(r'$h_{\rm c}(f)$')
     plt.legend(loc='lower left', frameon=False, fontsize=20)
 
-    hc_LISA = cosmoGW.hc_OmGW(f_LISA, LISA_OmPLS)
-    hc_LISA_s = cosmoGW.hc_OmGW(f_LISA, LISA_sensitivity)
-    plt.plot(f_LISA, hc_LISA, color='lime', ls='dashdot')
-    plt.plot(f_LISA, hc_LISA_s, color='lime')
+    LISA_hc_PLS = cosmoGW.hc_OmGW(fs, LISA_OmPLS)
+    LISA_hc = cosmoGW.hc_OmGW(fs, LISA_Om)
+    plt.plot(fs, LISA_hc_PLS, color='lime', ls='dashdot')
+    plt.plot(fs, LISA_hc, color='lime')
 
     # plot f^(-7/2) line
     fk0 = np.logspace(-2.2, -1.6, 5)
