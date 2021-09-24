@@ -23,8 +23,11 @@ import run as r
 from dirs import read_dirs as rd
 import spectra as sp
 
+os.chdir(dir0)
+
 def run():
 
+    os.chdir(HOME)
     # read the runs
     runs = read_runs()
 
@@ -44,6 +47,8 @@ def run():
     # we can save the variables runs now to avoid repeating the
     # computation of the averaged and maximum spectra
     save_runs(runs)
+
+    os.chdir(dir0)
 
 def read_runs():
 
