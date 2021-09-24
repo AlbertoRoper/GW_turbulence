@@ -7,4 +7,4 @@ from helical MHD turbulent sources" by A. Roper Pol, S. Mandal, A. Brandenburg, 
 submitted to JCAP (https://arxiv.org/pdf/2107.05356.pdf).
 
 The reference for the data sets is: Datasets for ``Numerical Simulations of Gravitational Waves from Early-Universe Turbulence,'' v2021.09.24,
-DOI:10.5281/zenodo.5525504, A. Roper Pol, S. Mandal, A. Brandenburg, & T. Kahniashvili (2021).
+https://DOI:10.5281/zenodo.5525504, A. Roper Pol, S. Mandal, A. Brandenburg, & T. Kahniashvili (2021).
