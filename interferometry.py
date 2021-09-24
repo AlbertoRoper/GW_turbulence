@@ -8,44 +8,92 @@ import astropy.constants as const
 import astropy.units as u
 import numpy as np
 
-def read_sens():
+def read_sens(SNR=10, T=4, interf='LISA', Xi=False):
+
     """
-    Function that reads the LISA and Taiji power law sensitivities
-    (PLS), both Omega and Xi, previously generated and saved as pickle
-    variables.
+    Function that reads the sensitivity Omega (expressed as a GW energy
+    density spectrum), and the power law sensitivity (PLS)
+    of the interferometer chosen (options are 'LISA', 'Taiji', and the
+    LISA-Taiji network 'comb').
+
+    Arguments:
+        SNR -- signal-to-noise ratio (SNR) of the resulting PLS (default 10)
+        T -- duration of the mission (in years) of the resulting PLS
+             (default 4)
+        interf -- option to chose the interferometer (default 'LISA')
+        Xi -- option to return the helical sensitivity and PLS (default False)
 
     Returns:
-        f -- array of frequencies
-        f_Xi_comb -- array of frequencies used for the PLS LISA_Taiji_XiPLS
-        LISA_sensitivity -- LISA sensitivity expressed as a
-                            GW energy density spectrum
-        LISA_OmPLS -- LISA PLS to the GW energy density spectrum of a
-                      cosmological GW background
-        LISA_XiPLS -- LISA PLS to the helical GW energy density spectrum of a
-                      cosmological GW background
-        Taiji_OmPLS -- Taiji PLS to the GW energy density spectrum of a
-                      cosmological GW background
-        Taiji_XiPLS -- Taiji PLS to the helical GW energy density spectrum of a
-                      cosmological GW background.
-        LISA_Taiji_XiPLS -- PLS to the helical GW energy density spectrum of a
-                            cosmological GW background obtained by combining
-                            LISA and Taiji
+        fs -- array of frequencies
+        interf_Om -- sensitivity of the interferometer 'interf'
+                     expressed as a GW energy density spectrum
+        interf_OmPLS --  PLS of the interferometer 'interf'
+        interf_Xi -- helical sensitivity of the interferometer 'interf'
+        interf_XiPLS -- helical PLS of the interferometer 'interf'
     """
 
+    import pandas as pd
+
+    fact = SNR/np.sqrt(T)
     dir = 'detector_sensitivity'
-    f = read(dir, 'fs_PLS_Xi_LISA_SNR10.pckl')
-    f_Xi_comb = read(dir, 'fs_PLS_Xi_LISA_Taiji_SNR10.pckl')
-    LISA_sensitivity = read(dir, 'Om_LISA_sensitivity.pckl')
-    LISA_OmPLS = read(dir, 'PLS_Om_LISA_SNR10.pckl')
-    LISA_XiPLS = read(dir, 'PLS_Xi_LISA_SNR10.pckl')
-    Taiji_OmPLS = read(dir, 'PLS_Om_Taiji_SNR10.pckl')
-    Taiji_XiPLS = read(dir, 'PLS_Xi_Taiji_SNR10.pckl')
-    LISA_Taiji_XiPLS = read(dir, 'PLS_Xi_LISA_Taiji_SNR10.pckl')
 
-    return (f, f_Xi_comb, np.real(LISA_sensitivity), LISA_OmPLS, LISA_XiPLS,
-            Taiji_OmPLS, Taiji_XiPLS, LISA_Taiji_XiPLS)
+    if interf=='LISA':
 
-def read(dir, file):
+        fs, LISA_Om = read_csv(dir, 'LISA_Omega')
+        fs, LISA_OmPLS = read_csv(dir, 'LISA_OmegaPLS')
+        LISA_OmPLS *= fact
+        if Xi:
+            fs, LISA_Xi = read_csv(dir, 'LISA_Xi', b='Xi')
+            fs, LISA_XiPLS = read_csv(dir, 'LISA_XiPLS', b='Xi')
+            LISA_XiPLS *= fact
+            return fs, LISA_Om, LISA_OmPLS, LISA_Xi, LISA_XiPLS
+        else: return fs, LISA_Om, LISA_OmPLS
+
+    if interf=='Taiji':
+
+        fs, Taiji_Om = read_csv(dir, 'Taiji_Omega')
+        fs, Taiji_OmPLS = read_csv(dir, 'Taiji_OmegaPLS')
+        Taiji_OmPLS *= fact
+        if Xi:
+            fs, Taiji_Xi = read_csv(dir, 'Taiji_Xi', b='Xi')
+            fs, Taiji_XiPLS = read_csv(dir, 'Taiji_XiPLS', b='Xi')
+            Taiji_XiPLS *= fact
+            return fs, Taiji_Om, Taiji_OmPLS, Taiji_Xi, Taiji_XiPLS
+        else: return fs, Taiji_Om, Taiji_OmPLS
+
+    if interf=='comb':
+
+        fs, LISA_Taiji_Xi = read_csv(dir, 'LISA_Taiji_Xi', b='Xi')
+        fs, LISA_Taiji_XiPLS = read_csv(dir, 'LISA_Taiji_XiPLS', b='Xi')
+        LISA_Taiji_XiPLS *= fact
+        return fs, LISA_Taiji_Xi, LISA_Taiji_XiPLS
+
+def read_csv(dir, file, a='f', b='Omega'):
+
+    """
+    Function that reads a csv file with two arrays and returns them.
+
+    Arguments:
+        dir -- directory that contains the file
+        file -- name of the csv file
+
+    Returns:
+        x -- first array of the file
+        y -- second array of the file
+        a -- identifier in pandas dataframe of first array (default 'f')
+        b -- identifier in pandas dataframe of second array (default 'Omega')
+    """
+
+    import pandas as pd
+
+    df = pd.read_csv(dir + '/' + file + '.csv')
+    x = np.array(df[a])
+    y = np.array(df[b])
+
+    return x, y
+
+# not used at the moment (replaced by read_csv)
+def read_pic(dir, file):
 
     """
     Function that reads a pickle variable file and returns it.
