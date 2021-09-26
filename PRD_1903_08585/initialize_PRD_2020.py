@@ -133,8 +133,6 @@ def compute_aver_spec(runs):
         k = run.spectra.get('k')[1:]
         run.OmGWsat = np.trapz(GWs_stat_sp, k)
 
-    #return runs
-
 def save_runs(runs):
 
     """
