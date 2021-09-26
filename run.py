@@ -526,7 +526,7 @@ class run():
                 if 'helOmGW_tot' not in self.spectra_avail:
                     self.spectra_avail.append('helOmGW_tot')
 
-    def min_max_stat(self, sp='GWs', indt=0, plot=False):
+    def min_max_stat(self, sp='GWs', indt=0, plot=False, hel=False):
 
         """
         Function that computes the minimum, the maximum, and the
@@ -538,6 +538,7 @@ class run():
                     from t[indt] to t[-1]
             plot -- option to overplot all spectral functions
                     from t[indt] to t[-1]
+            hel --
 
         The updated spectral functions within the run.spectra dictionary
         are:
@@ -548,16 +549,31 @@ class run():
         """
 
         import spectra
+        import numpy as np
 
         if sp in self.spectra_avail:
             t = self.spectra.get('t_' + sp)
             E = self.spectra.get(sp)[:, 1:]
             k = self.spectra.get('k')[1:]
-            min_sp, max_sp, stat_sp = \
-                    spectra.min_max_stat(t, k, E, indt=indt, plot=plot)
-            self.spectra.update({sp + '_min_sp':min_sp})
-            self.spectra.update({sp + '_max_sp':max_sp})
-            self.spectra.update({sp + '_stat_sp':stat_sp})
+            if hel:
+                min_sp_pos, min_sp_neg, max_sp_pos, max_sp_neg, stat_sp = \
+                        spectra.min_max_stat(t, k, E, indt=indt,
+                                             plot=plot, hel=True)
+                self.spectra.update({sp + '_pos_min_sp':min_sp_pos})
+                self.spectra.update({sp + '_neg_min_sp':min_sp_neg})
+                self.spectra.update({sp + '_pos_max_sp':max_sp_pos})
+                self.spectra.update({sp + '_neg_max_sp':max_sp_neg})
+                self.spectra.update({sp + '_min_sp': \
+                                     np.minimum(min_sp_pos, min_sp_neg)})
+                self.spectra.update({sp + '_max_sp': \
+                                     np.maximum(max_sp_pos, max_sp_neg)})
+                self.spectra.update({sp + '_stat_sp':stat_sp})
+            else:
+                min_sp, max_sp, stat_sp = \
+                        spectra.min_max_stat(t, k, E, indt=indt, plot=plot)
+                self.spectra.update({sp + '_min_sp':min_sp})
+                self.spectra.update({sp + '_max_sp':max_sp})
+                self.spectra.update({sp + '_stat_sp':stat_sp})
         else: print(sp, 'spectrum is not available!')
 
     def save(self, dir0='.'):
