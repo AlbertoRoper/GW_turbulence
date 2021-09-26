@@ -60,7 +60,8 @@ def plot_EGW_EM_vs_k(runs, rr='ini2', save=True, show=True):
     Arguments:
         runs -- dictionary that includes the run variables
         rr -- string that selects which run to plot (default 'ini2')
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as
+                plots/EGW_EM_vs_k_'name_run'.pdf' (default True)
         show -- option to show the resulting figure (default True)
     """
 
@@ -130,7 +131,8 @@ def plot_EGW_vs_kt(runs, rr='ini2', save=True, show=True):
     Arguments:
         runs -- dictionary that includes the run variables
         rr -- string that selects which run to plot (default 'ini2')
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as
+                plots/EGW_vs_kt.pdf (default True)
         show -- option to show the resulting figure (default True)
     """
 
@@ -180,7 +182,8 @@ def plot_OmMK_OmGW_vs_t(runs, save=True, show=True):
 
     Arguments:
         runs -- dictionary that includes the run variables
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as
+                plots/OmGW_vs_t.pdf (default True)
         show -- option to show the resulting figure (default True)
     """
 
@@ -275,7 +278,8 @@ def plot_OmGW_hc_vs_f_ini(runs, T=1e5*u.MeV, g=100, SNR=10, Td=4,
         SNR -- signal-to-noise ratio (SNR) of the resulting PLS (default 10)
         Td -- duration of the mission (in years) of the resulting PLS
              (default 4)
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as
+                plots/OmGW_vs_f_ini.pdf (default True)
         show -- option to show the resulting figure (default True)
     """
 
@@ -406,7 +410,8 @@ def plot_OmGW_hc_vs_f_driven(runs, T=1e5*u.MeV, g=100, SNR=10, Td=4,
         SNR -- signal-to-noise ratio (SNR) of the resulting PLS (default 10)
         Td -- duration of the mission (in years) of the resulting PLS
              (default 4)
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as
+                plots/OmGW_vs_f_driven.pdf (default True)
         show -- option to show the resulting figure (default True)
     """
 
@@ -546,7 +551,8 @@ def plot_OmGW_vs_OmMK(runs, save=True, show=True):
 
     Arguments:
         runs -- dictionary that includes the run variables
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as
+                plots/OmGW_vs_OmMK.pdf (default True)
         show -- option to show the resulting figure (default True)
     """
 
@@ -614,7 +620,8 @@ def plot_EGW_vs_k_initial_ts(runs, rr='ini2', save=True, show=True):
     Arguments:
         runs -- dictionary that includes the run variables
         rr -- string that selects which run to plot (default 'ini2')
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as
+                plots/EGW_vs_k_initial_ts.pdf (default True)
         show -- option to show the resulting figure (default True)
     """
 
@@ -693,7 +700,8 @@ def plot_efficiency(runs, save=True, show=True, sqrt=False):
 
     Arguments:
         runs -- dictionary that includes the run variables
-        save -- option to save the resulting figure (default True)
+        save -- option to save the resulting figure as plots/efficiency.pdf
+                or plots/efficiency_sqrt.pdf (if sqrt = True) (default True)
         show -- option to show the resulting figure (default True)
         sqrt -- option to plot the efficiency defined as the square root of
                 the compensated GW energy density (default False)
