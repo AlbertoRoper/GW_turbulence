@@ -146,8 +146,12 @@ def plot_EGW(runs, A='A', diff=False, save=True):
             EGW_l = run_l.spectra.get('EGW')[-1, :]
             run_nl = runs_nl[i]
             EGW_nl = run_nl.spectra.get('EGW')[-1, :]
-            ax.plot(abs(EGW_nl - EGW_l), color=col, alpha = 1 - i*.3,
-                     label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
+            if A == 'A' or A == 'B':
+                ax.plot(abs(EGW_nl - EGW_l), color=col, alpha = 1 - i*.3,
+                        label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
+            else:
+                ax.plot(EGW_nl - EGW_l, color=col, alpha = 1 - i*.3,
+                        label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
             good = np.where(EGW_l != 0)
             ax2.plot(EGW_nl[good]/EGW_l[good], '.', color=col,
                      alpha = .6 - i*.15)
@@ -172,7 +176,7 @@ def plot_EGW(runs, A='A', diff=False, save=True):
     ax.set_xlim(1, 300)
     if diff: ax2.set_yscale('log')
     plot_sets.axes_lines()
-    if A == 'A' or A == 'C':
+    if A == 'A' or A == 'B':
         h = 'non-helical'
         if diff:
             ax.set_ylim(1e-44, 1e2)
@@ -194,7 +198,8 @@ def plot_EGW(runs, A='A', diff=False, save=True):
     ax.set_title(r'%s runs with $\beta = %.1f$'%(h, b), pad=15)
     ax.set_xlabel('$k$')
     if diff:
-        ax.set_ylabel(r'$|\Delta E_{\rm GW} (k)|$')
+        if A == 'A' or A == 'B': ax.set_ylabel(r'$|\Delta E_{\rm GW} (k)|$')
+        else: ax.set_ylabel(r'$\Delta E_{\rm GW} (k)$')
         ax2.set_ylabel(r'$E_{\rm GW}^{\rm nlin}$' + \
                        r'$ (k)/E_{\rm GW}^{\rm lin} (k)$')
     else: ax.set_ylabel(r'$E_{\rm GW} (k)$')
