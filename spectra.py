@@ -45,6 +45,23 @@ def compute_kpeak(k, E, tol=.01, quiet=False):
 
     return kpeak, Emax
 
+def max_E_kf(k, E, exp=0):
+
+    """
+    Function that computes the maximum of a spectrum compensated by the
+    wave number, i.e., max(E*k^exp)
+
+    Arguments:
+        k -- array of wave numbers
+        E -- array of spectral values
+        exp -- exponent of k (default 0)
+    """
+    
+    indmax = np.argmax(k**exp*E)
+    max_k = k[indmax]
+    max_E = E[indmax]
+    return max_k, max_E
+
 def characteristic_k(k, E, exp=1):
 
     """
@@ -61,7 +78,7 @@ def characteristic_k(k, E, exp=1):
         kch -- characteristic wave number defined with the power 'exp'
     """
 
-    k=k[np.where(k != 0)]
+    k = k[np.where(k != 0)]
     E = abs(E[np.where(k != 0)])
     spec_mean = np.trapz(E, k)
     int = np.trapz(E*k**exp, k)
