@@ -7,3 +7,6 @@ by A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, & A. Kosowsky, Phys
 
 The run directories and results in JCAP_2107_05356 correspond to the paper "Polarization of gravitational waves from helical MHD turbulent sources"
 by A. Roper Pol, S. Mandal, A. Brandenburg, & T. Kahniashvili, submitted to JCAP (https://arxiv.org/pdf/2107.05356.pdf)
+
+The run directories and results in memory correspond to the paper "Leading-order nonlinear gravitational waves from reheating magnetogeneses"
+by Y. He, A. Brandenburg, & A. Roper Pol, to be submitted to Phys. Rev. D.
