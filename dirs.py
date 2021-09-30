@@ -36,32 +36,47 @@ def read_dirs(proj, dirs={}):
 
         'JCAP_2021' -- runs of A. Roper Pol et al., "Polarization of
                        gravitational waves from helical MHD turbulent sources",
-                       arXiv:2107.05356.
+                       submitted to JCAP, arXiv:2107.05356.
 
                        The options are: 'JCAP_2021_ini' and 'JCAP_2021_dri'
                            for the initially given (ini) or driven (dri)
                            fields.
 
+        'memory' -- runs of Y. He et al., "Leading-order nonlinear
+                    gravitational waves from reheating magnetogeneses",
+                    to be submitted to Phys. Rev. D, arxiv:
+
+                    The options are: 'memory_helical_b27', 'memory_helical_b73',
+                    'memory_nonhelical_b27', 'memory_nonhelical_b73' for
+                    helical and non-helical runs with beta = 2.7 and beta = 7.3
+
     Returns:
         dirs -- updated dictionary of directories
     """
+
+    ############################# PRD_2020 #####################################
 
     if proj == 'PRD_2020_ini':
         dirs.update({'ini1':'M1152e_exp6k4_M4b'})
         dirs.update({'ini2':'M1152e_exp6k4'})
         dirs.update({'ini3':'M1152e_exp6k4_k60b'})
+
     if proj == 'PRD_2020_hel':
         dirs.update({'hel1':'F1152d2_sig1_t11_M2c_double'})
         dirs.update({'hel2':'F1152a_sig1_t11d_double'})
         dirs.update({'hel3':'F1152a_sig1'})
         dirs.update({'hel4':'F1152a_k10_sig1'})
+
     if proj == 'PRD_2020_noh':
         dirs.update({'noh1':'F1152b_sig0_t11_M4'})
         dirs.update({'noh2':'F1152a_sig0_t11b'})
+
     if proj == 'PRD_2020_ac':
         dirs.update({'ac1':'E1152e_t11_M4d_double'})
         dirs.update({'ac2':'E1152e_t11_M4a_double'})
         dirs.update({'ac3':'E1152e_t11_M4e_double'})
+
+    ############################# PRR_2021 #####################################
 
     if proj == 'PRR_2021_K':
         dirs.update({'K0':'K512sig0_k6_ramp1a'})
@@ -70,6 +85,7 @@ def read_dirs(proj, dirs={}):
         dirs.update({'K03':'K512sig03_k6_ramp1a'})
         dirs.update({'K05':'K512sig05_k6_ramp1a'})
         dirs.update({'K1':'K512sig1_k6_ramp1a'})
+
     if proj == 'PRR_2021_M':
         dirs.update({'M0':'M512sig0_k6_ramp1a'})
         dirs.update({'M01_c':'M512sig01_k6_ramp1c'})
@@ -77,6 +93,7 @@ def read_dirs(proj, dirs={}):
         dirs.update({'M03':'M512sig03_k6_ramp1a'})
         dirs.update({'M05':'M512sig05_k6_ramp1a'})
         dirs.update({'M1':'M512sig1_k6_ramp1a'})
+
     if proj == 'PRR_2021_nohel':
         dirs.update({'nohel_tau01':'F1152a_sig0_t11_M4_ramp01b'})
         dirs.update({'nohel_tau02':'F1152a_sig0_t11_M4_ramp02a'})
@@ -84,12 +101,15 @@ def read_dirs(proj, dirs={}):
         dirs.update({'nohel_tau1':'F1152a_sig0_t11_M4_ramp1a'})
         dirs.update({'nohel_tau2':'F1152a_sig0_t11_M4_ramp2a'})
 
+    ############################# JCAP_2021 ####################################
+
     if proj == 'JCAP_2021_ini':
         dirs.update({'i_s01':'M1152e_exp6k4_sig01'})
         dirs.update({'i_s03':'M1152e_exp6k4_sig03'})
         dirs.update({'i_s05':'M1152e_exp6k4_sig05'})
         dirs.update({'i_s07':'M1152e_exp6k4_sig07'})
         dirs.update({'i_s1':'M1152e_exp6k4'})
+
     if proj == 'JCAP_2021_dri':
         dirs.update({'f_s001_neg':'F1152sigm001a'})
         dirs.update({'f_s001':'F1152sig001a'})
@@ -97,5 +117,51 @@ def read_dirs(proj, dirs={}):
         dirs.update({'f_s05':'F1152sig05a'})
         dirs.update({'f_s07':'F1152sig07c'})
         dirs.update({'f_s1_neg':'F1152sigm1a'})
+
+    ############################# memory ######################################
+
+    if proj == 'memory_nonhelical_b73':
+
+        dirs.update({'A4_nl': 'P512b73c_nlin2_nhel_e002new'})
+        dirs.update({'A4_l': 'P512b73c_lin2_nhel_e002new'})
+        dirs.update({'A3_nl': 'P512b73c_nlin2_nhel_e01new'})
+        dirs.update({'A3_l': 'P512b73c_lin2_nhel_e01new'})
+        dirs.update({'A2_nl': 'P512b73c_nlin2_nhel_e1new'})
+        dirs.update({'A2_l': 'P512b73c_lin2_nhel_e1new'})
+        dirs.update({'A1_nl': 'P512b73c_nlin2_nhel_e10new'})
+        dirs.update({'A1_l': 'P512b73c_lin2_nhel_e10new'})
+
+    if proj == 'memory_nonhelical_b27':
+
+        dirs.update({'B4_nl': 'P512b27c_nlin2_nhel_e002new'})
+        dirs.update({'B4_l': 'P512b27c_lin2_nhel_e002new'})
+        dirs.update({'B3_nl': 'P512b27c_nlin2_nhel_e01new'})
+        dirs.update({'B3_l': 'P512b27c_lin2_nhel_e01new'})
+        dirs.update({'B2_nl': 'P512b27c_nlin2_nhel_e1new'})
+        dirs.update({'B2_l': 'P512b27c_lin2_nhel_e1new'})
+        dirs.update({'B1_nl': 'P512b27c_nlin2_nhel_e10new'})
+        dirs.update({'B1_l: 'P512b27c_lin2_nhel_e10new'})
+
+    if proj == 'memory_helical_b73':
+
+        dirs.update({'C4_nl': 'P512b73c_nlin2_e002new'})
+        dirs.update({'C4_l': 'P512b73c_lin2_e002new'})
+        dirs.update({'C3_nl': 'P512b73c_nlin2_e01new'})
+        dirs.update({'C3_l': 'P512b73c_lin2_e01new'})
+        dirs.update({'C2_nl': 'P512b73c_nlin2_e1new'})
+        dirs.update({'C2_l': 'P512b73c_lin2_e1new'})
+        dirs.update({'C1_nl': 'P512b73c_nlin2_e10new'})
+        dirs.update({'C1_l': 'P512b73c_lin2_e10new'})
+
+    if proj == 'memory_helical_b27':
+
+        dirs.update({'D4_nl': 'P512b27c_nlin2_e002new'})
+        dirs.update({'D4_l': 'P512b27c_lin2_e002new'})
+        dirs.update({'D3_nl': 'P512b27c_nlin2_e01new'})
+        dirs.update({'D3_l': 'P512b27c_lin2_e01new'})
+        dirs.update({'D2_nl': 'P512b27c_nlin2_e1new'})
+        dirs.update({'D2_l': 'P512b27c_lin2_e1new'})
+        dirs.update({'D1_nl': 'P512b27c_nlin2_e10new'})
+        dirs.update({'D1_l': 'P512b27c_lin2_e10new'})
 
     return dirs
