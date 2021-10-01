@@ -52,7 +52,7 @@ def read_runs():
     # set quiet to False to see the spectra available, the runs read,
     # and some characteristic info of the run
     runs = r.initialize_runs(R, dir0, dirs, quiet=False, opt=1)
-    r.characterize_runs(runs, quiet=True)
+    r.characterize_runs(runs, quiet=False)
 
     os.chdir(dir0)
 
