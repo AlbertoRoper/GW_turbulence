@@ -23,6 +23,9 @@ from dirs import read_dirs as rd
 import run as r
 import plot_sets
 import spectra
+import cosmoGW
+import interferometry as inte
+import pta
 
 os.chdir(dir0)
 
@@ -143,30 +146,33 @@ def plot_EGW(runs, A='A', diff=False, save=True):
     if diff:
         for i in range(0, 4):
             run_l = runs_l[i]
-            EGW_l = run_l.spectra.get('EGW')[-1, :]
+            EGW_l = run_l.spectra.get('EGW')[-1, 1:]
+            k = run_l.spectra.get('k')[1:]
             run_nl = runs_nl[i]
-            EGW_nl = run_nl.spectra.get('EGW')[-1, :]
+            EGW_nl = run_nl.spectra.get('EGW')[-1, 1:]
             if A == 'A' or A == 'B':
-                ax.plot(abs(EGW_nl - EGW_l), color=col, alpha = 1 - i*.3,
+                ax.plot(k, abs(EGW_nl - EGW_l), color=col, alpha = 1 - i*.3,
                         label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
             else:
-                ax.plot(EGW_nl - EGW_l, color=col, alpha = 1 - i*.3,
+                ax.plot(k, EGW_nl - EGW_l, color=col, alpha = 1 - i*.3,
                         label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
             good = np.where(EGW_l != 0)
-            ax2.plot(EGW_nl[good]/EGW_l[good], '.', color=col,
+            ax2.plot(k, EGW_nl[good]/EGW_l[good], '.', color=col,
                      alpha = .6 - i*.15)
 
     else:
         j = 0
         for i in runs_l:
-            EGW_l = i.spectra.get('EGW')[-1, :]
-            ax.plot(EGW_l, color=col, alpha = 1 - j*.3,
+            EGW_l = i.spectra.get('EGW')[-1, 1:]
+            k = i.spectra.get('k')[1:]
+            ax.plot(k, EGW_l, color=col, alpha = 1 - j*.3,
                      label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[j])
             j += 1
         j = 0
         for i in runs_nl:
-            EGW = i.spectra.get('EGW')[-1, :]
-            ax.plot(EGW, color=col, ls='--', alpha = 1 - j*.3)
+            EGW = i.spectra.get('EGW')[-1, 1:]
+            k = i.spectra.get('k')[1:]
+            ax.plot(k, EGW, color=col, ls='--', alpha = 1 - j*.3)
             j += 1
 
     if not diff:
@@ -235,20 +241,22 @@ def plot_PGW(runs, A='A', save=True):
 
     j = 0
     for i in runs_l:
-        EGW_l = i.spectra.get('EGW')[-1, :]
-        XiGW_l = i.spectra.get('helEGW')[-1, :]
+        EGW_l = i.spectra.get('EGW')[-1, 1:]
+        XiGW_l = i.spectra.get('helEGW')[-1, 1:]
+        k = i.spectra.get('k')[1:]
         good = np.where(EGW_l != 0)
-        plt.plot(XiGW_l[good]/EGW_l[good],
+        plt.plot(k[good], XiGW_l[good]/EGW_l[good],
                  color=col, alpha=1 - j*.3,
                  label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[j])
         j += 1
 
     j = 0
     for i in runs_nl:
-        EGW = i.spectra.get('EGW')[-1, :]
-        XiGW = i.spectra.get('helEGW')[-1, :]
+        EGW = i.spectra.get('EGW')[-1, 1:]
+        XiGW = i.spectra.get('helEGW')[-1, 1:]
+        k = i.spectra.get('k')[1:]
         good = np.where(EGW != 0)
-        plt.plot(XiGW[good]/EGW[good], '--',
+        plt.plot(k[good], XiGW[good]/EGW[good], '--',
                  color=col, alpha=1 - j*.3)
         j += 1
 
@@ -273,4 +281,118 @@ def plot_PGW(runs, A='A', save=True):
     ax.tick_params(axis='x', pad=15)
 
     if save: plt.savefig('plots/' + 'PGW_k_' + A + '.pdf',
+                         bbox_inches='tight')
+
+def plot_OmGW_f(run_l, run_nl, T, g, col='blue'):
+
+    EGW_l = run_l.spectra.get('EGW')[-1, 1:]
+    k_l = run_l.spectra.get('k')[1:]
+    f_l, OmGW_l = cosmoGW.shift_OmGW_today(k_l, EGW_l*k_l, T, g)
+    EGW_nl = run_nl.spectra.get('EGW')[-1, 1:]
+    k_nl = run_nl.spectra.get('k')[1:]
+    f_nl, OmGW_nl = cosmoGW.shift_OmGW_today(k_nl, EGW_nl*k_nl, T, g)
+
+    plt.plot(f_l, OmGW_nl, color=col)
+    plt.plot(f_nl, abs(OmGW_nl - OmGW_l), color=col, ls='-.')
+
+def plot_OmGW_vs_f(runs, save=True):
+
+    """
+    Function that plots the resulting GW energy density spectrum at the end
+    of inflation (reheating) as an observable at the present time and compares
+    it with LISA sensitivity and NANOGrav 12.5 yr results.
+    It plots the leading-order nonlinear term as a GW spectrum separately
+    for comparison.
+
+    It generates the plots corresponding to figure 4 of
+    Y. He, A. Brandenburg, and A. Roper Pol, "Leading-order nonlinear
+    gravitational waves from reheating magnetogeneses".
+
+    Arguments:
+        runs -- variable that contains the memory project runs with the
+                stored spectra
+        save -- option to save the plot in plots/OmGW_f_detectors.pdf
+                (default True)
+    """
+
+    plt.figure(figsize=(12, 8))
+
+    # read LISA PLS
+    CWD = os.getcwd()
+    os.chdir('..')
+    fs, LISA_Om, LISA_OmPLS = inte.read_sens(SNR=10, T=4)
+    fs = fs*u.Hz
+    os.chdir(CWD)
+
+    # read NANOGrav data
+    CWD = os.getcwd()
+    os.chdir('../runs_nonhelical_ini')
+    _ = pta.read_PTA_data(beta_b=False, Omega_b=False, return_all=True)
+    gamma_NG_sPL_1s, A1_NG_sPL_1s, A2_NG_sPL_1s = [_[3], _[4], _[5]]
+    betas = np.linspace(-2, 5, 100)
+    colors = ['blue']*len(betas)
+    _ = pta.CP_delay(betas, colors, obs='NANOGrav_singlePL_1s',
+             plot=False)
+    fNG = _[0]
+    OmGW_NG_a = _[3]
+    OmGW_NG_b = _[6]
+    _ = pta.CP_delay(betas, colors, obs='NANOGrav_brokenPL_1s',
+             plot=False)
+    fNGb = _[0]
+    OmGW_NGb_a = _[3]
+    OmGW_NGb_b = _[6]
+    os.chdir(CWD)
+
+    plt.plot(fs, LISA_OmPLS, color='limegreen')
+    plt.plot(fs, LISA_Om, color='limegreen', ls='-.')
+    minOM = np.zeros(len(fNG))
+    maxOM = np.zeros(len(fNG))
+    for i in range(0, len(fNG)):
+        good = np.where(OmGW_NG_a[:, i] != 0)
+        minOM[i] = np.min(OmGW_NG_a[good, i])
+        maxOM[i] = np.max(OmGW_NG_b[:, i])
+    plt.fill_between(fNG, minOM, maxOM, color='blue', alpha=.3)
+    #for i in range(0, len(betas)):
+    #    plt.fill_between(fNG, OmGW_NG_a[i, :],
+    #                     OmGW_NG_b[i, :], color='blue', alpha=.2)
+        #plt.fill_between(fNGb, OmGW_NGb_a[i, :],
+        #                 OmGW_NGb_b[i, :], color='blue', alpha=.2)
+    plt.text(1e-8, 2e-5, 'NANOGrav 12.5yr', color='blue', fontsize=16)
+    plt.text(1e-4, 2e-13, 'LISA PLS', color='limegreen', fontsize=16)
+
+    # chose linear and nonlinear runs corresponding to A
+    runsA_l, runsA_nl, colA = select_runs(runs, A='A')
+    runsB_l, runsB_nl, colB = select_runs(runs, A='B')
+    runsC_l, runsC_nl, colC = select_runs(runs, A='C')
+    runsD_l, runsD_nl, colD = select_runs(runs, A='D')
+    EEM = [10, 1, 0.1, 0.02]
+
+    # select runs corresponding to EM = 0.1
+    runA_l = runsA_l[2]
+    runA_nl = runsA_nl[2]
+    runB_l = runsB_l[2]
+    runB_nl = runsB_nl[2]
+    runC_l = runsC_l[2]
+    runC_nl = runsC_nl[2]
+    runD_l = runsD_l[2]
+    runD_nl = runsD_nl[2]
+
+    # Note that T and g are different for every run
+    plot_OmGW_f(runA_l, runA_nl, 100*u.GeV, 100, col=colA)
+    plot_OmGW_f(runB_l, runB_nl, 150*u.MeV, 15, col=colB)
+    plot_OmGW_f(runC_l, runC_nl, 8*u.GeV, 86, col=colC)
+    plot_OmGW_f(runD_l, runD_nl, 120*u.MeV, 20, col=colD)
+
+    plot_sets.axes_lines()
+
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('$f$ [Hz]')
+    plt.ylabel(r'$h_0^2 \Omega_{\rm GW} (f)$')
+    plt.xticks(np.logspace(-9, -2, 8))
+    plt.xlim(1e-9, 1e-2)
+    plt.yticks(np.logspace(-16, -3, 14))
+    plt.ylim(1e-16, 1e-3)
+
+    if save: plt.savefig('plots/' + 'OmGW_f_detectors.pdf',
                          bbox_inches='tight')
