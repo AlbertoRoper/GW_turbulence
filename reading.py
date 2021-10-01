@@ -68,6 +68,8 @@ def read_spectra_runs(dir0, dir_run, opt=0):
     # read the wave number from power_krms.dat and normalize it using the
     # size of the box length L (assuming a cubic domain)
     k = read_k()
+    Nk = len(k)
+    if np.isnan(k[0]): k = np.linspace(0, Nk-1, num=Nk)
     L = read_L()
     k0 = 2*np.pi/L
     k = k*k0
