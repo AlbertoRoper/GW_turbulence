@@ -207,9 +207,9 @@ def plot_EGW(runs, A='A', diff=False, save=True):
             ax.plot(xx, 1e-12*(xx/10)**(-32), color=col, ls='-.', lw=.8)
             ax.text(18, 1e-30, r'$\sim\!k^{-32}$', color=col)
         if A == 'B':
-            xx = np.linspace(1.05, 3)
-            ax.plot(xx, 3e-6*xx**.5, color=col, ls='-.', lw=.8)
-            ax.text(1.3, 4e-8, r'$\sim\!k^{1/2}$', color=col)
+            xx = np.linspace(1.15, 3)
+            ax.plot(xx, 1e-6*xx, color=col, ls='-.', lw=.8)
+            ax.text(1.5, 3e-8, r'$\sim\!k$', color=col)
             xx = np.linspace(10, 100)
             ax.plot(xx, 2e-1*(xx/10)**(-10), color=col, ls='-.', lw=.8)
             ax.text(27, 6e-5, r'$\sim\!k^{-10}$', color=col)
