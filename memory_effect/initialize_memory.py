@@ -30,7 +30,7 @@ def run():
 
     os.chdir(dir0)
 
-def read_runs():
+def read_runs(dirs=[]):
 
     """
     Function that reads the runs from the Pencil Code simulations.
@@ -43,10 +43,11 @@ def read_runs():
 
     # dictionary with the name identifying
     # the runs and pointing to the corresponding directory
-    dirs = rd('memory_nonhelical_b73')
-    dirs = rd('memory_nonhelical_b27')
-    dirs = rd('memory_helical_b73')
-    dirs = rd('memory_helical_b27')
+    if len(dirs) == 0:
+        dirs = rd('memory_nonhelical_b73')
+        dirs = rd('memory_nonhelical_b27')
+        dirs = rd('memory_helical_b73')
+        dirs = rd('memory_helical_b27')
     R = [s for s in dirs]
 
     # set quiet to False to see the spectra available, the runs read,
