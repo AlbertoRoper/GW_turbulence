@@ -106,7 +106,7 @@ def select_runs(runs, A='A'):
         run3_nl = runs.get('D3_nl')
         run4_l = runs.get('D4_l')
         run4_nl = runs.get('D4_nl')
-        col = 'darkred'
+        col = 'red'
 
     runs_l = [run1_l, run2_l, run3_l, run4_l]
     runs_nl = [run1_nl, run2_nl, run3_nl, run4_nl]
@@ -199,6 +199,34 @@ def plot_EGW(runs, A='A', diff=False, save=True):
             k = i.spectra.get('k')[1:]
             ax.plot(k, EGW_nl, color=col, ls='--', alpha = .1 + j*.3)
             j += 1
+        if A == 'A':
+            xx = np.linspace(1.2, 5)
+            ax.plot(xx, 1e-8*xx, color=col, ls='-.', lw=.8)
+            ax.text(2, 1e-10, r'$\sim\!k$', color=col)
+            xx = np.linspace(15, 60)
+            ax.plot(xx, 1e-12*(xx/10)**(-32), color=col, ls='-.', lw=.8)
+            ax.text(18, 1e-30, r'$\sim\!k^{-32}$', color=col)
+        if A == 'B':
+            xx = np.linspace(1.05, 3)
+            ax.plot(xx, 3e-6*xx**.5, color=col, ls='-.', lw=.8)
+            ax.text(1.3, 4e-8, r'$\sim\!k^{1/2}$', color=col)
+            xx = np.linspace(10, 100)
+            ax.plot(xx, 2e-1*(xx/10)**(-10), color=col, ls='-.', lw=.8)
+            ax.text(27, 6e-5, r'$\sim\!k^{-10}$', color=col)
+        if A == 'C':
+            xx = np.linspace(1.4, 20)
+            ax.plot(xx, 1e-10*xx**1.5, color=col, ls='-.', lw=.8)
+            ax.text(4, 1e-12, r'$\sim\!k^{3/2}$', color=col)
+            xx = np.linspace(30, 100)
+            ax.plot(xx, 1e10*(xx/10)**(-45), color=col, ls='-.', lw=.8)
+            ax.text(30, 1e-24, r'$\sim\!k^{-45}$', color=col)
+        if A == 'D':
+            xx = np.linspace(1.25, 8)
+            ax.plot(xx, 1e-8*xx**1.5, color=col, ls='-.', lw=.8)
+            ax.text(2.5, 5e-10, r'$\sim\!k^{3/2}$', color=col)
+            xx = np.linspace(11, 50)
+            ax.plot(xx, 1e-7*(xx/10)**(-15), color=col, ls='-.', lw=.8)
+            ax.text(15, 6e-15, r'$\sim\!k^{-15}$', color=col)
 
     if not diff:
         ax.legend(fontsize=18, loc='lower left', frameon=False)
