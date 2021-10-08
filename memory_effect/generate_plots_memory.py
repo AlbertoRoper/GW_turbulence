@@ -133,11 +133,14 @@ def plot_EGW(runs, A='A', diff=False, save=True):
                 linear and nonlinear when diff = True (default False)
         A -- option to chose the type of runs to be plotted (default 'A',
              other options are 'B', 'C', 'D')
-        save -- option to save the plot in plots/EGW_k_'A'_'diff'.pdf (default True)
+        save -- option to save the plot in plots/EGW_k_'A'_'diff'.pdf
+                (default True)
     """
 
     fig, ax = plt.subplots(figsize=(12, 8))
+    plot_sets.axes_lines()
     if diff: ax2 = ax.twinx()
+    plot_sets.axes_lines(both=False)
 
     # chose linear and nonlinear runs corresponding to A
     runs_l, runs_nl, col = select_runs(runs, A=A)
@@ -146,33 +149,55 @@ def plot_EGW(runs, A='A', diff=False, save=True):
     if diff:
         for i in range(0, 4):
             run_l = runs_l[i]
-            EGW_l = run_l.spectra.get('EGW')[-1, 1:]
+            t_l = run_l.spectra.get('t_EGW')
+            ind_tl = np.argmin(abs(t_l - 1.))
+            if abs(t_l[ind_tl] - 1) > 1e-2:
+                print('The time t = 1 is not available in the spectra of',
+                      ' the run %s, so t = %.2f has been',
+                      ' taken'%(run_l.name_run, t_l[ind_tl]))
+            EGW_l = run_l.spectra.get('EGW')[ind_tl, 1:]
             k = run_l.spectra.get('k')[1:]
             run_nl = runs_nl[i]
-            EGW_nl = run_nl.spectra.get('EGW')[-1, 1:]
-            if A == 'A' or A == 'B':
-                ax.plot(k, abs(EGW_nl - EGW_l), color=col, alpha = 1 - i*.3,
-                        label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
-            else:
-                ax.plot(k, EGW_nl - EGW_l, color=col, alpha = 1 - i*.3,
+            t_nl = run_nl.spectra.get('t_EGW')
+            ind_tnl = np.argmin(abs(t_nl - 1.))
+            if abs(t_nl[ind_tnl] - 1) > 1e-2:
+                print('The time t = 1 is not available in the spectra of',
+                      ' the run %s, so t = %.2f has been',
+                      ' taken'%(run.name_run, t_l[ind_tnl]))
+            EGW_nl = run_nl.spectra.get('EGW')[ind_tnl, 1:]
+            dif = abs(EGW_nl - EGW_l)
+            ax.plot(k, dif, color=col, alpha = 1 - i*.3,
                         label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
             good = np.where(EGW_l != 0)
-            ax2.plot(k, EGW_nl[good]/EGW_l[good], '.', color=col,
+            ax2.plot(k, dif/EGW_nl[good], '.', color=col,
                      alpha = .6 - i*.15)
+            ax2.set_ylim(1e-5, 2.)
 
     else:
         j = 0
         for i in runs_l:
-            EGW_l = i.spectra.get('EGW')[-1, 1:]
+            t_l = i.spectra.get('t_EGW')
+            ind_tl = np.argmin(abs(t_l - 1.))
+            if abs(t_l[ind_tl] - 1) > 1e-2:
+                print('The time t = 1 is not available in the spectra of',
+                      ' the run %s, so t = %.2f has been',
+                      ' taken'%(i.name_run, t_l[ind_tl]))
+            EGW_l = i.spectra.get('EGW')[ind_tl, 1:]
             k = i.spectra.get('k')[1:]
             ax.plot(k, EGW_l, color=col, alpha = 1 - j*.3,
                      label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[j])
             j += 1
         j = 0
         for i in runs_nl:
-            EGW = i.spectra.get('EGW')[-1, 1:]
+            t_nl = i.spectra.get('t_EGW')
+            ind_tnl = np.argmin(abs(t_nl - 1.))
+            if abs(t_nl[ind_tnl] - 1) > 1e-2:
+                print('The time t = 1 is not available in the spectra of',
+                      ' the run %s, so t = %.2f has been',
+                      ' taken'%(i.name_run, t_nl[ind_tnl]))
+            EGW_nl = i.spectra.get('EGW')[ind_tnl, 1:]
             k = i.spectra.get('k')[1:]
-            ax.plot(k, EGW, color=col, ls='--', alpha = 1 - j*.3)
+            ax.plot(k, EGW_nl, color=col, ls='--', alpha = 1 - j*.3)
             j += 1
 
     if not diff:
@@ -181,33 +206,31 @@ def plot_EGW(runs, A='A', diff=False, save=True):
     ax.set_xscale('log')
     ax.set_xlim(1, 300)
     if diff: ax2.set_yscale('log')
-    plot_sets.axes_lines()
-    if A == 'A' or A == 'B':
-        h = 'non-helical'
+    if A == 'A' or A == 'B': h = 'non-helical'
+    else: h = 'helical'
+    if A == 'A' or A == 'C':
+        b = 7.3
         if diff:
-            ax.set_ylim(1e-44, 1e2)
+            ax.set_ylim(1e-40, 1e2)
             ax.set_yticks(np.logspace(-46, 2, 13))
         else:
             ax.set_ylim(1e-42, 1e2)
             ax.set_yticks(np.logspace(-42, 2, 12))
     else:
-        h = 'helical'
+        b = 2.7
         if diff:
             ax.set_ylim(1e-32, 1e2)
             ax.set_yticks(np.logspace(-34, 2, 10))
         else:
             ax.set_ylim(1e-30, 1e2)
             ax.set_yticks(np.logspace(-30, 2, 9))
-    if A == 'A' or A == 'C': b = 7.3
-    else: b = 2.7
 
     ax.set_title(r'%s runs with $\beta = %.1f$'%(h, b), pad=15)
     ax.set_xlabel('$k$')
     if diff:
-        if A == 'A' or A == 'B': ax.set_ylabel(r'$|\Delta E_{\rm GW} (k)|$')
-        else: ax.set_ylabel(r'$\Delta E_{\rm GW} (k)$')
-        ax2.set_ylabel(r'$E_{\rm GW}^{\rm nlin}$' + \
-                       r'$ (k)/E_{\rm GW}^{\rm lin} (k)$')
+        ax.set_ylabel(r'$|\Delta E_{\rm GW} (k)|$')
+        ax2.set_ylabel(r'$|\Delta E_{\rm GW} (k)|$' + \
+                       r'$/E_{\rm GW}^{\rm nlin} (k)$')
     else: ax.set_ylabel(r'$E_{\rm GW} (k)$')
     dff = ''
     if diff: dff = '_diff'
@@ -241,8 +264,14 @@ def plot_PGW(runs, A='A', save=True):
 
     j = 0
     for i in runs_l:
-        EGW_l = i.spectra.get('EGW')[-1, 1:]
-        XiGW_l = i.spectra.get('helEGW')[-1, 1:]
+        t_l = i.spectra.get('t_EGW')
+        ind_tl = np.argmin(abs(t_l - 1.))
+        if abs(t_l[ind_tl] - 1) > 1e-2:
+            print('The time t = 1 is not available in the spectra of',
+                  ' the run %s, so t = %.2f has been',
+                  ' taken'%(i.name_run, t_l[ind_tl]))
+        EGW_l = i.spectra.get('EGW')[ind_tl, 1:]
+        XiGW_l = i.spectra.get('helEGW')[ind_tl, 1:]
         k = i.spectra.get('k')[1:]
         good = np.where(EGW_l != 0)
         plt.plot(k[good], XiGW_l[good]/EGW_l[good],
@@ -252,11 +281,17 @@ def plot_PGW(runs, A='A', save=True):
 
     j = 0
     for i in runs_nl:
-        EGW = i.spectra.get('EGW')[-1, 1:]
-        XiGW = i.spectra.get('helEGW')[-1, 1:]
+        t_nl = i.spectra.get('t_EGW')
+        ind_tnl = np.argmin(abs(t_nl - 1.))
+        if abs(t_nl[ind_tnl] - 1) > 1e-2:
+            print('The time t = 1 is not available in the spectra of',
+                  ' the run %s, so t = %.2f has been',
+                  ' taken'%(i.name_run, t_nl[ind_tnl]))
+        EGW_nl = i.spectra.get('EGW')[ind_tnl, 1:]
+        XiGW_nl = i.spectra.get('helEGW')[ind_tnl, 1:]
         k = i.spectra.get('k')[1:]
-        good = np.where(EGW != 0)
-        plt.plot(k[good], XiGW[good]/EGW[good], '--',
+        good = np.where(EGW_nl != 0)
+        plt.plot(k[good], XiGW_nl[good]/EGW_nl[good], '--',
                  color=col, alpha=1 - j*.3)
         j += 1
 
@@ -273,7 +308,7 @@ def plot_PGW(runs, A='A', save=True):
         plt.legend(loc='lower right', fontsize=18, frameon=False)
     if A=='D':
         plt.ylim(-.2, 1.1)
-        plt.legend(loc='center right', fontsize=18, frameon=False)
+        plt.legend(loc='lower left', fontsize=18, frameon=False)
     plot_sets.axes_lines()
     plt.xlabel('$k$')
     plt.ylabel(r'${\cal P}_{\rm GW} (k)$')
@@ -285,10 +320,22 @@ def plot_PGW(runs, A='A', save=True):
 
 def plot_OmGW_f(run_l, run_nl, T, g, col='blue'):
 
-    EGW_l = run_l.spectra.get('EGW')[-1, 1:]
+    t_l = run_l.spectra.get('t_EGW')
+    ind_tl = np.argmin(abs(t_l - 1.))
+    if abs(t_l[ind_tl] - 1) > 1e-2:
+        print('The time t = 1 is not available in the spectra of',
+              ' the run %s, so t = %.2f has been',
+              ' taken'%(run_l.name_run, t_l[ind_tl]))
+    EGW_l = run_l.spectra.get('EGW')[ind_tl, 1:]
     k_l = run_l.spectra.get('k')[1:]
     f_l, OmGW_l = cosmoGW.shift_OmGW_today(k_l, EGW_l*k_l, T, g)
-    EGW_nl = run_nl.spectra.get('EGW')[-1, 1:]
+    t_nl = run_nl.spectra.get('t_EGW')
+    ind_tnl = np.argmin(abs(t_nl - 1.))
+    if abs(t_nl[ind_tnl] - 1) > 1e-2:
+        print('The time t = 1 is not available in the spectra of',
+              ' the run %s, so t = %.2f has been',
+              ' taken'%(run_nl.name_run, t_nl[ind_tnl]))
+    EGW_nl = run_nl.spectra.get('EGW')[ind_tnl, 1:]
     k_nl = run_nl.spectra.get('k')[1:]
     f_nl, OmGW_nl = cosmoGW.shift_OmGW_today(k_nl, EGW_nl*k_nl, T, g)
 
@@ -345,13 +392,8 @@ def plot_OmGW_vs_f(runs, save=True):
 
     plt.plot(fs, LISA_OmPLS, color='limegreen')
     plt.plot(fs, LISA_Om, color='limegreen', ls='-.')
-    minOM = np.zeros(len(fNG))
-    maxOM = np.zeros(len(fNG))
-    for i in range(0, len(fNG)):
-        good = np.where(OmGW_NG_a[:, i] != 0)
-        minOM[i] = np.min(OmGW_NG_a[good, i])
-        maxOM[i] = np.max(OmGW_NG_b[:, i])
-    plt.fill_between(fNG, minOM, maxOM, color='blue', alpha=.3)
+    minOm, maxOm = pta.get_min_max(fNG, OmGW_NG_a, OmGW_NG_b)
+    plt.fill_between(fNG, minOm, maxOm, color='blue', alpha=.3)
     #for i in range(0, len(betas)):
     #    plt.fill_between(fNG, OmGW_NG_a[i, :],
     #                     OmGW_NG_b[i, :], color='blue', alpha=.2)
