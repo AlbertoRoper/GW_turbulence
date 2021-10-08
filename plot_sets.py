@@ -16,16 +16,17 @@ plt.rcParams.update({'axes.labelsize': 'x-large',
                      'ytick.labelsize': 'x-large',
                      'legend.fontsize': 'x-large'})
 
-def axes_lines():
+def axes_lines(ax=[], both=True):
 
     """
     Function that includes some default settings for the lines in the loglog
     plots.
     """
 
-    ax = plt.gca()
+    if ax == []: ax = plt.gca()
     ax.tick_params(axis='y', direction='in', length=12)
     ax.tick_params(axis='x', direction='in', length=12, pad=10)
     ax.tick_params(which='minor', direction='in', length=6)
-    ax.yaxis.set_ticks_position('both')
-    ax.xaxis.set_ticks_position('both')
+    if both:
+        ax.yaxis.set_ticks_position('both')
+        ax.xaxis.set_ticks_position('both')
