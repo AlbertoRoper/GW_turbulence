@@ -122,46 +122,46 @@ def read_dirs(proj, dirs={}):
 
     if proj == 'memory_nonhelical_b73':
 
-        dirs.update({'A4_nl': 'P512b73c_nlin2_nhel_e002new'})
-        dirs.update({'A4_l': 'P512b73c_lin2_nhel_e002new'})
-        dirs.update({'A3_nl': 'P512b73c_nlin2_nhel_e01new'})
-        dirs.update({'A3_l': 'P512b73c_lin2_nhel_e01new'})
-        dirs.update({'A2_nl': 'P512b73c_nlin2_nhel_e1new'})
-        dirs.update({'A2_l': 'P512b73c_lin2_nhel_e1new'})
-        dirs.update({'A1_nl': 'P512b73c_nlin2_nhel_e10new'})
-        dirs.update({'A1_l': 'P512b73c_lin2_nhel_e10new'})
+        dirs.update({'A1_nl': 'P512b73c_nlin2_nhel_e002new'})
+        dirs.update({'A1_l': 'P512b73c_lin2_nhel_e002new'})
+        dirs.update({'A2_nl': 'P512b73c_nlin2_nhel_e01new'})
+        dirs.update({'A2_l': 'P512b73c_lin2_nhel_e01new'})
+        dirs.update({'A3_nl': 'P512b73c_nlin2_nhel_e1new'})
+        dirs.update({'A3_l': 'P512b73c_lin2_nhel_e1new'})
+        dirs.update({'A4_nl': 'P512b73c_nlin2_nhel_e10new'})
+        dirs.update({'A4_l': 'P512b73c_lin2_nhel_e10new'})
 
     if proj == 'memory_nonhelical_b27':
 
-        dirs.update({'B4_nl': 'P512b27c_nlin2_nhel_e002new'})
-        dirs.update({'B4_l': 'P512b27c_lin2_nhel_e002new'})
-        dirs.update({'B3_nl': 'P512b27c_nlin2_nhel_e01new'})
-        dirs.update({'B3_l': 'P512b27c_lin2_nhel_e01new'})
-        dirs.update({'B2_nl': 'P512b27c_nlin2_nhel_e1new'})
-        dirs.update({'B2_l': 'P512b27c_lin2_nhel_e1new'})
-        dirs.update({'B1_nl': 'P512b27c_nlin2_nhel_e10new'})
-        dirs.update({'B1_l: 'P512b27c_lin2_nhel_e10new'})
+        dirs.update({'B1_nl': 'P512b27c_nlin2_nhel_e002new'})
+        dirs.update({'B1_l': 'P512b27c_lin2_nhel_e002new'})
+        dirs.update({'B2_nl': 'P512b27c_nlin2_nhel_e01new'})
+        dirs.update({'B2_l': 'P512b27c_lin2_nhel_e01new'})
+        dirs.update({'B3_nl': 'P512b27c_nlin2_nhel_e1new'})
+        dirs.update({'B3_l': 'P512b27c_lin2_nhel_e1new'})
+        dirs.update({'B4_nl': 'P512b27c_nlin2_nhel_e10new'})
+        dirs.update({'B4_l': 'P512b27c_lin2_nhel_e10new'})
 
     if proj == 'memory_helical_b73':
 
-        dirs.update({'C4_nl': 'P512b73c_nlin2_e002new'})
-        dirs.update({'C4_l': 'P512b73c_lin2_e002new'})
-        dirs.update({'C3_nl': 'P512b73c_nlin2_e01new'})
-        dirs.update({'C3_l': 'P512b73c_lin2_e01new'})
-        dirs.update({'C2_nl': 'P512b73c_nlin2_e1new'})
-        dirs.update({'C2_l': 'P512b73c_lin2_e1new'})
-        dirs.update({'C1_nl': 'P512b73c_nlin2_e10new'})
-        dirs.update({'C1_l': 'P512b73c_lin2_e10new'})
+        dirs.update({'C1_nl': 'P512b73c_nlin2_e002new'})
+        dirs.update({'C1_l': 'P512b73c_lin2_e002new'})
+        dirs.update({'C2_nl': 'P512b73c_nlin2_e01new'})
+        dirs.update({'C2_l': 'P512b73c_lin2_e01new'})
+        dirs.update({'C3_nl': 'P512b73c_nlin2_e1new'})
+        dirs.update({'C3_l': 'P512b73c_lin2_e1new'})
+        dirs.update({'C4_nl': 'P512b73c_nlin2_e10new'})
+        dirs.update({'C4_l': 'P512b73c_lin2_e10new'})
 
     if proj == 'memory_helical_b27':
 
-        dirs.update({'D4_nl': 'P512b27c_nlin2_e002new'})
-        dirs.update({'D4_l': 'P512b27c_lin2_e002new'})
-        dirs.update({'D3_nl': 'P512b27c_nlin2_e01new'})
-        dirs.update({'D3_l': 'P512b27c_lin2_e01new'})
-        dirs.update({'D2_nl': 'P512b27c_nlin2_e1new'})
-        dirs.update({'D2_l': 'P512b27c_lin2_e1new'})
-        dirs.update({'D1_nl': 'P512b27c_nlin2_e10new'})
-        dirs.update({'D1_l': 'P512b27c_lin2_e10new'})
+        dirs.update({'D1_nl': 'P512b27c_nlin2_e002new'})
+        dirs.update({'D1_l': 'P512b27c_lin2_e002new'})
+        dirs.update({'D2_nl': 'P512b27c_nlin2_e01new'})
+        dirs.update({'D2_l': 'P512b27c_lin2_e01new'})
+        dirs.update({'D3_nl': 'P512b27c_nlin2_e1new'})
+        dirs.update({'D3_l': 'P512b27c_lin2_e1new'})
+        dirs.update({'D4_nl': 'P512b27c_nlin2_e10new'})
+        dirs.update({'D4_l': 'P512b27c_lin2_e10new'})
 
     return dirs

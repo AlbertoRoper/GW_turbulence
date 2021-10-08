@@ -260,7 +260,7 @@ def plot_PGW(runs, A='A', save=True):
 
     # chose linear and nonlinear runs corresponding to A
     runs_l, runs_nl, col = select_runs(runs, A=A)
-    EEM = [10, 1, 0.1, 0.02]
+    EEM = [0.02, 0.1, 1, 10]
 
     j = 0
     for i in runs_l:
@@ -407,7 +407,7 @@ def plot_OmGW_vs_f(runs, save=True):
     runsB_l, runsB_nl, colB = select_runs(runs, A='B')
     runsC_l, runsC_nl, colC = select_runs(runs, A='C')
     runsD_l, runsD_nl, colD = select_runs(runs, A='D')
-    EEM = [10, 1, 0.1, 0.02]
+    EEM = [0.02, 0.1, 1, 10]
 
     # select runs corresponding to EM = 0.1
     runA_l = runsA_l[2]
