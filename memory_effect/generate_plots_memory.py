@@ -144,7 +144,7 @@ def plot_EGW(runs, A='A', diff=False, save=True):
 
     # chose linear and nonlinear runs corresponding to A
     runs_l, runs_nl, col = select_runs(runs, A=A)
-    EEM = [10, 1, 0.1, 0.02]
+    EEM = [0.02, 0.1, 1, 10]
 
     if diff:
         for i in range(0, 4):
@@ -166,11 +166,11 @@ def plot_EGW(runs, A='A', diff=False, save=True):
                       ' taken'%(run.name_run, t_l[ind_tnl]))
             EGW_nl = run_nl.spectra.get('EGW')[ind_tnl, 1:]
             dif = abs(EGW_nl - EGW_l)
-            ax.plot(k, dif, color=col, alpha = 1 - i*.3,
+            ax.plot(k, dif, color=col, alpha = .1 + i*.3,
                         label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[i])
             good = np.where(EGW_l != 0)
             ax2.plot(k, dif/EGW_nl[good], '.', color=col,
-                     alpha = .6 - i*.15)
+                     alpha = .15 + i*.15)
             ax2.set_ylim(1e-5, 2.)
 
     else:
@@ -184,7 +184,7 @@ def plot_EGW(runs, A='A', diff=False, save=True):
                       ' taken'%(i.name_run, t_l[ind_tl]))
             EGW_l = i.spectra.get('EGW')[ind_tl, 1:]
             k = i.spectra.get('k')[1:]
-            ax.plot(k, EGW_l, color=col, alpha = 1 - j*.3,
+            ax.plot(k, EGW_l, color=col, alpha = .1 + j*.3,
                      label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[j])
             j += 1
         j = 0
@@ -197,7 +197,7 @@ def plot_EGW(runs, A='A', diff=False, save=True):
                       ' taken'%(i.name_run, t_nl[ind_tnl]))
             EGW_nl = i.spectra.get('EGW')[ind_tnl, 1:]
             k = i.spectra.get('k')[1:]
-            ax.plot(k, EGW_nl, color=col, ls='--', alpha = 1 - j*.3)
+            ax.plot(k, EGW_nl, color=col, ls='--', alpha = .1 + j*.3)
             j += 1
 
     if not diff:
@@ -275,7 +275,7 @@ def plot_PGW(runs, A='A', save=True):
         k = i.spectra.get('k')[1:]
         good = np.where(EGW_l != 0)
         plt.plot(k[good], XiGW_l[good]/EGW_l[good],
-                 color=col, alpha=1 - j*.3,
+                 color=col, alpha=.1 + j*.3,
                  label=r'${\cal E}_{\rm EM} = %.2f$'%EEM[j])
         j += 1
 
@@ -292,7 +292,7 @@ def plot_PGW(runs, A='A', save=True):
         k = i.spectra.get('k')[1:]
         good = np.where(EGW_nl != 0)
         plt.plot(k[good], XiGW_nl[good]/EGW_nl[good], '--',
-                 color=col, alpha=1 - j*.3)
+                 color=col, alpha=.1 + j*.3)
         j += 1
 
     if A == 'A' or A == 'B': h = 'non-helical'
@@ -410,14 +410,14 @@ def plot_OmGW_vs_f(runs, save=True):
     EEM = [0.02, 0.1, 1, 10]
 
     # select runs corresponding to EM = 0.1
-    runA_l = runsA_l[2]
-    runA_nl = runsA_nl[2]
-    runB_l = runsB_l[2]
-    runB_nl = runsB_nl[2]
-    runC_l = runsC_l[2]
-    runC_nl = runsC_nl[2]
-    runD_l = runsD_l[2]
-    runD_nl = runsD_nl[2]
+    runA_l = runsA_l[1]
+    runA_nl = runsA_nl[1]
+    runB_l = runsB_l[1]
+    runB_nl = runsB_nl[1]
+    runC_l = runsC_l[1]
+    runC_nl = runsC_nl[1]
+    runD_l = runsD_l[1]
+    runD_nl = runsD_nl[1]
 
     # Note that T and g are different for every run
     plot_OmGW_f(runA_l, runA_nl, 100*u.GeV, 100, col=colA)
@@ -438,3 +438,72 @@ def plot_OmGW_vs_f(runs, save=True):
 
     if save: plt.savefig('plots/' + 'OmGW_f_detectors.pdf',
                          bbox_inches='tight')
+
+
+def generate_table(runs, save=True):
+
+    """
+    Function that generates the Table II of Y. He, A. Brandenburg, and
+    A. Roper Pol, "Leading-order nonlinear gravitational waves from
+    reheating magnetogeneses" that contains the relevant results of the runs.
+
+    Arguments:
+        runs -- variable that contains the memory project runs with the
+                stored spectra
+        save -- option to save the table in tableII.csv
+                (default True)
+    """
+
+    import pandas as pd
+
+    EGW_ar = []
+    DEGW_ar = []
+    rat_DEGW_ar = []
+    hr_ar = []
+    Dhr_ar = []
+    rat_Dhr_ar = []
+    name = []
+
+    for i in runs:
+        run = runs.get(i)
+        t = run.ts.get('t')
+        indt = np.argmin(abs(t - 1.))
+        GW_ts = run.ts.get('EEGW')[indt]
+        hr = run.ts.get('hrms')[indt]
+
+        tk = run.spectra.get('t_EGW')
+        indt = np.argmin(abs(tk - 1))
+        k = run.spectra.get('k')
+        GW = np.trapz(run.spectra.get('EGW')[indt, :], k)
+        hc = np.trapz(run.spectra.get('GWh')[indt, :], k)
+
+        if '_l' in run.name_run:
+            EGW_ar.append(GW)
+            hr_ar.append(hr)
+            name.append(run.name_run)
+            DEGW_ar.append(GW_nl - GW)
+            rat_DEGW_ar.append((GW_nl - GW)/GW_nl)
+            Dhr_ar.append(hc_nl - hc)
+            rat_Dhr_ar.append((hc_nl - hc)/hc_nl)
+        else:
+            tk = run.spectra.get('t_EGW')
+            indt = np.argmin(abs(tk - 1))
+            k = run.spectra.get('k')
+            GW_nl = np.trapz(run.spectra.get('EGW')[indt, :], k)
+            hc_nl = np.trapz(run.spectra.get('GWh')[indt, :], k)
+
+    name = np.array(name)
+    EGW_ar = np.array(EGW_ar)
+    DEGW_ar = np.array(DEGW_ar)
+    rat_DEGW_ar = np.array(rat_DEGW_ar)
+    hr_ar = np.array(hr_ar)
+    Dhr_ar = np.array(Dhr_ar)
+    rat_Dhr_ar = np.array(rat_Dhr_ar)
+
+    df = pd.DataFrame({'name': name, 'EGW': EGW_ar, 'Del EGW': DEGW_ar,
+                   'ratio Del EGW': rat_DEGW_ar, 'hrms': hr_ar,
+                   'Del hrms': Dhr_ar, 'ratio Del hrms': rat_Dhr_ar})
+
+    if save: df.to_csv('tableII.csv')
+
+    return df
