@@ -347,6 +347,131 @@ def plot_PGW(runs, A='A', save=True):
     if save: plt.savefig('plots/' + 'PGW_k_' + A + '.pdf',
                          bbox_inches='tight')
 
+def plot_EEGW_vs_EEM(runs, save=True):
+
+    """
+    Function that plots the total GW energy density produced as a function
+    of the maximum electromagnetic energy density, both for the linearized
+    GW equation and the nonlinear contribution corresponding to the
+    nonlinear effect.
+
+    It generates the plot corresponding to figure 3 of
+    Y. He, A. Brandenburg, and A. Roper Pol, "Leading-order nonlinear
+    gravitational waves from reheating magnetogeneses".
+
+    Arguments:
+        runs -- variable that contains the memory project runs with the
+                stored spectra
+        save -- option to save the plot in plots/EEGW_EEM.pdf and
+                plots/DEEGW_EEM.pdf (default True)
+    """
+
+    import pandas as pd
+
+    df = generate_table(runs, save=False)
+    EEM = np.array(df['EM'])
+    EGW = np.array(df['EGW'])
+    delEGW = np.array(df['Del EGW'])
+    name = np.array(df['name'])
+
+    def plot_runA(q, bet=2.7, gam=0, A='A', exp=2, d='three', qst='q'):
+
+        kstar = bet*(gam + np.sqrt(1 + gam**2 + 1/2/bet))
+        if A == 'A': col = 'blue'
+        if A == 'B': col = 'darkgreen'
+        if A == 'C': col = 'orange'
+        if A == 'D': col = 'red'
+        if d == 'two': st = '%.2f'%q
+        if d == 'three': st = '%.3f'%q
+        plt.plot(xx, (q*xx)**exp, color=col, lw=.8,
+                 label='$%s = %s$, $k_* = %.3f$'%(qst, st, kstar))
+
+        return q*kstar
+
+    plt.figure(1, figsize=(12, 8))
+    plt.figure(2, figsize=(12, 8))
+
+    f_col = 'none'
+    for i in range(0, len(EEM)):
+        if 'A' in name[i]: col = 'blue'
+        if 'B' in name[i]: col = 'darkgreen'
+        if 'C' in name[i]:
+            col = 'orange'
+            f_col = col
+        if 'D' in name[i]:
+            col = 'red'
+            f_col = col
+        plt.figure(1)
+        plt.scatter(EEM[i], EGW[i], facecolors=f_col, color=col)
+        plt.figure(2)
+        plt.scatter(EEM[i], delEGW[i], facecolors=f_col, color=col)
+    xx2 = np.logspace(-1, 2)
+    xx = np.logspace(-3, 3)
+    plt.figure(1)
+    # Runs A
+    q = [.18, .52, .08, .21]
+    AA = ['A', 'B', 'C', 'D']
+    qt = np.zeros(4)
+    qt[0] = plot_runA(q[0], bet=7.3, gam=0., A='A')
+    # Runs B
+    qt[1] = plot_runA(q[1], bet=2.7, gam=0., A='B')
+    # Runs C
+    qt[2] = plot_runA(q[2], bet=7.3, gam=1., A='C')
+    # Runs D
+    qt[3] = plot_runA(q[3], bet=2.7, gam=1., A='D')
+    plt.legend(loc='upper left', fontsize=22, frameon=False)
+    plt.text(1, 5e-5, r'${\cal E}_{\rm GW} =  (q {\cal E}_{\rm EM})^2$',
+             fontsize=26)
+    plot_sets.axes_lines()
+    plt.xlabel(r'${\cal E}_{\rm EM}$')
+    plt.ylabel(r'${\cal E}_{\rm GW}$')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlim(1e-2, 20)
+    plt.yticks(np.logspace(-7, 3, 11))
+    plt.ylim(1e-7, 1e3)
+    plt.fill_between(xx2, xx2**0*1e-7, xx2**0*1e3, color='gray', alpha=.1)
+
+    if save: plt.savefig('plots/EEGW_EEM.pdf',
+                         bbox_inches='tight')
+
+    plt.figure(2)
+    # Runs A
+    p = [.033, .23, .047, .18]
+    pt = np.zeros(4)
+    pt[0] = plot_runA(p[0], bet=7.3, gam=0., A='A',
+                      exp=3, d='three', qst='p')
+    # Runs B
+    pt[1] = plot_runA(p[1], bet=2.7, gam=0., A='B',
+                      exp=3, d='three', qst='p')
+    # Runs C
+    pt[2] = plot_runA(p[2], bet=7.3, gam=1., A='C',
+                      exp=3, d='three', qst='p')
+    # Runs D
+    pt[3] = plot_runA(p[3], bet=2.7, gam=1., A='D',
+                      exp=3, d='three', qst='p')
+    plt.legend(loc='upper left', fontsize=22, frameon=False)
+    plt.text(1, 1e-7, r'$\Delta {\cal E}_{\rm GW} =  (p {\cal E}_{\rm EM})^3$',
+             fontsize=26)
+    plot_sets.axes_lines()
+    plt.xlabel(r'${\cal E}_{\rm EM}$')
+    plt.ylabel(r'$\Delta {\cal E}_{\rm GW}$')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlim(1e-2, 20)
+    plt.yticks(np.logspace(-10, 2, 13))
+    plt.ylim(1e-10, 1e2)
+    plt.fill_between(xx2, xx2**0*1e-10, xx2**0*1e3, color='gray', alpha=.1)
+
+    df2 = pd.DataFrame({'run': AA, 'q': q, 'qt': qt, 'p': p, 'pt': pt})
+
+    if save:
+        plt.savefig('plots/DEEGW_EEM.pdf',
+                    bbox_inches='tight')
+        df2.to_csv('tableIII.csv')
+
+    return df2
+
 def plot_OmGW_f(run_l, run_nl, T, g, col='blue'):
 
     t_l = run_l.spectra.get('t_EGW')
@@ -485,6 +610,7 @@ def generate_table(runs, save=True):
 
     import pandas as pd
 
+    EM_ar = []
     EGW_ar = []
     DEGW_ar = []
     rat_DEGW_ar = []
@@ -499,6 +625,7 @@ def generate_table(runs, save=True):
         indt = np.argmin(abs(t - 1.))
         GW_ts = run.ts.get('EEGW')[indt]
         hr = run.ts.get('hrms')[indt]
+        EEM = run.ts.get('EEEM')[indt]
 
         tk = run.spectra.get('t_EGW')
         indt = np.argmin(abs(tk - 1))
@@ -507,6 +634,7 @@ def generate_table(runs, save=True):
         hc = np.trapz(run.spectra.get('GWh')[indt, :], k)
 
         if '_l' in run.name_run:
+            EM_ar.append(EEM)
             EGW_ar.append(GW)
             hr_ar.append(hr)
             name.append(run.name_run.replace('_l', ''))
@@ -522,6 +650,7 @@ def generate_table(runs, save=True):
             hc_nl = np.trapz(run.spectra.get('GWh')[indt, :], k)
 
     name = np.array(name)
+    EM_ar = np.array(EM_ar)
     EGW_ar = np.array(EGW_ar)
     DEGW_ar = np.array(DEGW_ar)
     rat_DEGW_ar = np.array(rat_DEGW_ar)
@@ -529,9 +658,10 @@ def generate_table(runs, save=True):
     Dhr_ar = np.array(Dhr_ar)
     rat_Dhr_ar = np.array(rat_Dhr_ar)
 
-    df = pd.DataFrame({'name': name, 'EGW': EGW_ar, 'Del EGW': DEGW_ar,
-                   'ratio Del EGW': rat_DEGW_ar, 'hrms': hr_ar,
-                   'Del hrms': Dhr_ar, 'ratio Del hrms': rat_Dhr_ar})
+    df = pd.DataFrame({'name': name, 'EM': EM_ar, 'EGW': EGW_ar,
+                       'Del EGW': DEGW_ar, 'ratio Del EGW': rat_DEGW_ar,
+                       'hrms': hr_ar, 'Del hrms': Dhr_ar,
+                       'ratio Del hrms': rat_Dhr_ar})
 
     if save: df.to_csv('tableII.csv')
 
