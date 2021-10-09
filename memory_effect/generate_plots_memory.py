@@ -197,39 +197,40 @@ def plot_EGW(runs, A='A', diff=False, save=True):
                       ' taken'%(i.name_run, t_nl[ind_tnl]))
             EGW_nl = i.spectra.get('EGW')[ind_tnl, 1:]
             k = i.spectra.get('k')[1:]
-            ax.plot(k, EGW_nl, color=col, ls='--', alpha = .1 + j*.3)
+            ax.plot(k, EGW_nl, color=col, ls='--', alpha=.1 + j*.3)
             j += 1
+        fs = 32
         if A == 'A':
             xx = np.linspace(1.2, 5)
             ax.plot(xx, 1e-8*xx, color=col, ls='-.', lw=.8)
-            ax.text(2, 1e-10, r'$\sim\!k$', color=col)
+            ax.text(1.7, 1e-11, r'$\sim\!k$', color=col, fontsize=fs)
             xx = np.linspace(15, 60)
             ax.plot(xx, 1e-12*(xx/10)**(-32), color=col, ls='-.', lw=.8)
-            ax.text(18, 1e-30, r'$\sim\!k^{-32}$', color=col)
+            ax.text(14, 1e-30, r'$\sim\!k^{-32}$', color=col, fontsize=fs)
         if A == 'B':
             xx = np.linspace(1.15, 3)
             ax.plot(xx, 1e-6*xx, color=col, ls='-.', lw=.8)
-            ax.text(1.5, 3e-8, r'$\sim\!k$', color=col)
+            ax.text(1.3, 1e-8, r'$\sim\!k$', color=col, fontsize=fs)
             xx = np.linspace(10, 100)
             ax.plot(xx, 2e-1*(xx/10)**(-10), color=col, ls='-.', lw=.8)
-            ax.text(27, 6e-5, r'$\sim\!k^{-10}$', color=col)
+            ax.text(27, 6e-5, r'$\sim\!k^{-10}$', color=col, fontsize=fs)
         if A == 'C':
             xx = np.linspace(1.4, 20)
             ax.plot(xx, 1e-10*xx**1.5, color=col, ls='-.', lw=.8)
-            ax.text(4, 1e-12, r'$\sim\!k^{3/2}$', color=col)
+            ax.text(3.3, 2e-13, r'$\sim\!k^{3/2}$', color=col, fontsize=fs)
             xx = np.linspace(30, 100)
             ax.plot(xx, 1e10*(xx/10)**(-45), color=col, ls='-.', lw=.8)
-            ax.text(30, 1e-24, r'$\sim\!k^{-45}$', color=col)
+            ax.text(22, 1e-24, r'$\sim\!k^{-45}$', color=col, fontsize=fs)
         if A == 'D':
             xx = np.linspace(1.25, 8)
             ax.plot(xx, 1e-8*xx**1.5, color=col, ls='-.', lw=.8)
-            ax.text(2.5, 5e-10, r'$\sim\!k^{3/2}$', color=col)
+            ax.text(2., 1e-10, r'$\sim\!k^{3/2}$', color=col, fontsize=fs)
             xx = np.linspace(11, 50)
             ax.plot(xx, 1e-7*(xx/10)**(-15), color=col, ls='-.', lw=.8)
-            ax.text(15, 6e-15, r'$\sim\!k^{-15}$', color=col)
+            ax.text(10, 6e-15, r'$\sim\!k^{-15}$', color=col, fontsize=fs)
 
     if not diff:
-        ax.legend(fontsize=18, loc='lower left', frameon=False)
+        ax.legend(fontsize=24, loc='lower left', frameon=False)
     ax.set_yscale('log')
     ax.set_xscale('log')
     ax.set_xlim(1, 300)
@@ -508,7 +509,7 @@ def generate_table(runs, save=True):
         if '_l' in run.name_run:
             EGW_ar.append(GW)
             hr_ar.append(hr)
-            name.append(run.name_run)
+            name.append(run.name_run.replace('_l', ''))
             DEGW_ar.append(GW_nl - GW)
             rat_DEGW_ar.append((GW_nl - GW)/GW_nl)
             Dhr_ar.append(hc_nl - hc)
