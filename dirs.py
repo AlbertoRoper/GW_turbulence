@@ -164,4 +164,39 @@ def read_dirs(proj, dirs={}):
         dirs.update({'D4_nl': 'P512b27c_nlin2_e10new'})
         dirs.update({'D4_l': 'P512b27c_lin2_e10new'})
 
+    if proj == 'memory_helical_b17':
+
+        dirs.update({'E1_nl': 'P512b17c_k02b_nlin2_e002new'})
+        dirs.update({'E1_l': 'P512b17c_k02b_lin2_e002new'})
+        dirs.update({'E2_nl': 'P512b17c_k02b_nlin2_e01new'})
+        dirs.update({'E2_l': 'P512b17c_k02b_lin2_e01new'})
+        dirs.update({'E3_nl': 'P512b17c_k02b_nlin2_e1new'})
+        dirs.update({'E3_l': 'P512b17c_k02b_lin2_e1new'})
+
+    if proj == 'memory_helical_toff':
+
+        dirs.update({'C1_nl_toff': 'P512b73c_nlin2_e002new_toff'})
+        dirs.update({'C1_l_toff': 'P512b73c_lin2_e002new_toff'})
+        dirs.update({'C2_nl_toff': 'P512b73c_nlin2_e01new_toff'})
+        dirs.update({'C2_l_toff': 'P512b73c_lin2_e01new_toff'})
+        dirs.update({'D1_nl_toff': 'P512b27c_nlin2_e002new_toff'})
+        dirs.update({'D1_l_toff': 'P512b27c_lin2_e002new_toff'})
+        dirs.update({'D2_nl_toff': 'P512b27c_nlin2_e01new_toff'})
+        dirs.update({'D2_l_toff': 'P512b27c_lin2_e01new_toff'})
+        dirs.update({'E1_nl_toff': 'P512b17c_k02b_nlin2_e002new_toff'})
+        dirs.update({'E1_l_toff': 'P512b17c_k02b_lin2_e002new_toff'})
+        dirs.update({'E2_nl_toff': 'P512b17c_k02b_nlin2_e01new_toff'})
+        dirs.update({'E2_l_toff': 'P512b17c_k02b_lin2_e01new_toff'})
+
+    if proj == 'memory_nonhelical_toff':
+
+        dirs.update({'B1_nl_toff': 'P512b27c_nlin2_nhel_e002new_toff'})
+        dirs.update({'B1_l_toff': 'P512b27c_lin2_nhel_e002new_toff'})
+        dirs.update({'B2_nl_toff': 'P512b27c_nlin2_nhel_e01new_toff'})
+        dirs.update({'B2_l_toff': 'P512b27c_lin2_nhel_e01new_toff'})
+        dirs.update({'A1_nl_toff': 'P512b73c_nlin2_nhel_e002new_toff'})
+        dirs.update({'A1_l_toff': 'P512b73c_lin2_nhel_e002new_toff'})
+        dirs.update({'A2_nl_toff': 'P512b73c_nlin2_nhel_e01new_toff'})
+        dirs.update({'A2_l_toff': 'P512b73c_lin2_nhel_e01new_toff'})
+
     return dirs
