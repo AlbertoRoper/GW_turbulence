@@ -47,8 +47,10 @@ def read_dirs(proj, dirs={}):
                     to be submitted to Phys. Rev. D, arxiv:
 
                     The options are: 'memory_helical_b27', 'memory_helical_b73',
-                    'memory_nonhelical_b27', 'memory_nonhelical_b73' for
-                    helical and non-helical runs with beta = 2.7 and beta = 7.3
+                    'memory_nonhelical_b27', 'memory_nonhelical_b73', and
+                    'memory_helical_b17' for helical and non-helical runs with
+                    beta = 1.7, 2.7, and 7.3, and 'memory_helical_toff' and
+                    'memory_nonhelical_toff' for extended runs (up to t = 10).
 
     Returns:
         dirs -- updated dictionary of directories
