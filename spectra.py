@@ -56,10 +56,11 @@ def max_E_kf(k, E, exp=0):
         E -- array of spectral values
         exp -- exponent of k (default 0)
     """
-    
+
     indmax = np.argmax(k**exp*E)
     max_k = k[indmax]
     max_E = E[indmax]
+
     return max_k, max_E
 
 def characteristic_k(k, E, exp=1):
@@ -316,6 +317,45 @@ def red_blue_func(x, f, col=0):
     x_neg = np.array(x_neg)
 
     return x_pos, x_neg, f_pos, f_neg, color
+
+def plot_neg_pos(x, f, ls1='solid', lw1=1, ls2=':', lw2=2, col='black'):
+
+    """
+    Function that splits an array into positive and negative values, and
+    plots them with different line styles.
+
+    Arguments:
+        x -- array of x
+        f -- array of the function values
+        col -- option to choose blue and red (default 0 is red for positive
+               and blue for negative, 1 is swapped)
+    """
+
+    import matplotlib.pyplot as plt
+
+    # plot positive and negative values with different line styles
+    sgn = np.sign(f)
+    converge = False
+    sgn0 = sgn[0]
+    i = 0
+    lw = 1
+    while not converge:
+        sign = False
+        i0 = i
+        while not sign and not converge:
+            if sgn0 == 1:
+                ls = ls1
+                lw = lw1
+            else:
+                ls = ls2
+                lw = lw2
+            if i==len(sgn) - 2: converge=True
+            if sgn[i] != sgn0:
+                sign = True
+                sgn0 = sgn[i]
+            i += 1
+        plt.plot(x[i0-1:i], abs(f[i0-1:i]),
+                 color=col, ls=ls, lw=lw)
 
 def str_exp(exp, ak, den, diff=0.05):
 
