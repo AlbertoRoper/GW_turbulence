@@ -20,8 +20,11 @@ def read_sens(SNR=10, T=4, interf='LISA', Xi=False):
         SNR -- signal-to-noise ratio (SNR) of the resulting PLS (default 10)
         T -- duration of the mission (in years) of the resulting PLS
              (default 4)
-        interf -- option to chose the interferometer (default 'LISA')
-        Xi -- option to return the helical sensitivity and PLS (default False)
+        interf -- option to chose the interferometer (default 'LISA', other
+                  options are 'Taiji', 'comb', i.e., LISA + Taiji, and
+                  'muAres')
+        Xi -- option to return the helical sensitivity and PLS (default False),
+              available when 'LISA' or 'Taiji' interf are chosen
 
     Returns:
         fs -- array of frequencies
@@ -564,6 +567,22 @@ def OmPLS(f, Oms, beta, SNR=1, T=0, Xi=0):
     return Omega
 
 def SNR(f, OmGW, fs, Oms, T=1.):
+
+    """
+    Function that computes the signal-to-noise ratio (SNR) of a GW signal as
+
+    SNR = 2 \sqrt(T \int (OmGW/Oms)^2 df)
+
+    Arguments:
+        f -- frequency array of the GW signal
+        OmGW -- GW energy density spectrum of the GW signal
+        fs -- frequency array of the GW detector sensitivity
+        Oms -- GW energy density sensitivity of the GW detector
+        T -- duration of observations in years (default 1)
+
+    Returns:
+        SNR -- SNR of the GW signal
+    """
 
     T = T*u.yr
     T = T.to(u.s)
