@@ -15,6 +15,8 @@ def read_spectra_runs(dir0, dir_run, opt=0):
     Arguments:
         dir0 -- directory that contains the runs to be read
         dir_run -- directory of the specific run to be read
+        opt -- option to choose some reading routines (default is 0 and 1 can
+               be chosen if 0 gives warnings)
 
     Returns:
         spectra -- dictionary that contains the different spectra of the run
@@ -80,10 +82,10 @@ def read_spectra_runs(dir0, dir_run, opt=0):
     spectra.update({'k':k})     # add the wave number array to the dictionary
     spectra.update({'k0':k0})   # add smallest wave number
     for i in matching:
-        # print(i)
         aux = i.replace('power_', '')
         aux = aux.replace('.dat', '')
         times, sps = read_spectrum(aux, hel=False, opt=opt)
+        if len(np.shape(times)) > 1: times = times[:, 0]
         sps = np.asarray(sps/k0, dtype=object)
         spectra.update({aux:sps})
         spectra.update({'t_' + aux:times})
@@ -102,7 +104,78 @@ def read_spectra_runs(dir0, dir_run, opt=0):
 
     return spectra
 
-def read_ts(dir_data='.', opt=0):
+def take_exception(s, db=False):
+
+    """
+    Function that corrects the values from time series or spectra into a
+    suitable format to be converted into numpy floats.
+
+    Arguments:
+        s -- string read from time series or spectra
+        db -- option to print some debugging checks (default False)
+
+    Returns:
+        s2 -- converted string into a suitable format
+        divided -- if 2 values were given in s, then the function splits into
+                   s2 and s3, and returns divided = True, otherwise it returns
+                   False
+        s3 -- in case 2 values were included in s, s3 corresponds to the
+              additional string after taking the first of the 2 values
+    """
+
+    neg = False
+    if db: print(s)
+    if s[0] == '-':
+        neg = True
+        s0 = s[1:]
+    else: s0 = s
+    divided = False
+    s3 = ''
+    excep = False
+    if '+' in s0:
+        ind = s0.index('+') - 1
+        if s0[ind] != 'E':
+            s3 = s0[ind + 5:]
+            s2 = s0[:ind + 1] + 'E' + s0[ind + 1:ind + 5]
+            divided = True
+            excep = True
+        else: s2 = s
+    if not excep:
+        if '-' in s0:
+            ind = s0.index('-') - 1
+            s3 = s0[ind + 1:]
+            if len(s3) < 5:
+                if s0[ind] != 'E':
+                    s3 = s0[ind + 1:]
+                    s2 = s0[:ind + 1] + 'E' + s3
+                else: s2 = s0
+            else:
+                divided = True
+                s2 = s0[:ind + 1]
+                if '-' in s3[1:]:
+                    ind = s3[1:].index('-')
+                    s2 += s3[:ind + 1]
+                    s3 = s3[ind + 1:]
+        else: s2 = s0
+    if neg: s2 = '-' + s2
+
+    return s2, divided, s3
+
+def print_opt_warning():
+
+    print('There are some numbers in the time series that are not of',
+          ' standard format, consider using opt different than 0 to',
+          ' handle exceptions to avoid this warning \n')
+    print('switched opt to 1\n')
+
+def print_lrer_warning(af, cwd):
+
+    print('There is something wrong with the time',
+          ' series data at it = %s, please check!!'%af)
+    print('The directory is %s'%cwd)
+
+
+def read_ts(dir_data='.', opt=0, debug=False):
 
     """
     Read the time series data, which contains the averaged values of the
@@ -117,6 +190,9 @@ def read_ts(dir_data='.', opt=0):
     Arguments:
         dir_data -- data directory where the time_series.dat file is stored
                     (default current directory)
+        opt -- option to choose some reading routines (default is 0 and 1 can
+               be chosen if 0 gives warnings)
+        debug -- option to print some debugging checks (default False)
 
     Returns:
         ts -- dictionary that contains the variables of the time series data
@@ -125,52 +201,65 @@ def read_ts(dir_data='.', opt=0):
     import os
     import numpy as np
 
-    # change to dir_data if it is given, otherwise stay current directory
-    if dir_data != '.':
-        cwd = os.getcwd()
-        os.chdir(dir_data)
+    cwd = os.getcwd()
+
+    # change to dir_data if it is given, otherwise stay in current directory
+    if dir_data != '.': os.chdir(dir_data)
 
     # read the file from time_series.dat
     file = 'time_series.dat'
-    if opt==0: af = np.loadtxt(file)
+    if opt==0:
+        try: af = np.loadtxt(file)
+        except:
+            print_opt_warning()
+            opt = 1
     # in this case things become a bit more complicated, since
     # if there are terms of the type 1.23-114 then numpy loadtxt does not work
     # we have to read all data and modify 1.23-114 -> 1.23E-114 to construct
     # af from scratch (as done in read_spectrum)
-    if opt==1:
+    if opt > 0:
         with open(file) as fp:
             line = fp.readline()
             content = line.split(' ')
             while '' in content: content.remove('')
             while '\n' in content: content.remove('\n')
             j = 0
+            rerun = False
+            lrer = 0
             while line:
-                line = fp.readline()
+                if lrer == 10:
+                    print_lrer_warning(aff2[0], cwd)
+                    rerun = False
+                    lrer = 0
+                if not rerun: line = fp.readline()
                 content = line.split(' ')
+                if debug: print(content)
                 while '' in content: content.remove('')
                 while '\n' in content: content.remove('\n')
                 aff = [s.replace('\n', '') for s in content]
-                neg = False
+                if rerun: aff = aff2
+                if debug: print(aff)
                 aff2 = []
                 for s in aff:
-                    if s[0] == '-':
-                        neg = True
-                        s0 = s[1:]
-                    else: s0 = s
-                    if '-' in s0:
-                        ind = s0.index('-') - 1
-                        if s0[ind] != 'E': s2 = s0[:ind + 1] + 'E' + s0[ind + 1:]
-                        else: s2 = s0
-                    else: s2 = s0
-                    if neg: s2 = '-' + s2
+                    s2, divided, s3 = take_exception(s, db=debug)
                     aff2.append(s2)
-                if j == 0: af = [aff2]
-                else:
-                    if aff != []: af.append(aff2)
-                j += 1
+                    while divided:
+                        s4, divided, s3 = take_exception(s3, db=debug)
+                        aff2.append(s4)
+                try:
+                    aff00 = np.array(aff2, dtype='float')
+                    if j == 0: af = [aff2]
+                    else:
+                        if aff != []: af.append(aff2)
+                    if debug: print(aff2)
+                    if debug: print(len(aff2))
+                    j += 1
+                    rerun = False
+                except:
+                    rerun = True
+                    lrer += 1
         # now we can convert to a numpy array of floats
-        #for i in af:
-            #print(i, len(i))
+        if debug: print(af)
         af = np.array(af, dtype='float')
 
     with open('legend.dat') as fp:
@@ -179,7 +268,6 @@ def read_ts(dir_data='.', opt=0):
         while '' in leg: leg.remove('')
         while ' ' in leg: leg.remove(' ')
         while '\n' in leg: leg.remove('\n')
-        #leg = [s for s in leg if s.isalpha()]
 
     # define the ts (time series) dictionary and update with the values read
     # from the time series file
@@ -192,16 +280,21 @@ def read_ts(dir_data='.', opt=0):
 
     return ts
 
-def read_spectrum(spectrum, dir_data='.', hel=False, opt=0):
+def read_spectrum(spectrum, dir_data='.', hel=False, opt=0, debug=False,
+                  debug2=False):
 
     """
     Function to read the file containing the values of the spectrum
 
     Arguments:
         spectrum -- name of the spectrum to be read
-        hel -- choose if helical spectrum should be read (default False)
         dir_data -- data directory where the time_series.dat file is stored
                     (default current directory)
+        hel -- choose if helical spectrum should be read (default False)
+        opt -- option to choose some reading routines (default is 0 and 1 can
+               be chosen if 0 gives warnings)
+        debug and debug2 -- options to print some debugging checks
+                            (default False)
 
     Returns:
         times -- array with the times at which the spectrum is computed
@@ -213,9 +306,8 @@ def read_spectrum(spectrum, dir_data='.', hel=False, opt=0):
     import numpy as np
 
     # change to dir_data if it is given, otherwise stay current directory
-    if dir_data != '.':
-        cwd = os.getcwd()
-        os.chdir(dir_data)
+    cwd = os.getcwd()
+    if dir_data != '.': os.chdir(dir_data)
     power = 'power_'
     if hel: power = 'powerhel_'
     file = power + spectrum + '.dat'
@@ -227,53 +319,58 @@ def read_spectrum(spectrum, dir_data='.', hel=False, opt=0):
         line = fp.readline()
         times = []
         sp = [[]]
-        content = line.strip()
-        if opt == 1:
-            content = line.split(' ')
-            while '' in content: content.remove('')
-            while '\n' in content: content.remove('\n')
+        content = line.split(' ')
+        while '' in content: content.remove('')
+        while '\n' in content: content.remove('\n')
         times.append(content)
         len_st = len(content)
         specs = []
+        rerun = False
+        j = 0
+        lrer = 0
+        if debug: print(content)
         while line:
-            line = fp.readline()
-            content = line.strip()
-            if opt == 1:
-                content = line.split(' ')
-                while '' in content: content.remove('')
-                while '\n' in content: content.remove('\n')
+            if lrer == 10:
+                print_lrer_warning(j, cwd)
+                rerun = False
+                lrer = 0
+            if not rerun: line = fp.readline()
+            content = line.split(' ')
+            while '' in content: content.remove('')
+            while '\n' in content: content.remove('\n')
             if len(content) == len_st:
                 times.append(content)
                 sp.append(specs)
                 specs = []
+                if debug: print(content)
+                j += 1
             else:
-                if opt == 0:
-                    spec = content.split()
-                if opt == 1:
-                    spec = [s.replace('\n', '') for s in content]
-                    # first, remove initial '-' of negative values,
-                    # and then
-                    # find a second '-' character that corresponds
-                    # to the index notation and check if 'E' is before '-',
-                    # which is not the case for very large exponents > 100
-                    # for example, 1.23-103 -> 1.23E-103
-                    spec0 = []
-                    neg = False
-                    for s in spec:
-                        if s[0] == '-':
-                            neg = True
-                            s0 = s[1:]
-                        else: s0 = s
-                        if '-' in s0:
-                            ind = s0.index('-') - 1
-                            if s0[ind] != 'E': s2 = s0[:ind + 1] + \
-                                                        'E' + s0[ind + 1:]
-                            else: s2 = s0
-                            if neg: s2 = '-' + s2
-                            s0 = s2
-                        spec0.append(s0)
-                    spec = spec0
-                specs.append(spec)
+                spec = [s.replace('\n', '') for s in content]
+                if debug: print(spec)
+                # first, remove initial '-' of negative values,
+                # and then
+                # find a second '-' character that corresponds
+                # to the index notation and check if 'E' is before '-',
+                # which is not the case for very large exponents > 100
+                # for example, 1.23-103 -> 1.23E-103
+                spec0 = []
+                for s in spec:
+                    s2, divided, s3 = take_exception(s, db=debug)
+                    spec0.append(s2)
+                    while divided:
+                        if debug2: print(s2)
+                        s4, divided, s3 = take_exception(s3, db=debug)
+                        if debug2: print(s4)
+                        spec0.append(s4)
+                try:
+                    specff00 = np.array(spec0, dtype='float')
+                    if debug: print(spec0)
+                    if debug: print(len(spec0))
+                    rerun = False
+                except:
+                    rerun = True
+                    lrer += 1
+                specs.append(spec0)
     sp.append(specs)
 
     # define the length of the times values read, and compare with the size of
@@ -311,7 +408,7 @@ def read_spectrum(spectrum, dir_data='.', hel=False, opt=0):
     sps = np.array(sps, dtype=object)
 
     # return to initial directory
-    if dir_data != '.': os.chdir(dir0)
+    if dir_data != '.': os.chdir(cwd)
 
     return times, sps
 
@@ -356,7 +453,7 @@ def read_k(dir_data='.'):
 
     return k
 
-def read_L(dir_data='.'):
+def read_L(dir_data='.', debug=False):
 
     """
     Function that reads the size of the domain to compute the actual
@@ -367,6 +464,7 @@ def read_L(dir_data='.'):
     Arguments:
         dir_data -- data directory where the time_series.dat file is stored
                     (default current directory)
+        debug -- option to print some debugging checks (default False)
 
     Returns:
         L -- size of the domain in one direction
@@ -374,10 +472,9 @@ def read_L(dir_data='.'):
 
     import os
 
+    cwd = os.getcwd()
     # change to dir_data if it is given, otherwise stay current directory
-    if dir_data != '.':
-        cwd = os.getcwd()
-        os.chdir(dir_data)
+    if dir_data != '.': os.chdir(dir_data)
 
     # read length from the file 'param.nml'
     with open('param.nml') as fp:
@@ -385,14 +482,19 @@ def read_L(dir_data='.'):
         content = [x.strip() for x in content]
 
     matching = [s for s in content if "LXYZ" in s]
+    if debug: print(matching)
     LXYZ = matching[0].split()[1]
+    if debug: print(LXYZ)
+    if LXYZ == '=':
+        LXYZ = matching[0].split()[2]
     L = float(LXYZ.split('*')[1])
 
     # return to initial directory
-    if dir_data != '.': os.chdir(dir0)
+    if dir_data != '.': os.chdir(cwd)
 
     return L
 
+## This function might be obsolete (to be checked)
 def sensitivity(file, dir='detector_sensitivity'):
 
     """
