@@ -68,6 +68,13 @@ def read_sens(SNR=10, T=4, interf='LISA', Xi=False):
         LISA_Taiji_XiPLS *= fact
         return fs, LISA_Taiji_Xi, LISA_Taiji_XiPLS
 
+    if interf =='muAres':
+
+        fs, muAres_Om = read_csv(dir, 'muAres_Omega')
+        fs, muAres_OmPLS = read_csv(dir, 'muAres_OmegaPLS')
+        muAres_OmPLS *= fact
+        return fs, muAres_Om, muAres_OmPLS
+
 def read_csv(dir, file, a='f', b='Omega'):
 
     """
@@ -555,3 +562,18 @@ def OmPLS(f, Oms, beta, SNR=1, T=0, Xi=0):
     for j in range(0, len(f)): Omega[j] = np.max(funcs[j,:])
 
     return Omega
+
+def SNR(f, OmGW, fs, Oms, T=1.):
+
+    T = T*u.yr
+    T = T.to(u.s)
+    T = T.value
+    f = f.to(u.Hz)
+    f = f.value
+    OmGW = np.interp(fs, f, OmGW)
+    OmGW[np.where(fs < f[0])] = 0
+    OmGW[np.where(fs > f[-1])] = 0
+    integ = np.trapz((OmGW/Oms)**2, f)
+    SNR = 2*np.sqrt(T*integ)
+
+    return SNR
