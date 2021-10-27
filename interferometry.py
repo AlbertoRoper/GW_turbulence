@@ -592,7 +592,7 @@ def SNR(f, OmGW, fs, Oms, T=1.):
     OmGW = np.interp(fs, f, OmGW)
     OmGW[np.where(fs < f[0])] = 0
     OmGW[np.where(fs > f[-1])] = 0
-    integ = np.trapz((OmGW/Oms)**2, f)
+    integ = np.trapz((OmGW/Oms)**2, fs)
     SNR = 2*np.sqrt(T*integ)
 
     return SNR
