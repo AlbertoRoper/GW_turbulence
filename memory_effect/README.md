@@ -3,7 +3,7 @@
 Generates gravitational wave results from numerical simulations.
 
 The run directories correspond to the runs in Table II of the paper "Leading-order nonlinear gravitational waves from
-reheating magnetogeneses" by Y. He, A. Brandenburg, & A. Roper Pol,
+reheating magnetogeneses" by Y. He, A. Roper Pol, & A. Brandenburg,
 to be submitted to Phys. Rev. D.
 
 The reference for the data sets is: Datasets for ``Leading-order nonlinear gravitational waves from
