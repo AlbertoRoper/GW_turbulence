@@ -1425,7 +1425,9 @@ def plot_OmGW_f(run_l, run_nl, T, g, diff=True,
          OmGW_nl = abs(OmGW_nl)
          OmGW_l = abs(OmGW_l)
 
-    plt.plot(f_nl, OmGW_nl, color=col)
+    alp = 1.
+    if '1' in run_l.name_run: alp = .6
+    plt.plot(f_nl, OmGW_nl, color=col, alpha=alp)
 
     if not diff:
         plt.plot(f_l, OmGW_l, color=col, ls='-.')
@@ -1453,7 +1455,10 @@ def plot_OmGW_f(run_l, run_nl, T, g, diff=True,
                     sgn0 = sgn[i]
                 i += 1
             plt.plot(f_nl[i0:i+1], abs(diff_OmGW[i0:i+1]),
-                     color=col, ls=ls, lw=lw)
+                     color=col, ls=ls, lw=lw, alpha=alp)
+
+    return (np.array(f_l, dtype='float'), np.array(f_nl, dtype='float'),
+            np.array(OmGW_l, dtype='float'), np.array(OmGW_nl, dtype='float'))
 
 def plot_OmGW_vs_f(runs, save=True):
 
@@ -1562,9 +1567,9 @@ def plot_OmGW_vs_f(runs, save=True):
              fontsize=16, alpha=.7)
     plt.text(3e-2, 3e-17, 'DECIGO', color='darkred',
              fontsize=16, alpha=.7)
-    plt.text(1.e-1, 1.5e-14, 'AEDGE', color='peru',
+    plt.text(3e-2, 7e-15, 'AEDGE', color='peru',
              fontsize=16, alpha=.7)
-    plt.text(2.5e-2, 9e-13, 'AION', color='peru',
+    plt.text(2.8e-2, 7e-12, 'AION', color='peru',
              fontsize=16, alpha=.7)
     plt.text(2e-5, 5e-6, 'MSPs', color='darkviolet',
              fontsize=16, alpha=.7)
@@ -1584,6 +1589,8 @@ def plot_OmGW_vs_f(runs, save=True):
     runD_nl = runs.get('D2_nl_toff')
     runE_l = runs.get('E2_l_toff')
     runE_nl = runs.get('E2_nl_toff')
+    runE1_l = runs.get('E1_l_toff')
+    runE1_nl = runs.get('E1_nl_toff')
 
     col_A = 'blue'
     col_B = 'darkgreen'
@@ -1593,16 +1600,22 @@ def plot_OmGW_vs_f(runs, save=True):
 
     # Note that T and g are different for every run
     # pars[0] is the temperature in GeV and pars[1] is g
-    plot_OmGW_f(runA_l, runA_nl, runA_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runA_l, runA_nl, runA_l.pars[0]*u.GeV,
                 runA_l.pars[1], col=col_A, toff=True)
-    plot_OmGW_f(runB_l, runB_nl, runB_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runB_l, runB_nl, runB_l.pars[0]*u.GeV,
                 runB_l.pars[1], col=col_B, toff=True)
-    plot_OmGW_f(runC_l, runC_nl, runC_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runC_l, runC_nl, runC_l.pars[0]*u.GeV,
                 runC_l.pars[1], col=col_C, toff=True)
-    plot_OmGW_f(runD_l, runD_nl, runD_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runD_l, runD_nl, runD_l.pars[0]*u.GeV,
                 runD_l.pars[1], col=col_D, toff=True)
-    plot_OmGW_f(runE_l, runE_nl, runE_l.pars[0]*u.GeV,
-                runE_l.pars[1], col=col_E, toff=True)
+    fE2_l, fE2_nl, OmGWE2_l, OmGWE2_nl = \
+            plot_OmGW_f(runE_l, runE_nl, runE_l.pars[0]*u.GeV,
+                        runE_l.pars[1], col=col_E, toff=True)
+    fE1_l, fE1_nl, OmGWE1_l, OmGWE1_nl = \
+            plot_OmGW_f(runE1_l, runE1_nl, runE1_l.pars[0]*u.GeV,
+                        runE1_l.pars[1], col=col_E, toff=True)
+    plt.fill_between(fE1_l, OmGWE1_nl, OmGWE2_nl, color=col_E,
+                     alpha=.05)
 
     plot_sets.axes_lines()
     plt.xscale('log')
@@ -1619,6 +1632,7 @@ def plot_OmGW_vs_f(runs, save=True):
     plt.text(3e-6, 1e-16, "C2'", color='orange')
     plt.text(1e-7, 8e-14, "D2'", color='red')
     plt.text(2.5e-3, 1e-9, "E2'", color='purple')
+    plt.text(6e-4, 1.5e-12, "E1'", color='purple')
 
     if save: plt.savefig('plots/' + 'OmGW_f_detectors.pdf',
                          bbox_inches='tight')
@@ -1678,6 +1692,8 @@ def plot_XiGW_vs_f(runs, diff=False, save=True):
     runD_nl = runs.get('D2_nl_toff')
     runE_l = runs.get('E2_l_toff')
     runE_nl = runs.get('E2_nl_toff')
+    runE1_l = runs.get('E1_l_toff')
+    runE1_nl = runs.get('E1_nl_toff')
 
     col_A = 'blue'
     col_B = 'darkgreen'
@@ -1687,21 +1703,28 @@ def plot_XiGW_vs_f(runs, diff=False, save=True):
 
     # Note that T and g are different for every run
     # pars[0] is the temperature in GeV and pars[1] is g
-    plot_OmGW_f(runA_l, runA_nl, runA_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runA_l, runA_nl, runA_l.pars[0]*u.GeV,
                 runA_l.pars[1], col=col_A, sp='helEGW',
                 diff=diff)
-    plot_OmGW_f(runB_l, runB_nl, runB_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runB_l, runB_nl, runB_l.pars[0]*u.GeV,
                 runB_l.pars[1], col=col_B, sp='helEGW',
                 diff=diff)
-    plot_OmGW_f(runC_l, runC_nl, runC_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runC_l, runC_nl, runC_l.pars[0]*u.GeV,
                 runC_l.pars[1], col=col_C, sp='helEGW',
                 diff=diff)
-    plot_OmGW_f(runD_l, runD_nl, runD_l.pars[0]*u.GeV,
+    _ = plot_OmGW_f(runD_l, runD_nl, runD_l.pars[0]*u.GeV,
                 runD_l.pars[1], col=col_D, sp='helEGW',
                 diff=diff)
-    plot_OmGW_f(runE_l, runE_nl, runE_l.pars[0]*u.GeV,
-                runE_l.pars[1], col=col_E, sp='helEGW',
-                diff=diff)
+    fE2_l, fE2_nl, OmGWE2_l, OmGWE2_nl = \
+            plot_OmGW_f(runE_l, runE_nl, runE_l.pars[0]*u.GeV,
+                        runE_l.pars[1], col=col_E, sp='helEGW',
+                        diff=diff)
+    fE1_l, fE1_nl, OmGWE1_l, OmGWE1_nl = \
+            plot_OmGW_f(runE1_l, runE1_nl, runE1_l.pars[0]*u.GeV,
+                        runE1_l.pars[1], col=col_E, sp='helEGW',
+                        diff=diff)
+    plt.fill_between(fE1_l, OmGWE1_nl, OmGWE2_nl, color=col_E,
+                     alpha=.05)
 
     plot_sets.axes_lines()
     plt.xscale('log')
@@ -1718,6 +1741,7 @@ def plot_XiGW_vs_f(runs, diff=False, save=True):
     plt.text(5e-7, 1e-10, "C2'", color='orange')
     plt.text(4.5e-8, 1e-9, "D2'", color='red')
     plt.text(1.5e-1, 1e-8, "E2'", color='purple')
+    plt.text(5e-4, 1e-13, "E1'", color='purple')
 
     if save: plt.savefig('plots/' + 'XiGW_f_detectors.pdf',
                          bbox_inches='tight')
