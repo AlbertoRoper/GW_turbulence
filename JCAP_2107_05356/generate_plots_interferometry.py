@@ -11,6 +11,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astropy.units as u
 
+plt.rcParams.update({'xtick.labelsize': 'x-large',
+                     'ytick.labelsize': 'x-large',
+                     'axes.labelsize': 'x-large'})
+
 # get working directory, where the runs and routines should be stored
 dir0 = os.getcwd() + '/'
 HOME = dir0 + '/..'
@@ -205,13 +209,13 @@ def plot_Mf(save=True, ED_I=False):
                 channels E and D of the LISA-Taiji network (default False)
     """
 
-    plt.figure(figsize=(12,8))
-    plt.rc('font', size=16)
+    plt.figure(figsize=(12,10))
+    plt.rc('font', size=30)
     plt.plot(fs, MAs, color='black', label=r'${\cal M}_{\rm AA} (f)$')
     plt.plot(fs, MAs_Tai, color='black', ls='-.',
              label=r'${\cal M}_{\rm CC} (f)$')
-    plt.plot(fs, MTs, color='blue', lw=.5, label=r'${\cal M}_{\rm TT} (f)$')
-    plt.plot(fs, MTs_Tai, color='blue', ls='-.', lw=.5,
+    plt.plot(fs, MTs, color='blue', label=r'${\cal M}_{\rm TT} (f)$')
+    plt.plot(fs, MTs_Tai, color='blue', ls='-.',
              label=r'${\cal M}_{\rm SS} (f)$')
     aaux = ''
     if ED_I == True:
@@ -224,15 +228,21 @@ def plot_Mf(save=True, ED_I=False):
     Rf_Tai = inte.R_f(fs, L=L)
     plt.plot(fs, Rf, color='black', ls='dashed', lw=.7)
     plt.plot(fs, Rf_Tai, color='black', ls='dashed', lw=.7)
-    plt.text(5e-2, 7e-2, r'$\tilde {\cal R}^{\rm A, C}(f)$', fontsize=20)
+    plt.text(5e-2, 7e-2, r'$\tilde {\cal R}^{\rm A, C}(f)$', fontsize=34)
     plt.xscale('log')
     plt.yscale('log')
     plt.xlim(1e-3, 1)
-    plt.ylim(1e-6, 1e0)
-    plt.legend(fontsize=20, frameon = False)
+    plt.ylim(1e-7, 1e0)
+    plt.legend(fontsize=28, frameon=False, loc='center left')
     plt.xlabel(r'$f$ [Hz]')
     plt.ylabel(r'${\cal M} (f)$')
     plot_sets.axes_lines()
+    plt.yticks(np.logspace(-7, 0, 8))
+
+    ax = plt.gca()
+    ax.tick_params(axis='x', pad=20)
+    ax.tick_params(axis='y', pad=10)
+
     if save: plt.savefig('plots/LISA_Taiji_response' + aaux + '.pdf',
                          bbox_inches='tight')
 
@@ -285,8 +295,8 @@ def plot_Df(save=True):
                 (default True)
     """
 
-    fig, ax0 = plt.subplots(figsize=(12,8))
-    plt.rc('font', size=16)
+    fig, ax0 = plt.subplots(figsize=(12,10))
+    # plt.rc('font', size=30)
     DAE_posneg(fs, DAEs)
     DAE_posneg(fs, DAEs_Tai, ls='-.')
     plt.xlim(1e-3, 1)
@@ -296,8 +306,8 @@ def plot_Df(save=True):
     plt.xscale('log')
     plt.yscale('log')
     plot_sets.axes_lines()
-    plt.text(4.7e-2, 2e-2, r'${\cal D}_{AE}(f)$', fontsize=20)
-    plt.text(1.8e-2, 7e-3, r'${\cal D}_{CD}(f)$', fontsize=20)
+    plt.text(4.7e-2, 2e-2, r'${\cal D}_{AE}(f)$', fontsize=30)
+    plt.text(1.3e-2, 7e-3, r'${\cal D}_{CD}(f)$', fontsize=30)
     #plt.text(2.1e-2, 3e-3, r'${\cal D}_{CD}(f)$', fontsize=20)
 
     line_pos, = ax0.plot([], [], color='blue', lw=.7,
@@ -306,72 +316,15 @@ def plot_Df(save=True):
                            label=r'negative values')
     handles = [line_pos, line_neg]
     lgd = ax0.legend(handles=handles, loc='lower left',
-                     fontsize=18, frameon=False)
+                     fontsize=34, frameon=False)
+
+    ax = plt.gca()
+    ax.tick_params(axis='x', pad=20)
+    ax.tick_params(axis='y', pad=10)
+
+    plt.yticks(np.logspace(-7, 0, 8))
 
     if save: plt.savefig('plots/DEA_LISA_Taiji.pdf', bbox_inches='tight')
-
-def plot_MAC(save=True, log=False):
-
-    """
-    Function that generates the plot of the helical (V Stokes parameter)
-    monopole responses of the cross-correlated channels of the LISA-Taiji
-    network.
-
-    It corresponds to figure 18 of A. Roper Pol, S. Mandal,
-    A. Brandenburg, and T. Kahniashvili, "Polarization of gravitational waves
-    from helical MHD turbulent sources," submitted to JCAP,
-    https://arxiv.org/abs/2107.05356.
-
-    Arguments:
-        save -- option to save the figure in
-                "plots/Mcross_LISA_Taiji.pdf" (default True)
-        log -- option to plot loglog with absolute values of the response
-               functions (default False)
-    """
-
-    plt.figure(figsize=(12,8))
-    plt.rc('font', size=20)
-    lg = ''
-    if log:
-        MAC = abs(M_AC)
-        MAD = abs(M_AD)
-        MEC = abs(M_ED)
-        MED = abs(M_ED)
-        MED_I = abs(M_ED_I)
-        plt.xscale('log')
-        plt.yscale('log')
-        lg = '_log'
-    else:
-        MAC = M_AC
-        MAD = M_AD
-        MEC = M_EC
-        MED = M_ED
-        MED_I = M_ED_I
-    plt.plot(fs, MAC, color='black',
-             label=r'${\cal M}^V_{\rm AC}$')
-    plt.plot(fs, MAD, color='blue', ls='dotted',
-             label=r'${\cal M}^V_{\rm AD}$')
-    plt.plot(fs, MEC, color='red', ls='-.',
-             label=r'${\cal M}^V_{\rm EC}$')
-    plt.plot(fs, MED, color='green', ls='--',
-             label=r'${\cal M}^V_{\rm ED}$')
-    gg = np.where(abs(MED_I) > 1e-48)
-    plt.plot(fs[gg], MED_I[gg], color='purple', alpha=.8,
-             label=r'${\cal M}^I_{\rm ED}$')
-    plt.legend(fontsize=18, frameon=False)
-    plt.xlabel('$f$ [Hz]')
-    plt.ylabel(r'${\cal M} (f)$')
-    plt.xscale('log')
-    if log:
-        plt.xlim(1e-4, 4e-2)
-        plt.ylim(1e-4, 2e-1)
-    else:
-        plt.xlim(3e-5, 4e-2)
-        plt.ylim(-0.08, 0.08)
-    plot_sets.axes_lines()
-
-    if save: plt.savefig('plots/Mcross_LISA_Taiji' + lg + '.pdf',
-                         bbox_inches='tight')
 
 def plot_sensitivity(save=True):
 
@@ -384,7 +337,7 @@ def plot_sensitivity(save=True):
     """
 
     plt.figure(figsize=(12,8))
-    plt.rc('font', size=18)
+    plt.rc('font', size=20)
     plt.plot(fs, np.sqrt(SnX), color='red', label='channel X')
     plt.plot(fs, np.sqrt(SnA), color='blue', label='TDI channel A')
     plt.plot(fs, np.sqrt(SnT), color='orange', label='TDI channel T',
@@ -442,38 +395,41 @@ def plot_Omega_sensitivity(OmPLS, OmPLS_Tai, OmPLS_comb,
     import pandas as pd
 
     fact = SNR/np.sqrt(T)
-    fig, ax0 = plt.subplots(figsize=(12,8))
+    fig, ax0 = plt.subplots(figsize=(12,10))
     line_OmPLS, = ax0.plot([], [], color='green',
-                           label=r'$h_0^2\,\Omega_{\rm PLS}^{\rm A} (f)$')
+                           label=r'$\Omega_{\rm PLS}^{\rm A}$')
     line_OmPLS_Tai, = ax0.plot([], [], color='green', ls='-.',
-                               label=r'$h_0^2\,\Omega_{\rm PLS}^{\rm C} (f)$')
+                               label=r'$\Omega_{\rm PLS}^{\rm C}$')
     line_OmPLS_comb, = ax0.plot([], [], color='green', lw=.8,
-                               label=r'$h_0^2\,\Omega_{\rm PLS}^{\rm comb} (f)$')
+                               label=r'$\Omega_{\rm PLS}^{\rm comb}$')
 
     line_OmSA, = ax0.plot([], [], color='blue',
-                          label=r'$h_0^2\,\Omega_{\rm s}^{\rm A} (f)$')
+                          label=r'$\Omega_{\rm s}^{\rm A}$')
     line_OmSC, = ax0.plot([], [], color='blue', ls='-.',
-                          label=r'$h_0^2\,\Omega_{\rm s}^{\rm C} (f)$')
+                          label=r'$\Omega_{\rm s}^{\rm C}$')
     line_OmS_comb, = ax0.plot([], [], color='blue', lw=.8,
-                          label=r'$h_0^2\,\Omega_{\rm s}^{\rm comb} (f)$')
+                              label=r'$\Omega_{\rm s}^{\rm comb}$')
 
     line_OmST, = ax0.plot([], [], color='orange', alpha=.5,
-                          label=r'$h_0^2\,\Omega_{\rm s}^{\rm T} (f)$')
+                          label=r'$\Omega_{\rm s}^{\rm T}$')
     line_OmSS, = ax0.plot([], [], color='orange', ls='-.', alpha=.5,
-                 label=r'$h_0^2\,\Omega_{\rm s}^{\rm S} (f)$')
+                          label=r'$\Omega_{\rm s}^{\rm S}$')
     line_OmS_ED_I, = ax0.plot([], [], color='purple', alpha=.5,
-                 label=r'$h_0^2\,\Omega_{\rm s}^{\rm ED} (f)$')
+                              label=r'$\Omega_{\rm s}^{\rm ED}$')
 
-    handles = [line_OmSA, line_OmSC, line_OmS_comb,
-               line_OmPLS, line_OmPLS_Tai, line_OmPLS_comb]
+    handles = [line_OmSA, line_OmSC, line_OmS_comb]
     lgd1 = ax0.legend(handles=handles, loc='lower right',
-                      fontsize=16, frameon=False)
-    handles2=[line_OmST, line_OmSS, line_OmS_ED_I]
+                      fontsize=28, frameon=False)
+    handles2 = [line_OmST, line_OmSS, line_OmS_ED_I]
     lgd2 = ax0.legend(handles=handles2, loc='upper left',
-                      fontsize=16, frameon=False)
+                      fontsize=28, frameon=False)
+    handles3 = [line_OmPLS, line_OmPLS_Tai, line_OmPLS_comb]
+    lgd3 = ax0.legend(handles=handles3, loc='lower left',
+                      fontsize=28, frameon=False)
     ax0.add_artist(lgd1)
+    ax0.add_artist(lgd2)
 
-    plt.rc('font', size=18)
+    # plt.rc('font', size=30)
     plt.plot(fs, OmSA, color='blue')
     plt.plot(fs, OmST, color='orange', alpha=.5)
     plt.plot(fs, OmPLS*fact, color='green')
@@ -495,15 +451,18 @@ def plot_Omega_sensitivity(OmPLS, OmPLS_Tai, OmPLS_comb,
     plt.plot(ff, OmGW_PLS_LISA, '.', color='green', alpha=.4)
 
     plot_sets.axes_lines()
-    ax = plt.gca()
-    ytics = 10**np.array(np.linspace(-14, -2, 13))
-    ax.set_yticks(ytics)
     plt.ylim(1e-14, 1e-2)
+    plt.yticks(np.logspace(-14, -2, 8))
     plt.xlim(1e-5, 1e0)
     plt.xlabel('$f$ [Hz]')
     plt.ylabel(r'$h_0^2\,\Omega_{\rm s} (f)$')
     plt.xscale('log')
     plt.yscale('log')
+    ax = plt.gca()
+    ax.tick_params(axis='x', pad=20)
+    ax.tick_params(axis='y', pad=10)
+    plt.yticks(np.logspace(-14, -2, 7))
+    plt.xticks(np.logspace(-5, 0, 6))
 
     if save: plt.savefig('plots/Omega_LISA_Taiji.pdf',
                          bbox_inches='tight')
@@ -539,28 +498,44 @@ def plot_Xi_sensitivity(XiPLSa, XiPLSb, XiPLSa_Tai, XiPLSb_Tai, XiPLS_comb,
     """
 
     fact = SNR/np.sqrt(T)
-    plt.figure(figsize=(12,8))
-    plt.rc('font', size=18)
-    plt.plot(fs, XiSAE, color='blue',
-             label=r'$h_0^2 \, \Xi_{\rm s}^{\rm AE} (f)$')
-    plt.plot(fs, XiSCD, color='blue', ls='-.',
-             label=r'$h_0^2 \, \Xi_{\rm s}^{\rm CD} (f)$')
+    fig, ax0 = plt.subplots(figsize=(12,10))
+    #plt.rc('font', size=18)
+    plt.plot(fs, XiSAE, color='blue')
+    plt.plot(fs, XiSCD, color='blue', ls='-.')
 
     gg = np.where(XiS_comb < 1e5)
-    plt.plot(fs[gg], XiS_comb[gg], color='blue', lw=.6,
-             label=r'$h_0^2\,\Xi_{\rm s}^{\rm comb} (f)$')
+    plt.plot(fs[gg], XiS_comb[gg], color='blue', lw=.6)
 
-    plt.plot(fs, XiPLSa*fact, color='green',
-             label=r'$h_0^2\,\Xi_{\rm PLS}^{\rm AE} (f)$')
+    plt.plot(fs, XiPLSa*fact, color='green')
     plt.plot(fs, XiPLSb*fact, color='green')
-    plt.plot(fs, XiPLSa_Tai*fact, color='green', ls='-.',
-             label=r'$h_0^2\,\Xi_{\rm PLS}^{\rm CD} (f)$')
+    plt.plot(fs, XiPLSa_Tai*fact, color='green', ls='-.')
     plt.plot(fs, XiPLSb_Tai*fact, color='green', ls='-.')
 
-    plt.plot(fs, XiPLS_comb*fact, color='green', lw=.6,
-             label=r'$h_0^2\,\Xi_{\rm PLS}^{\rm comb} (f)$')
+    plt.plot(fs, XiPLS_comb*fact, color='green', lw=.6)
 
-    plt.legend(fontsize=18, loc='lower right', frameon=False)
+    line_XiPLS, = ax0.plot([], [], color='green',
+                           label=r'$\Xi_{\rm PLS}^{\rm AE}$')
+    line_XiPLS_Tai, = ax0.plot([], [], color='green', ls='-.',
+                               label=r'$\Xi_{\rm PLS}^{\rm CD}$')
+    line_XiPLS_comb, = ax0.plot([], [], color='green', lw=.8,
+                               label=r'$\Xi_{\rm PLS}^{\rm comb}$')
+
+    line_XiSA, = ax0.plot([], [], color='blue',
+                          label=r'$\Xi_{\rm s}^{\rm AE}$')
+    line_XiSC, = ax0.plot([], [], color='blue', ls='-.',
+                          label=r'$\Omega_{\rm s}^{\rm CD}$')
+    line_XiS_comb, = ax0.plot([], [], color='blue', lw=.8,
+                              label=r'$\Xi_{\rm s}^{\rm comb}$')
+
+    handles = [line_XiSA, line_XiSC, line_XiS_comb]
+    lgd1 = ax0.legend(handles=handles, loc='lower right',
+                      fontsize=28, frameon=False)
+    handles2 = [line_XiPLS, line_XiPLS_Tai, line_XiPLS_comb]
+    lgd2 = ax0.legend(handles=handles2, loc='lower left',
+                      fontsize=28, frameon=False)
+    ax0.add_artist(lgd1)
+
+    #plt.legend(fontsize=30, loc='lower right', frameon=False)
     plt.xlabel(r'$f$ [Hz]')
     plt.ylabel(r'$h_0^2\, \Xi_{\rm s} (f)$')
     plt.xscale('log')
@@ -569,8 +544,14 @@ def plot_Xi_sensitivity(XiPLSa, XiPLSb, XiPLSa_Tai, XiPLSb_Tai, XiPLS_comb,
     plt.xlim(1e-5, 1e0)
     plot_sets.axes_lines()
 
-    plt.text(1e-1, 8e-9, r'$\beta_{\rm max}=2$', color='green')
-    plt.text(1e-1, 2e-4, r'$\beta_{\rm max}=3$', color='green')
+    plt.text(1e-1, 8e-9, r'$\beta_{\rm max}=2$', color='green', fontsize=30)
+    plt.text(9e-2, 6e-4, r'$\beta_{\rm max}=3$', color='green', fontsize=30)
+
+    ax = plt.gca()
+    ax.tick_params(axis='x', pad=20)
+    ax.tick_params(axis='y', pad=10)
+    plt.yticks(np.logspace(-14, -2, 7))
+    plt.xticks(np.logspace(-5, 0, 6))
 
     if save: plt.savefig('plots/Xi_LISA_Taiji.pdf',
                          bbox_inches='tight')
@@ -617,10 +598,8 @@ def plot_Xi_sensitivity_dipole(XiPLSa, XiPLSb, XiPLSc, XiPLSd,
     """
 
     import pandas as pd
-
     fact = SNR/np.sqrt(T)
-    plt.figure(figsize=(12,8))
-    plt.rc('font', size=16)
+    plt.figure(figsize=(12,10))
     if interf=='LISA':
         AE = 'AE'
         ybeta_a = 1.3e-8
@@ -636,10 +615,10 @@ def plot_Xi_sensitivity_dipole(XiPLSa, XiPLSb, XiPLSc, XiPLSd,
         ybeta_c = 8e-9
         ybeta_d = 3e-8
         ybeta_e = 2.5e-9
-        ybeta_f = 1.6e-8
+        ybeta_f = 6e-9
     # plot PLS using dipole for different beta_max
     plt.plot(fs, XiPLSa*fact, color='blue', lw=1,
-             label=r'$h_0^2\,\Xi_{\rm PLS}^{\rm %s} (f)$'%AE)
+             label=r'$\Xi_{\rm PLS}^{\rm %s}$'%AE)
     plt.plot(fs, XiPLSb*fact, color='blue', lw=.8, ls='-.')
     plt.plot(fs, XiPLSc*fact, color='blue', lw=.8, ls='-.')
     plt.plot(fs, XiPLSd*fact, color='blue', lw=.8, ls='-.')
@@ -647,34 +626,43 @@ def plot_Xi_sensitivity_dipole(XiPLSa, XiPLSb, XiPLSc, XiPLSd,
     plt.plot(fs, XiPLSf*fact, color='blue', lw=.8, ls='-.')
     # plot PLS using dipole ignoring 1/abs(1 - beta/4) term
     plt.plot(fs, XiPLS0*fact, color='red', lw=.8,
-             label=r'$h_0^2\,\Xi_{\rm PLS}^{0, {\rm %s}} (f)$'%AE)
+             label=r'$\Xi_{\rm PLS}^{0, {\rm %s}}$'%AE)
     # plot PLS using LISA-Taiji combined network
     plt.plot(fs, XiPLS_comb*fact, color='green', lw=.8,
-             label=r'$h_0^2\,\Xi_{\rm PLS}^{\rm comb} (f)$')
+             label=r'$\Xi_{\rm PLS}^{\rm comb}$')
 
     # text with values of beta_max
-    plt.text(4.5e-2, ybeta_a, r'$\beta_{\rm max}=2$', color='blue')
-    plt.text(5e-2, ybeta_b, r'$\beta_{\rm max}=3$', color='blue')
-    plt.text(6.6e-3, ybeta_c, r'$\beta_{\rm max}=3.7$', color='blue',
+    plt.text(2.5e-2, ybeta_a/4, r'$\beta_{\rm max}=2$', color='blue',
+             fontsize=22,
              bbox=dict(facecolor='white', edgecolor='none',
-                      boxstyle='round,pad=.5'))
-    plt.text(5.3e-3, ybeta_d, r'$\beta_{\rm max}=3.95$', color='blue',
+                      boxstyle='round,pad=.2'))
+    plt.text(3.2e-2, ybeta_b/4, r'$\beta_{\rm max}=3$', color='blue',
+             fontsize=22,
              bbox=dict(facecolor='white', edgecolor='none',
-                      boxstyle='round,pad=.5'))
-    plt.text(1e-3, ybeta_e, r'$\beta_{\rm max}=3.999$', color='blue')
-    plt.text(2e-4, ybeta_f, r'$\beta_{\rm max}=3.999999$',
-             color='blue')
+                      boxstyle='round,pad=.2'))
+    plt.text(5.3e-3, ybeta_c, r'$\beta_{\rm max}=3.7$', color='blue',
+             fontsize=22,
+             bbox=dict(facecolor='white', edgecolor='none',
+                      boxstyle='round,pad=.2'))
+    plt.text(5.5e-3, ybeta_d*3, r'$\beta_{\rm max}=3.95$', color='blue',
+             fontsize=22,
+             bbox=dict(facecolor='white', edgecolor='none',
+                      boxstyle='round,pad=.2'))
+    plt.text(8e-4, ybeta_e, r'$\beta_{\rm max}=3.999$', color='blue',
+            fontsize=22)
+    plt.text(2e-4, ybeta_f*5, r'$\beta_{\rm max}=3.999999$',
+             fontsize=22, color='blue')
 
-    plt.hlines(Xiflat*fact, 3.5e-4, 7e-2, color='blue', lw=.7)
-    plt.hlines(Xiflat_Tai*fact, 3.5e-4, 7e-2, color='blue',
+    plt.hlines(Xiflat*fact, 1e-3, 7e-2, color='blue', lw=.7)
+    plt.hlines(Xiflat_Tai*fact, 1e-3, 7e-2, color='blue',
                ls='-.', lw=.7)
-    plt.hlines(Xiflat_comb*fact, 3.5e-4, 1.5e-2, color='green', lw=.8)
-    plt.text(3e-2, 1.5e-10, r'$h_0^2\, \Xi_{\rm flat}^{\rm AE}$',
-             fontsize=20, color='blue')
-    plt.text(3e-2, 1.7e-11, r'$h_0^2\, \Xi_{\rm flat}^{\rm CD}$',
-             fontsize=20, color='blue')
-    plt.text(5e-4, 8e-13, r'$h_0^2\, \Xi_{\rm flat}^{\rm comb}$',
-             fontsize=20, color='green')
+    plt.hlines(Xiflat_comb*fact, 1.e-3, 7e-2, color='green', lw=.8)
+    plt.text(3e-2, 1.5e-10, r'$\Xi_{\rm flat}^{\rm AE}$',
+             fontsize=28, color='blue')
+    plt.text(3e-2, 1.7e-11, r'$\Xi_{\rm flat}^{\rm CD}$',
+             fontsize=28, color='blue')
+    plt.text(3e-2, 8e-13, r'$\Xi_{\rm flat}^{\rm comb}$',
+             fontsize=28, color='green')
 
     # read reference Xi PLS from Ellis et al 2019
     if interf=='Taiji':
@@ -686,12 +674,12 @@ def plot_Xi_sensitivity_dipole(XiPLSa, XiPLSb, XiPLSc, XiPLSd,
         XiGW_PLS_LISA = np.interp(ff, f, XiGW_PLS_LISA)
         plt.plot(ff, XiGW_PLS_LISA, '.', color='blue', alpha=.4)
         plt.text(1.15e-2, 1.5e-10, r'$\sim\!f^5$',
-                 fontsize=16, color='blue')
+                 fontsize=22, color='blue')
         gg = np.where(XiPLSg > Xiflat_Tai*1.01)
         hh = np.where(fs.value[gg] > 4e-3)
         plt.plot(fs[gg][hh], XiPLSg[gg][hh]*fact, color='blue', lw=.5)
 
-    plt.legend(fontsize=20, loc='lower right', frameon=False)
+    plt.legend(fontsize=28, loc='lower left', frameon=False)
     plt.xlabel(r'$f$ [Hz]')
     plt.ylabel(r'$h_0^2\, \Xi_{\rm PLS} (f)$')
     plt.xscale('log')
@@ -700,7 +688,76 @@ def plot_Xi_sensitivity_dipole(XiPLSa, XiPLSb, XiPLSc, XiPLSd,
     plt.xlim(1e-4, 1e-1)
     plot_sets.axes_lines()
 
+    ax = plt.gca()
+    ax.tick_params(axis='x', pad=20)
+    ax.tick_params(axis='y', pad=10)
+    plt.yticks(np.logspace(-13, -6, 8))
+
     if save: plt.savefig('plots/Xi_PLS_' + interf + '.pdf',
+                         bbox_inches='tight')
+
+def plot_MAC(save=True, log=False):
+
+    """
+    Function that generates the plot of the helical (V Stokes parameter)
+    monopole responses of the cross-correlated channels of the LISA-Taiji
+    network.
+
+    It corresponds to figure 18 of A. Roper Pol, S. Mandal,
+    A. Brandenburg, and T. Kahniashvili, "Polarization of gravitational waves
+    from helical MHD turbulent sources," submitted to JCAP,
+    https://arxiv.org/abs/2107.05356.
+
+    Arguments:
+        save -- option to save the figure in
+                "plots/Mcross_LISA_Taiji.pdf" (default True)
+        log -- option to plot loglog with absolute values of the response
+               functions (default False)
+    """
+
+    plt.figure(figsize=(12,8))
+    #plt.rc('font', size=20)
+    lg = ''
+    if log:
+        MAC = abs(M_AC)
+        MAD = abs(M_AD)
+        MEC = abs(M_ED)
+        MED = abs(M_ED)
+        MED_I = abs(M_ED_I)
+        plt.xscale('log')
+        plt.yscale('log')
+        lg = '_log'
+    else:
+        MAC = M_AC
+        MAD = M_AD
+        MEC = M_EC
+        MED = M_ED
+        MED_I = M_ED_I
+    plt.plot(fs, MAC, color='black',
+             label=r'${\cal M}^V_{\rm AC}$')
+    plt.plot(fs, MAD, color='blue', ls='dotted',
+             label=r'${\cal M}^V_{\rm AD}$')
+    plt.plot(fs, MEC, color='red', ls='-.',
+             label=r'${\cal M}^V_{\rm EC}$')
+    plt.plot(fs, MED, color='green', ls='--',
+             label=r'${\cal M}^V_{\rm ED}$')
+    gg = np.where(abs(MED_I) > 1e-48)
+    plt.plot(fs[gg], MED_I[gg], color='purple', alpha=.8,
+             label=r'${\cal M}^I_{\rm ED}$')
+    plt.legend(fontsize=18, frameon=False)
+    plt.xlabel('$f$ [Hz]')
+    plt.ylabel(r'${\cal M} (f)$')
+    plt.xscale('log')
+    if log:
+        plt.xlim(1e-4, 4e-2)
+        plt.ylim(1e-4, 2e-1)
+    else:
+        plt.xlim(3e-5, 4e-2)
+        plt.ylim(-0.08, 0.08)
+        plt.yticks(np.linspace(-.075, .075, 7))
+    plot_sets.axes_lines()
+
+    if save: plt.savefig('plots/Mcross_LISA_Taiji' + lg + '.pdf',
                          bbox_inches='tight')
 
 def plot_Xi_sensitivity_comb(save=True):
@@ -716,7 +773,7 @@ def plot_Xi_sensitivity_comb(save=True):
     """
 
     plt.figure(figsize=(12,8))
-    plt.rc('font', size=18)
+    #plt.rc('font', size=18)
     plt.plot(fs, XiSAC, color='black', lw=.8,
              label = r'$h_0^2\, \Xi_{\rm s}^{AC} (f)$')
     plt.plot(fs, XiSAD, color='blue', ls='dotted',
