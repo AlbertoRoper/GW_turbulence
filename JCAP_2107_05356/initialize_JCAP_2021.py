@@ -3,7 +3,7 @@ initialize_JCAP_2021.py is a Python routine that reads the data
 and stores the resulting run variables as pickle files.
 The simulations are those of A. Roper Pol, S. Mandal, A. Brandenburg, and
 T. Kahniashvili, "Polarization of gravitational waves from helical MHD
-turbulent sources", https://arxiv.org/abs/2107.05356.
+turbulent sources," https://arxiv.org/abs/2107.05356.
 
 The function run() executes the code.
 """
@@ -27,8 +27,12 @@ def run():
     # read the runs
     os.chdir(HOME)
     runs = read_runs()
+    # compute polarization spectra
+    polarization(runs)
     # compute max, min, mean of GW and helical GW spectra
     compute_min_max_hel(runs)
+    # assign parameters of the run and some characteristic values
+    assign_pars(runs)
     # save variables
     save_runs(runs)
     os.chdir(dir0)
@@ -44,7 +48,8 @@ def read_runs():
 
     # dictionary with the name identifying
     # the runs and pointing to the corresponding directory
-    dirs = rd('JCAP_2021_ini')
+    dirs = {}
+    dirs = rd('JCAP_2021_ini', dirs)
     dirs = rd('JCAP_2021_dri', dirs)
     R = [s for s in dirs]
 
@@ -55,18 +60,15 @@ def read_runs():
 
     return runs
 
-def save_runs(runs):
+def polarization(runs):
 
     """
-    Function that saves the run variables as pickle variables.
-
-    Arguments:
-        runs -- dictionary of the run variables
+    Function that computes the polarization spectra.
     """
 
     for i in runs:
         run = runs.get(i)
-        run.save(dir0=dir0)
+        run.compute_pol()
 
 def compute_min_max_hel(runs):
 
@@ -107,6 +109,8 @@ def compute_min_max_hel(runs):
         tss = np.append(tss, t[indt])
         run.min_max_stat(indt=indt, sp='EGW')
         run.min_max_stat(indt=indt, sp='helEGW', hel=True)
+        run.min_max_stat(indt=indt, sp='PGW', abs_b=False)
+        run.min_max_stat(indt=indt, sp='Ph', abs_b=False)
     indsst = np.array(indsst)
     tss = np.array(tss)
 
@@ -115,3 +119,54 @@ def compute_min_max_hel(runs):
     for i in runs:
         print('time t[%i] = %.4f for run %s'%(indsst[j], tss[j], i))
         j += 1
+
+def assign_pars(runs):
+
+    """
+    Function that assigns some parameters of the specific runs.
+    """
+
+    for i in runs:
+        run = runs.get(i)
+        nm = run.name_run
+        if 'i' in nm: run.type = 'ini'
+        if 'f' in nm: run.type = 'forc'
+        if nm == 'i_s01': run.sig = '0.1'
+        if '001' in nm:
+            if 'neg' in nm: run.sig = '-0.01'
+            else: run.sig = '0.01'
+        if '03' in nm: run.sig = '0.3'
+        if '05' in nm: run.sig = '0.5'
+        if '07' in nm: run.sig = '0.7'
+        if nm == 'i_s1': run.sig = '1'
+        if nm == 'f_s1_neg': run.sig = '-1'
+        t = run.spectra.get('t_mag')
+        k = run.spectra.get('k')
+        indt = np.argmin(abs(t - run.tini))
+        EMmax = run.spectra.get('mag')[indt, :]
+        EM0 = run.spectra.get('mag')[0, :]
+        HM0 = run.spectra.get('helmag_comp')[0, :]
+        run.EMmax = np.trapz(EMmax, k)
+        run.PM = np.trapz(HM0, k)/np.trapz(EM0, k)
+        EGW = run.spectra.get('EGW_stat_sp')
+        run.GWstat = np.trapz(EGW, k[1:])
+        HGW = run.spectra.get('helEGW_stat_sp')
+        helGWstat = np.trapz(HGW, k[1:])
+        run.PGW = helGWstat/run.GWstat
+        run.n = 1152
+        if 'i' in nm: run.eta = 5e-8
+        if 'f' in nm: run.eta = 5e-7
+        run.k = 600
+
+def save_runs(runs):
+
+    """
+    Function that saves the run variables as pickle variables.
+
+    Arguments:
+        runs -- dictionary of the run variables
+    """
+
+    for i in runs:
+        run = runs.get(i)
+        run.save(dir0=dir0)
