@@ -102,6 +102,23 @@ def read_csv(dir, file, a='f', b='Omega'):
 
     return x, y
 
+def read_detector_PLIS_Schmitz(det='BBO', SNR=10, T=4):
+
+    """
+    Read power law integrated senstivities from Schmitz ...
+    """
+
+    import pandas as pd
+
+    frac = SNR/np.sqrt(T)
+    dir = 'detector_sensitivity/power-law-integrated_sensitivities/'
+    BBO = pd.read_csv(dir + 'plis_' + det + '.dat', header=14, delimiter='\t',
+                      names=['f', 'Omega (log)', 'hc (log)', 'Sh (log)'])
+    f = 10**np.array(BBO['f'])
+    Omega = 10**np.array(BBO['Omega (log)'])
+
+    return f, Omega*frac
+
 # not used at the moment (replaced by read_csv)
 def read_pic(dir, file):
 
