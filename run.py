@@ -564,7 +564,154 @@ class run():
                 if 'helOmGW_tot' not in self.spectra_avail:
                     self.spectra_avail.append('helOmGW_tot')
 
-    def min_max_stat(self, sp='GWs', indt=0, plot=False, hel=False):
+    def compute_pol(self):
+
+        """
+        Function that computes the GW and magnetic polarization spectra
+        PGW(k), Ph(k), and PM(k).
+        """
+
+        import numpy as np
+        if 'EGW' in self.spectra_avail and 'helEGW' in self.spectra_avail:
+            EGW = self.spectra.get('EGW')
+            helEGW = self.spectra.get('helEGW')
+            t = self.spectra.get('t_helEGW')*1
+            PGW = np.zeros((np.shape(EGW)))
+            good = np.where(EGW != 0)
+            PGW[good] = helEGW[good]/EGW[good]
+            self.spectra.update({'PGW': PGW})
+            self.spectra.update({'t_PGW': t})
+            if 'PGW' not in self.spectra_avail:
+                self.spectra_avail.append('PGW')
+        if 'GWh' in self.spectra_avail and 'helGWh' in self.spectra_avail:
+            GWh = self.spectra.get('GWh')
+            helGWh = self.spectra.get('helGWh')
+            t = self.spectra.get('t_helGWh')*1
+            Ph = np.zeros((np.shape(GWh)))
+            good = np.where(GWh != 0)
+            Ph[good] = helGWh[good]/GWh[good]
+            self.spectra.update({'Ph': Ph})
+            self.spectra.update({'t_Ph': t})
+            if 'Ph' not in self.spectra_avail:
+                self.spectra_avail.append('Ph')
+        if 'mag' in self.spectra_avail and 'helmag' in self.spectra_avail:
+            EM = self.spectra.get('mag')
+            HM = self.spectra.get('helmag')
+            k = self.spectra.get('k')
+            t = self.spectra.get('t_helmag')
+            tij, kij = np.meshgrid(t, k, indexing='ij')
+            HkM = .5*kij*HM
+            self.spectra.update({'helmag_comp': HkM})
+            if 'helmag_comp' not in self.spectra_avail:
+                self.spectra_avail.append('helmag_comp')
+            PM = np.zeros((np.shape(EM)))
+            good = np.where(EM != 0)
+            PM[good] = HkM[good]/EM[good]
+            self.spectra.update({'PM': PM})
+            self.spectra.update({'t_PM': t})
+            if 'PM' not in self.spectra_avail:
+                self.spectra_avail.append('PM')
+        if 'kin' in self.spectra_avail and 'helkin' in self.spectra_avail:
+            EK = self.spectra.get('kin')
+            HK = self.spectra.get('helkin')
+            k = self.spectra.get('k')
+            t = self.spectra.get('t_helkin')
+            tij, kij = np.meshgrid(t, k, indexing='ij')
+            good = np.where(kij != 0)
+            HkK = .5*HK
+            HkK[good] = HkK[good]/kij[good]
+            self.spectra.update({'helkin_comp': HkK})
+            if 'helkin_comp' not in self.spectra_avail:
+                self.spectra_avail.append('helkin_comp')
+            PK = np.zeros((np.shape(EK)))
+            good = np.where(EK != 0)
+            PK[good] = HkK[good]/EK[good]
+            self.spectra.update({'PK': PK})
+            self.spectra.update({'t_PK': t})
+            if 'PK' not in self.spectra_avail:
+                self.spectra_avail.append('PK')
+
+    def compute_GWsmodel_Pi0(self, tfin=1e4):
+
+        """
+        Function that computes the GW energy density spectrum OmGW(k) using the
+        initial time Pi spectrum, considering the assumption that Pi does not
+        evolve in time.
+        """
+
+        import numpy as np
+        import GW_analytical as an
+
+        if 'Pi' in self.spectra_avail:
+            k = self.spectra.get('k')[1:]
+            t = self.spectra.get('t_Pi')
+            Pi = np.array(self.spectra.get('Pi')[:, 1:], dtype='float')
+            Pi0 = np.zeros(len(k))
+            for i in range(0, len(k)):
+                Pi0[i] = np.interp(self.tini, t, Pi[:, i])
+            EGW_model, OmGW_model = an.OmGW_from_Pi0(Pi0, k, t, tfin=tfin,
+                                                     tini=self.tini)
+            self.spectra.update({'EGW_model_Pi0': EGW_model})
+            self.spectra.update({'OmGW_model_Pi0': OmGW_model})
+            if not 'EGW_model_Pi0' in self.spectra_avail:
+                self.spectra_avail.append('EGW_model_Pi0')
+                self.spectra_avail.append('OmGW_model_Pi0')
+
+    def compute_PiM(self, ks=[], alpha=2, indt=0, alp_str='2'):
+
+        import GW_analytical as an
+        import numpy as np
+
+        if len(ks) == 0: ks = np.logspace(-2, 3, 10000)
+        if 'mag' in self.spectra_avail:
+            k = self.spectra.get('k')[1:]
+            mag = self.spectra.get('mag')[:, 1:]
+            _ = an.model_EM(k, mag, ks=ks)
+            A_EM = _[3]
+            xc_EM = _[5]
+            # compute Pi from magnetic field assuming Gaussianity
+            kf_Pi, PiM = an.compute_PiM(A_EM, xc_EM, alpha=alpha,
+                                        alp_str=alp_str)
+            PiM = 10**np.interp(np.log10(ks), np.log10(kf_Pi),
+                                np.log10(PiM))
+            self.spectra.update({'Pi_model': PiM})
+            self.spectra.update({'ks_Pi_model': ks})
+            if not 'Pi_model' in self.spectra_avail:
+                self.spectra_avail.append('Pi_model')
+
+    def compute_GWsmodel_coh(self, NNt=100):
+
+        import GW_analytical as an
+        import numpy as np
+
+        if 'Pi' in self.spectra_avail:
+            Pi = np.array(self.spectra.get('Pi'), dtype='float')
+            k = self.spectra.get('k')
+            t = self.spectra.get('t_Pi')
+            EGW, OmGW = an.OmGW_from_Pi_coh(t, k, Pi, NNt=NNt)
+            self.spectra.update({'EGW_model_coh': EGW})
+            self.spectra.update({'OmGW_model_coh': OmGW})
+            if not 'EGW_model_coh' in self.spectra_avail:
+                self.spectra_avail.append('EGW_model_coh')
+                self.spectra_avail.append('OmGW_model_coh')
+
+    def compute_GWsmodel_coh_PiM(self, NNt=100):
+
+        import GW_analytical as an
+        import numpy as np
+
+        if 'Pi_model' in self.spectra_avail:
+            Pi = self.spectra.get('Pi_model')
+            k = self.spectra.get('k')
+            t = self.spectra.get('t_Pi')
+            EGW, OmGW = an.OmGW_from_Pi_coh(t, k, Pi, NNt=NNt)
+            self.spectra.update({'EGW_model_coh': EGW})
+            self.spectra.update({'OmGW_model_coh': OmGW})
+            if not 'EGW_model_coh' in self.spectra_avail:
+                self.spectra_avail.append('EGW_model_coh')
+                self.spectra_avail.append('OmGW_model_coh')
+
+    def min_max_stat(self, abs_b=True, sp='GWs', indt=0, plot=False, hel=False):
 
         """
         Function that computes the minimum, the maximum, and the
@@ -608,7 +755,8 @@ class run():
                 self.spectra.update({sp + '_stat_sp':stat_sp})
             else:
                 min_sp, max_sp, stat_sp = \
-                        spectra.min_max_stat(t, k, E, indt=indt, plot=plot)
+                        spectra.min_max_stat(t, k, E, abs_b=abs_b, indt=indt,
+                                             plot=plot)
                 self.spectra.update({sp + '_min_sp': min_sp})
                 self.spectra.update({sp + '_max_sp': max_sp})
                 self.spectra.update({sp + '_stat_sp': stat_sp})
