@@ -557,7 +557,7 @@ def plot_EM_EGW(run, save=True):
 
     plt.xlim(100, 8e4)
     plt.ylim(1e-21, 1e-3)
-    if save: plt.savefig('plots/' + run.name_run + 'EM_EGW_new.pdf',
+    if save: plt.savefig('plots/' + run.name_run + 'EM_EGW.pdf',
                          bbox_inches='tight')
 
 def assign_col(nm):
@@ -771,7 +771,7 @@ def plot_PGW(runs, PPh='GW', type='ini', save=True):
                  fontsize=30, color=cols[i])
 
 
-    if save: plt.savefig('plots/P' + PPh + '_' + type + '_sigma_new.pdf',
+    if save: plt.savefig('plots/P' + PPh + '_' + type + '_sigma.pdf',
                          bbox_inches='tight')
 
 def get_lines_sig(tp):
