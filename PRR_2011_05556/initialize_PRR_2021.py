@@ -48,7 +48,7 @@ def read_runs():
     # the runs and pointing to the corresponding directory
     dirs = {}
     dirs = rd('PRR_2021_K', dirs)
-    # dirs = rd('PRR_2021_M', dirs)
+    dirs = rd('PRR_2021_M', dirs)
     #dirs = rd('PRR_2021_nohel', dirs)
     R = [s for s in dirs]
 
