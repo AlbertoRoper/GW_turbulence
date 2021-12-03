@@ -90,7 +90,7 @@ def characteristic_k(k, E, exp=1):
 
     return kch
 
-def min_max_stat(t, k, E, indt=0, plot=False, hel=False):
+def min_max_stat(t, k, E, abs_b=True, indt=0, plot=False, hel=False):
 
     """
     Function that computes the minimum, the maximum, and the averaged
@@ -142,7 +142,7 @@ def min_max_stat(t, k, E, indt=0, plot=False, hel=False):
                     min_E_neg[j] = min(min_E_neg[j], abs(f_neg[indx]))
                     max_E_neg[j] = max(max_E_neg[j], abs(f_neg[indx]))
         else:
-            E = abs(E)
+            if abs_b: E = abs(E)
             if plot: plt.plot(k, E[i,:])
             min_E = np.minimum(E[i,:], min_E)
             max_E = np.maximum(E[i,:], max_E)
@@ -160,8 +160,12 @@ def min_max_stat(t, k, E, indt=0, plot=False, hel=False):
     else:
         min_E[np.where(min_E == 1e30)] = \
                 abs(stat_E[np.where(min_E == 1e30)])
-        max_E[np.where(min_E == 0)] = \
-                abs(stat_E[np.where(min_E == 0)])
+        if abs_b:
+            max_E[np.where(max_E == 0)] = \
+                    abs(stat_E[np.where(max_E == 0)])
+        else:
+            max_E[np.where(max_E == 0)] = \
+                    (stat_E[np.where(max_E == 0)])
     if plot:
         plt.xscale('log')
         plt.yscale('log')
@@ -209,26 +213,28 @@ def compute_yks(k, E, N):
 
     # compute N number of single power law fits around the model
     kps = np.logspace(np.log10(k[0]),
-                      np.log10(k[-1]), N + 2)
+                      np.log10(k[-1]), N + 1)
     Ess = np.interp(kps, k, E)
     akss = np.zeros(N)
-    akss[0], c = slope(Ess[1], Ess[2],
-                       kps[1], kps[2])
+    c = np.zeros(N)
+    akss[0], c[0] = slope(Ess[0], Ess[1],
+                       kps[0], kps[1])
     kss = np.logspace(np.log10(kps[0]),
-                      np.log10(kps[2]), 5)
-    Ekss = kss**akss[0]*10**c
-    for i in range(2, N+1):
-        akss[i - 1], c = slope(Ess[i], Ess[i + 1],
-                               kps[i], kps[i + 1])
-        ksss = np.logspace(np.log10(kps[i]),
-                           np.log10(kps[i + 1]), 5)
-        Eksss = ksss**akss[i - 1]*10**c
+                      np.log10(kps[1]), 5)
+    Ekss = kss**akss[0]*10**c[0]
+    for i in range(2, N + 1):
+        akss[i - 1], c[i - 1] = slope(Ess[i - 1], Ess[i],
+                               kps[i - 1], kps[i])
+        ksss = np.logspace(np.log10(kps[i - 1]),
+                           np.log10(kps[i]), 5)
+        Eksss = ksss**akss[i - 1]*10**c[i - 1]
         kss = np.append(kss, ksss)
         Ekss = np.append(Ekss, Eksss)
-    km, Em = mean_pos_loglog(np.append(kps[0], kps[2:]),
-                             np.append(Ess[0], Ess[2:]))
+    #km, Em = mean_pos_loglog(np.append(kps[0], kps[2:]),
+    #                         np.append(Ess[0], Ess[2:]))
+    km, Em = mean_pos_loglog(kps, Ekss)
 
-    return kss, Ekss, akss, km, Em
+    return kss, Ekss, akss, km, Em, kps, c
 
 def mean_pos_loglog(k, E):
 
@@ -249,8 +255,8 @@ def mean_pos_loglog(k, E):
     km = np.zeros(N - 1)
     Em = np.zeros(N - 1)
     for i in range(1, N):
-        km[i-1] = np.sqrt(k[i-1]*k[i])
-        Em[i-1] = np.sqrt(E[i-1]*E[i])
+        km[i - 1] = np.sqrt(k[i - 1]*k[i])
+        Em[i - 1] = np.sqrt(E[i - 1]*E[i])
 
     return km, Em
 
@@ -390,3 +396,30 @@ def str_exp(exp, ak, den, diff=0.05):
         diff = difft[ind_min]
 
     return exp, diff
+
+def combine(k1, k2, E1, E2, facM, klim=10, exp=2):
+
+    """
+    Function that combines the spectra and wave number of two runs and uses
+    the ratio between their magnetic amplitudes (facM) to compensate the
+    GW spectrum by facM^2.
+
+    Arguments:
+        k1, k2 -- wave number arrays of runs 1 and 2
+        E1, E2 -- GW spectral values arrays of runs 1 and 2
+        facM -- ratio of the magnetic spectra amplitudes A2/A1
+        klim -- wave number at which we switch from run2 to run 1
+                (default 10)
+        exp -- exponent used in facM to compensate the spectra (default 2,
+               which correspond to that for GW spectra compensated by ratio
+               between magnetic spectra)
+
+    Returns:
+        k -- combined wave number array
+        E -- combined spectra
+    """
+
+    k = np.append(k2[np.where(k2 <= klim)], k1[np.where(k1 > klim)])
+    E = np.append(E2[np.where(k2 <= klim)]/facM**exp, E1[np.where(k1>klim)])
+
+    return k, E
