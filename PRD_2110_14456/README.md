@@ -152,7 +152,8 @@ of reheating (thin solid curves).
 frequency f: run A2’ is in blue, B2’ in green, C2’ in orange, D2’ in red, and E1’ and E2’ in purple.
 Solid curves are linear solutions and dashed-dotted curves are the differences between nonlinear and linear solutions.
 Dotted curves correspond to negative values of the differences.
-We show the 2σ confidence region for the 30-frequency power law fit for a common-process spectrum reported in the NANOGrav
+We show the 2<img src="https://render.githubusercontent.com/render/math?math=\sigma">
+confidence region for the 30-frequency power law fit for a common-process spectrum reported in the NANOGrav
 12.5-year dataset (blue shaded wedge), as well as the expected sensitivity curve for the SKA (black line).
 LISA instrument (dash-dotted line) and power law sensitivity (PLS) (solid line) are shown in green.
 The PLS of DECIGO and of the µAres concept, proposed within the ESA Voyage 2050 programme, are shown in dark red and cyan,
