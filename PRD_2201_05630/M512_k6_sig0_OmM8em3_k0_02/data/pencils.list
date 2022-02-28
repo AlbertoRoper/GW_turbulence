@@ -1,0 +1,46 @@
+ Pencils requested:
+           4 rho             
+           5 rho1            
+           6 glnrho          
+           8 uglnrho         
+          16 sglnrho         
+          32 fpres           
+          41 cs2             
+          90 divu            
+          96 u2              
+          97 uij             
+          98 uu              
+         100 sij             
+         103 ugu             
+         112 del2u           
+         118 graddivu        
+         135 aij             
+         136 bb              
+         142 b2              
+         144 bij             
+         145 del2a           
+         147 jj              
+         155 jxb             
+         156 jxbr            
+         159 uxb             
+ 
+ Pencils requested for diagnostics:
+           4 rho             
+           5 rho1            
+          19 ekin            
+          90 divu            
+          91 oo              
+          92 o2              
+          96 u2              
+          97 uij             
+          98 uu              
+         136 bb              
+         142 b2              
+ 
+ Pencils requested for 2-D diagnostics:
+           3 lnrho           
+           4 rho             
+           5 rho1            
+ 
+ Pencils requested video output
+         136 bb              
