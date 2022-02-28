@@ -7,7 +7,7 @@ The routines use results from large-scale numerical simulations, which are perfo
 see [Pencil Code Collaboration] ``The Pencil Code, a modular MPI code for partial differential equations and particles: multipurpose and multiuser-maintained,''
 J. Open Source Softw. 6, 2807 (2021) (https://arxiv.org/abs/2009.08231).
 
-If you use any of the results presented within this project, please cite the relevant reference and the Pencil Code paper.
+If you use any of the results presented within this project, please cite the relevant reference and the Pencil Code paper, and preferrably notify me about it.
 
 If you have any issues, comments, suggestions, or you are just interested in discussing any of the presented results you can contact me: roperpol@apc.in2p3.fr
 
