@@ -1,168 +1,143 @@
-# GW_turbulence/PRD_2110_14456
+# GW_turbulence/PRD_2201_05630
 
-The run directories correspond to the runs in Table II of the paper Y. He, A. Roper Pol,
-& A. Brandenburg, *Leading-order nonlinear gravitational waves from reheating magnetogeneses,* *submitted to
-Phys. Rev. D*, [arXiv:2110.14456](https://arxiv.org/abs/2110.14456) (2021).
-The datasets are also available in [Zenodo](https://zenodo.org/record/5603013).
+The run directories correspond to the runs in Table I of the paper A. Roper Pol,
+C. Caprini, A. Neronov, D. Semikoz, *The gravitational wave signal from primordial magnetic fields in the Pulsar
+Timing Array frequency band,* [arXiv:2201.05630](https://arxiv.org/abs/2201.05630) (2022).
 
-The reference for the data sets is: *Datasets for "Leading-order nonlinear gravitational waves from
-reheating magnetogeneses,"* v2021.09.23, [Zenodo](https://zenodo.org/record/5524454) (2021).
+The reference for the data sets is: *Datasets for "The gravitational wave signal from primordial magnetic fields in the Pulsar
+Timing Array frequency band,"* v2021.12.15, [Zenodo](https://zenodo.org/record/5782752) (2022).
 
 ## Abstract
 
-We study the leading-order nonlinear gravitational waves (GWs) produced by an electromagnetic (EM) stress in reheating magnetogenesis scenarios.
-Both nonhelical and helical magnetic fields are considered.
-By numerically solving the linear and leading-order nonlinear GW equations, we find that the GW energy from the latter is usually larger.
-We compare their differences in terms of the GW spectrum and parameterize the GW energy difference due to the nonlinear term,
-<img src="https://render.githubusercontent.com/render/math?math=\Delta {\cal E}_{\rm GW}">, in terms of EM energy
-<img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> as
-<img src="https://render.githubusercontent.com/render/math?math=\Delta {\cal E}_{\rm GW} = (\tilde p {\cal E}_{\rm EM}/k_*)^3">, where
-<img src="https://render.githubusercontent.com/render/math?math=k_*"> is the characteristic wave number,
-<img src="https://render.githubusercontent.com/render/math?math=\tilde p">=0.84 and 0.88 are found in the nonhelical and helical cases,
-respectively, with reheating around the QCD energy scale, while
-<img src="https://render.githubusercontent.com/render/math?math=\tilde p">=0.45 is found at the electroweak energy scale.
-We also compare the polarization spectrum of the linear and nonlinear cases and find that adding the nonlinear term usually
-yields a decrease in the polarization that is proportional to the EM energy density.
-We parameterize the fractional polarization suppression as
-<img src="https://render.githubusercontent.com/render/math?math=|\Delta {\cal P}_{\rm GW}/{\cal P}_{\rm GW}| = \tilde r {\cal E}_{\rm EM}/k_*">
-and find <img src="https://render.githubusercontent.com/render/math?math=\tilde r = 1.2 \times 10^{-1}, 7.2 \times 10^{-4}">, and
-<img src="https://render.githubusercontent.com/render/math?math=3.2 \times 10^{-2}"> for the helical cases with reheating temperatures
-<img src="https://render.githubusercontent.com/render/math?math=T_{\rm r}">=300TeV, 8GeV, and 120MeV, respectively.
-Prospects of observation by pulsar timing arrays, space-based interferometers, and other novel detection proposals are also discussed.
+The NANOGrav, Parkes, European, and International pulsar timing array (PTA) collaborations
+have reported evidence for a common-spectrum process that can potentially correspond to a stochastic
+gravitational wave background (SGWB) in the 1–100 nHz frequency range.
+We consider the scenario in which this signal is produced by magnetohydrodynamic (MHD) turbulence in the early
+universe, induced by a non-helical primordial magnetic field at the energy scale corresponding to the
+quark confinement phase transition. We perform MHD simulations to study the dynamical evolution of the
+magnetic field and compute the resulting SGWB. We show that the SGWB output from
+the simulations can be very well approximated by assuming that the magnetic anisotropic stress is
+constant in time, over a time interval related to the eddy turnover time. The analytical spectrum
+that we derive under this assumption features a change of slope at a frequency corresponding to
+the GW source duration that we confirm with the numerical simulations. We compare the SGWB
+signal with the PTA data to constrain the temperature scale at which the SGWB is sourced, as well
+as the amplitude and characteristic scale of the initial magnetic field. We find that the generation
+temperature is constrained to be in the 1–200 MeV range, the magnetic field amplitude must be
+\> 1% of the radiation energy density at that time, and the magnetic field characteristic scale is
+constrained to be \> 10% of the horizon scale. We show that the turbulent decay of this magnetic
+field will lead to a field at recombination that can help to alleviate the Hubble tension and can be
+tested by measurements in the voids of the Large Scale Structure with gamma-ray telescopes like
+the Cherenkov Telescope Array.
 
 ## Tables of runs
 
 <p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/tableII.png" width="800">
-<p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/tableI.png" width="500">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/tableIII.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/tableI.png" width="800">
 
 ## Figures
 
 <p align="center">  
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_A.png" width="333">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_A_diff_abs.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_A_diff_rel.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/Omega_GW_runsA.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/Omega_GW_runsB.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/Omega_GW_runsC.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/Omega_GW_runsD.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/Omega_GW_runsE.png" width="500">
  
-<p align="center">  
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_B.png" width="333">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_B_diff_abs.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_B_diff_rel.png" width="330">
-
-<p align="center">  
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_C.png" width="333">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_C_diff_abs.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_C_diff_rel.png" width="330">
- 
-<p align="center">  
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_D.png" width="333">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_D_diff_abs.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_D_diff_rel.png" width="330">
- 
-<p align="center">  
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_E.png" width="333">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_E_diff_abs.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EGW_k_E_diff_rel.png" width="330">
- 
-**Fig. 1**: Left panels: energy spectra <img src="https://render.githubusercontent.com/render/math?math=E_{\rm GW} (k)"> for
-<img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> = 0.02 (faintest), 0.1, 1, and 10 (darkest)
-at <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1.
-Linear and nonlinear solutions are in solid and dashed curves, respectively.
-Middle panels: differences in the energy spectra between the nonlinear and linear solutions
-<img src="https://render.githubusercontent.com/render/math?math=|\Delta E_{\rm GW} (k)|.">
-Right panels: ratios of the differences in the energy spectra to the nonlinear solutions
-<img src="https://render.githubusercontent.com/render/math?math=|\Delta E_{\rm GW} (k)|/E^{\rm nlin}_{\rm GW} (k)">.
+**Fig. 1**: Simulated GW spectra <img src="https://render.githubusercontent.com/render/math?math=h^2 \Omega_{\rm {GW}}^0 (k)">
+of runs A–E (dots) compared to the analytical model developed in subsection (II D) assuming constant magnetic stresses:
+Eq. (18) at <img src="https://render.githubusercontent.com/render/math?math=t_{\rm {fin}}"> (thin gray lines) and its envelope Eq. (24)
+(dash-dotted black lines).
+The maximal values over one oscillation of the numerical outputs at each wave number
+are shown in different colors for runs with different domain sizes, and are combined to show the GW spectra from
+sub-horizon scales up to the scales where the inertial range is developed.
+Runs A1 to E1 (blue dots) are computing the smallest scales resolved, up to a Nyquist wave number of
+<img src="https://render.githubusercontent.com/render/math?math=k_{\rm {Ny}} {\cal H}_*^{-1}"> = 126.
+The spectra are shown in terms of <img src="https://render.githubusercontent.com/render/math?math=k {\cal H}_*^{-1}">
+and compensated by <img src="https://render.githubusercontent.com/render/math?math=(g_*/10)^{-{1\over3}}">,
+such that they can be scaled to the specific value of the comoving Hubble rate
+at the time of generation <img src="https://render.githubusercontent.com/render/math?math={\cal H}_*">
+and to different values of <img src="https://render.githubusercontent.com/render/math?math=g_*">.
 
 <p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/PGW_k_C.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/PGW_k_D.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/PGW_k_E.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/dte_dtf_fit.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/dte_ratio_fit.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/Omega_GW_runs_model.png" width="500">
 
-**Fig. 2**: GW polarization spectra for <img src="https://render.githubusercontent.com/render/math?math=\beta"> = 7.3 (top panel),
-<img src="https://render.githubusercontent.com/render/math?math=\beta"> = 2.7 (middle panel), and
-<img src="https://render.githubusercontent.com/render/math?math=\beta"> = 1.7 (bottom panel) at
-<img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1.
-Solid and dashed curves are linear and nonlinear solutions.
-Fainter curves indicate smaller values of <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}">.
-In series D and E, the dashed curves for <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}">
- = 0.02, 0.1, and 1 overlap almost entirely with the solid piece and with each other.
+**Fig. 2**: *Upper Panel (left)*: the points represent the eddy
+turnover times of the simulations <img src="https://render.githubusercontent.com/render/math?math=\delta t_{\rm e}">
+and the corresponding values of <img src="https://render.githubusercontent.com/render/math?math=\delta t_{\rm {fin}}">
+obtained by fitting the break into <img src="https://render.githubusercontent.com/render/math?math=k^3">
+(occurring at <img src="https://render.githubusercontent.com/render/math?math=1/\delta t_{\rm {fin}}"> according to the analytical model).
+The dashed line represents the fit of Eq. (36).
+*Upper Panel (right)*: the points represent the ratio <img src="https://render.githubusercontent.com/render/math?math={\cal G}">
+between the numerical and the analytical SGWB amplitudes at the peak.
+The dashed line represents the fit of Eq. (37).
+*Bottom panel*: the SGWBs computed with the analytical model given in Eq. (24) (dot-dashed lines), and from
+the adjusted model given in Eq. (38) (solid lines), are compared to the results of the MHD simulations (colored points).
+The compensated model uses the empirical fits shown in the upper and middle panel.
   
 <p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/EEGW_EEM.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/DEEGW_EEM.png" width="330">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/ratDPGW_EEM.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/PTA_Om_vs_beta.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/Om_PTA_f.png" width="500">
  
-**Fig. 3**: GW energy density <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm GW}">,
-energy difference <img src="https://render.githubusercontent.com/render/math?math=\Delta {\cal E}_{\rm GW}">,
-and relative polarization suppression <img src="https://render.githubusercontent.com/render/math?math=|\Delta {\cal P}_{\rm GW}/{\cal P}_{\rm GW}|">
-against sourcing energy density <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}">
-at the end of reheating.
-We show series A (blue hollow circles), series B (green hollow circles), series C (yellow dots), series D (red dots),
-and series E (purple dots); see Table II.
-Dashed lines and crosses are the fittings corresponding to the saturated values of the extended runs A’, B’, C’, D’,
-and E’. Shaded areas indicate <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> > 0.1.
+**Fig. 3**: *Left*: 1<img src="https://render.githubusercontent.com/render/math?math=\sigma"> and
+2<img src="https://render.githubusercontent.com/render/math?math=\sigma"> contours of the amplitude
+<img src="https://render.githubusercontent.com/render/math?math=h^2 \Omega_{\rm {yr}}"> vs. slope
+<img src="https://render.githubusercontent.com/render/math?math=\beta"> (cf. Eqs. (43) and (45)) derived
+from the NANOGrav data set for both the broken PL (blue) and single PL (green) fits, and from the PPTA (red),
+EPTA (purple), and IPTA (black) data sets for the single PL fit.
+The grey shaded area shows the slopes <img src="https://render.githubusercontent.com/render/math?math=\beta \in (1, 3)">
+characteristic of the SGWB produced by primordial MHD turbulence below the spectral peak, cf. subsection (II D 1).
+*Right*: Shaded regions: range of the SGWB spectra <img src="https://render.githubusercontent.com/render/math?math=h^2 \Omega_{\rm {GW}}^0 (f)">
+of Eqs. (43) and (45), corresponding to the 2<img src="https://render.githubusercontent.com/render/math?math=\sigma">
+contours given in the upper panel.
+The vertical line shows the reference frequency <img src="https://render.githubusercontent.com/render/math?math=f_{\rm {yr}}">.
+Dashed lines: 2<img src="https://render.githubusercontent.com/render/math?math=\sigma"> maximum amplitude at each frequency —
+such that larger amplitudes are, in principle, excluded by the PTA observations.
   
 <p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/overshoot_ts.png" width="500">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/overshoot_ts_diff.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/OmGW_compatible_T100.png" width="500">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/OmGW_compatible_T150.png" width="500">
 
-**Fig. 4**:  Time evolution of the nonlinear GW energy density
-(upper panel) and its difference with the linear one (bottom
-panel). We show runs A2’ (blue), B2’ (green), C2’ (orange),
-D2’ (red), and E2’ (purple), all corresponding to <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> = 0.1.
-The horizontal lines are the averaged values over times larger
-than <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 2 and the values at
-<img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1.
-The vertical lines correspond to <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1, i.e.,
-the end of reheating, and <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 2. The
-zoomed-in plot (upper panel) shows the difference between
-nonlinear (dashed) and linear solution for one of the runs.
-Positive and negative values in the difference (lower panel)
-are shown using solid and dotted lines, respectively, in the
-nonhelical runs, while helical runs only present positive values.
+**Fig. 4**:  For <img src="https://render.githubusercontent.com/render/math?math=T_*"> = 150 MeV and
+<img src="https://render.githubusercontent.com/render/math?math=g_*"> = 15 in the upper
+panel, and <img src="https://render.githubusercontent.com/render/math?math=T_*"> = 100 MeV and
+<img src="https://render.githubusercontent.com/render/math?math=g_*"> = 10 in the lower
+panel, we show the upper boundary (solid lines) and the lower boundary (dashed lines) of the regions compatible
+with the PTA data at 2<img src="https://render.githubusercontent.com/render/math?math=\sigma">.
+To be compatible with NANOGrav with broken PL, each SGWB spectrum must lie in the region within the blue solid and dashed
+lines; with NANOGrav with single PL, within the green solid and dashed lines; with PPTA, within the red solid
+and dashed lines; with EPTA, within the purple solid and dashed lines; with IPTA, within the black solid and dashed lines.
+The shaded areas correspond to the range of allowed values <img src="https://render.githubusercontent.com/render/math?math=h^2 \Omega_{\rm {GW}}^0 (f)">
+of Eqs. (43) and (45), restricted to the range of slopes of interest for a MHD-produced SGWB, i.e.
+<img src="https://render.githubusercontent.com/render/math?math=\beta \in (1, 3)">.
+The magnetic field characteristic scale is bound to <img src="https://render.githubusercontent.com/render/math?math=k_* \geq 2\pi {\cal H}_*">
+and the magnetic energy densities to <img src="https://render.githubusercontent.com/render/math?math=\Omega^*_{\rm M} \leq"> 0.1.
+The vertical lines show the upper bound of the PTA frequency subset to which we restrain the analysis:
+<img src="https://render.githubusercontent.com/render/math?math=f \simeq 1.25 \times 10^{-8}"> Hz for the
+single PL cases (dot-dashed line), and <img src="https://render.githubusercontent.com/render/math?math=f \simeq 9 \times 10^{-9}"> Hz
+for the NANOGrav broken PL case (dashed line).
   
 <p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/overshoot_EGW_k.png" width="500">
-
-**Fig. 5**: Nonlinear GW energy spectra. We show runs A2’
-(blue), B2’ (green), C2’ (orange), D2’ (red), and E2’ (purple), all corresponding to
- <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> = 0.1.
-The solid thin lines correspond to the spectra at the end of reheating, while the
-dashed lines to the saturated values of the spectra.
-The inset shows the linear GW spectra near the spectral peak, where
-both linear and nonlinear solutions are almost identical.
-  
-<p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/overshoot_PGW_k.png" width="500">
-  
-**Fig. 6**: GW polarization spectra. We show helical runs C2’
-(orange), D2’ (red), and E2’ (purple), all corresponding to
-<img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> = 0.1.
-We compare the linear (dotted) and nonlinear
-(dashed) saturated polarization spectra with those at the end
-of reheating (thin solid curves).
- 
-<p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/OmGW_f_detectors.png" width="500">
- <img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/XiGW_f_detectors.png" width="500">
-  
-**Fig. 7**:  GW energy <img src="https://render.githubusercontent.com/render/math?math=h_0^2 \Omega_{\rm GW}"> (left) and helicity
-<img src="https://render.githubusercontent.com/render/math?math=h_0^2 \Xi_{\rm GW}"> (right) spectra scaled to the present day, in units of physical
-frequency f: run A2’ is in blue, B2’ in green, C2’ in orange, D2’ in red, and E1’ and E2’ in purple.
-Solid curves are linear solutions and dashed-dotted curves are the differences between nonlinear and linear solutions.
-Dotted curves correspond to negative values of the differences.
-We show the 2<img src="https://render.githubusercontent.com/render/math?math=\sigma">
-confidence region for the 30-frequency power law fit for a common-process spectrum reported in the NANOGrav
-12.5-year dataset (blue shaded wedge), as well as the expected sensitivity curve for the SKA (black line).
-LISA instrument (dash-dotted line) and power law sensitivity (PLS) (solid line) are shown in green.
-The PLS of DECIGO and of the µAres concept, proposed within the ESA Voyage 2050 programme, are shown in dark red and cyan,
-respectively, assuming 4 years of observations.
-The PLSs estimated for astrometry methods such as Gaia and Theia; for atomic interferometer projects AION (2 km design) and AEDGE,
-and using binary resonance forecasts by 2038 from binary millisecond pulsars (MSPs) and lunar laser-ranging (LRR) measurements are shown
-in dark blue, brown, and violet, respectively.
-Regarding the detectability of GW helicity (right panel), we show the PLS of
-LISA to a polarized GWB using the dipole response function induced by our proper motion and the one obtained using the LISA–Taiji network.
-All PLS curves assume an SNR of 10.
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T200.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T150.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T100.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T50.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T20.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T10.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T5.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T2.png" width="330">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T1.png" width="330">
 
 
+**Fig. 5**:  For different values of <img src="https://render.githubusercontent.com/render/math?math=T_* \in (1, 200)"> MeV,
+we show the allowed regions in the <img src="https://render.githubusercontent.com/render/math?math=(k_*, \Omega_{\rm M}^*)">
+parameter space, derived as described in the main text from the 2<img src="https://render.githubusercontent.com/render/math?math=\sigma">
+results of NANOGrav using the broken PL (blue) and single PL (green) fits, and from the 2<img src="https://render.githubusercontent.com/render/math?math=\sigma">
+results of EPTA (purple), PPTA (red), and IPTA (black) using the single PL fits.
+The vertical and horizontal dot-dashed lines show the physical limits
+<img src="https://render.githubusercontent.com/render/math?math=k_* \geq 2 \pi {\cal H}_*"> and
+<img src="https://render.githubusercontent.com/render/math?math=\Omega_{\rm M}^* \leq 0.1"> respectively: the allowed
+parameter region lies within the rectangle.
+The wave number of the largest processed eddies <img src="https://render.githubusercontent.com/render/math?math=k_*|_{\rm {LPE}}"> 
+is also shown (dash-dotted diagonal line).
