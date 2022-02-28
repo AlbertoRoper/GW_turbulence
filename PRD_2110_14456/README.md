@@ -67,7 +67,7 @@ Prospects of observation by pulsar timing arrays, space-based interferometers, a
  
 **Fig. 1**: Left panels: energy spectra <img src="https://render.githubusercontent.com/render/math?math=E_{\rm GW} (k)"> for
 <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> = 0.02 (faintest), 0.1, 1, and 10 (darkest)
-at η = 1.
+at <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1.
 Linear and nonlinear solutions are in solid and dashed curves, respectively.
 Middle panels: differences in the energy spectra between the nonlinear and linear solutions
 <img src="https://render.githubusercontent.com/render/math?math=|\Delta E_{\rm GW} (k)|.">
@@ -79,7 +79,10 @@ Right panels: ratios of the differences in the energy spectra to the nonlinear s
 <img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/PGW_k_D.png" width="330">
 <img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2110_14456/plots/png/PGW_k_E.png" width="330">
 
-**Fig. 2**: GW polarization spectra for β = 7.3 (top panel), β = 2.7 (middle panel), and β = 1.7 (bottom panel) at η = 1.
+**Fig. 2**: GW polarization spectra for <img src="https://render.githubusercontent.com/render/math?math=\beta"> = 7.3 (top panel),
+<img src="https://render.githubusercontent.com/render/math?math=\beta"> = 2.7 (middle panel), and
+<img src="https://render.githubusercontent.com/render/math?math=\beta"> = 1.7 (bottom panel) at
+<img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1.
 Solid and dashed curves are linear and nonlinear solutions.
 Fainter curves indicate smaller values of <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}">.
 In series D and E, the dashed curves for <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}">
@@ -109,7 +112,10 @@ and E’. Shaded areas indicate <img src="https://render.githubusercontent.com/r
 panel). We show runs A2’ (blue), B2’ (green), C2’ (orange),
 D2’ (red), and E2’ (purple), all corresponding to <img src="https://render.githubusercontent.com/render/math?math={\cal E}_{\rm EM}"> = 0.1.
 The horizontal lines are the averaged values over times larger
-than η = 2 and the values at η = 1. The vertical lines correspond to η = 1, i.e., the end of reheating, and η = 2. The
+than <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 2 and the values at
+<img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1.
+The vertical lines correspond to <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 1, i.e.,
+the end of reheating, and <img src="https://render.githubusercontent.com/render/math?math=\eta"> = 2. The
 zoomed-in plot (upper panel) shows the difference between
 nonlinear (dashed) and linear solution for one of the runs.
 Positive and negative values in the difference (lower panel)
