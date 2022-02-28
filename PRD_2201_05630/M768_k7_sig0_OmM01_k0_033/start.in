@@ -1,0 +1,26 @@
+:q!  -*-f90-*-  (for Emacs)    vim:set filetype=fortran:  (for vim)
+!
+! Initialisation parameters for gravitational waves
+!
+&init_pars
+  cvsid='$Id: start.in,v 1.1 2020/08/12 13:29:40 brandenb Exp $',
+  xyz0=-9.42477796076938,-9.42477796076938,-9.42477796076938
+  xyz1=+9.42477796076938,+9.42477796076938,+9.42477796076938
+  lwrite_aux=T
+  lread_aux=T
+  lwrite_ic=T
+  tstart=1.
+&eos_init_pars
+  gamma=1., cs0=.57735027
+/
+&hydro_init_pars
+/
+&density_init_pars
+  lrelativistic_eos=T
+/
+&magnetic_init_pars
+  initaa='power_randomphase_hel', amplaa=.11, relhel_aa=0.0
+  initpower_aa=2., kpeak_aa=6, lscale_tobox=F
+/
+&special_init_pars
+/
