@@ -129,7 +129,6 @@ for the NANOGrav broken PL case (dashed line).
 <img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T2.png" width="330">
 <img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/pars_compatible_T1.png" width="330">
 
-
 **Fig. 5**:  For different values of <img src="https://render.githubusercontent.com/render/math?math=T_* \in (1, 200)"> MeV,
 we show the allowed regions in the <img src="https://render.githubusercontent.com/render/math?math=(k_*, \Omega_{\rm M}^*)">
 parameter space, derived as described in the main text from the 2<img src="https://render.githubusercontent.com/render/math?math=\sigma">
@@ -141,3 +140,48 @@ The vertical and horizontal dot-dashed lines show the physical limits
 parameter region lies within the rectangle.
 The wave number of the largest processed eddies <img src="https://render.githubusercontent.com/render/math?math=k_*|_{\rm {LPE}}"> 
 is also shown (dash-dotted diagonal line).
+ 
+<p align="center">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/fbr_T_interp.png" width="500">
+
+**Fig. 6**:  Range of frequencies at which the <img src="https://render.githubusercontent.com/render/math?math=f^3">
+to <img src="https://render.githubusercontent.com/render/math?math=f^1"> break,
+<img src="https://render.githubusercontent.com/render/math?math=f_{\rm {br}}">, occurs, for the parameters
+<img src="https://render.githubusercontent.com/render/math?math=(k_*, \Omega_{\rm M}^*)"> compatible with
+the results of each of the PTA collaboration, for different <img src="https://render.githubusercontent.com/render/math?math=T_*">
+(cf. Fig. 5), in the limit <img src="https://render.githubusercontent.com/render/math?math=\Omega_{\rm M}^* \leq 0.1">.
+ 
+<p align="center">
+<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/plots/png/B_vs_l.png" width="700">
+
+**Fig. 7**: Region in the magnetic field parameter space, given by its comoving amplitude B and characteristic scale
+l, compatible with the observations of the different PTA collaborations: in blue, NANOGrav with broken PL; in
+green, NANOGrav with single PL; in red, PPTA; in purple, EPTA; in black, IPTA.
+The parameter space region accessible to LISA is shown in light blue.
+The horizontal dot-dashed lines show the bounds <img src="https://render.githubusercontent.com/render/math?math=\Omega_{\rm M}^* \leq 1">,
+and <img src="https://render.githubusercontent.com/render/math?math=\Omega_{\rm M}^* \leq 0.1"> from Nucleosynthesis.
+The black dash-dotted diagonal lines show: i) the magnetic field amplitude when the
+characteristic scale corresponds to the largest processed eddies at the QCD phase transition
+ <img src="https://render.githubusercontent.com/render/math?math=l_*|_{\rm {LPE}}"> (cf. Eq. (52));
+ii) the magnetic field amplitude reached at recombination (cf. Eq. (53)).
+The dash-dotted red and brown lines show the evolutionary paths of the extremities of the parameter space region compatible with the PTA results up to
+recombination, following compressible (red) and incompressible (brown) MHD free decay.
+The solid red and brown lines indicate the evolutionary paths of an initial field with
+<img src="https://render.githubusercontent.com/render/math?math=k_* = 2 \pi {\cal H}_*"> and
+<img src="https://render.githubusercontent.com/render/math?math=\Omega_{\rm M}^* = 0.1"> at
+<img src="https://render.githubusercontent.com/render/math?math=T_*"> = 100 MeV and
+<img src="https://render.githubusercontent.com/render/math?math=g_*"> = 10 (right red dot), and at
+<img src="https://render.githubusercontent.com/render/math?math=T_*"> = 150 MeV and
+<img src="https://render.githubusercontent.com/render/math?math=g_*"> = 15 (left red dot).
+The green line indicates the upper limit B <img src="https://render.githubusercontent.com/render/math?math=\lesssim"> 0.1 nG,
+and the range <img src="https://render.githubusercontent.com/render/math?math=B_{\rm {rec}} \in (0.013, 0.1)"> nG,
+proposed to alleviate the Hubble tension, both derived in ref. [62] from CMB
+constraints on the baryon clumping.
+The black solid diagonal lines show the Fermi Large Area Telescope (LAT) lower
+bound on the intergalactic magnetic field from timing of the blazar signal (darker gray area), and from the search of
+extended emission (lighter gray area) [2].
+The blue line shows the expected sensitivity of CTA [63]. At larger scales,
+the upper bound from Faraday rotation (FR) is shown [99], and the blue shaded region indicates the observations
+of UHECR from the Perseus-Pisces supercluster [100, 101]. Note that the latter constraints refer to present time
+magnetic field strength and characteristic scale, and they have been cut to avoid intersecting the evolutionary paths
+from the QCD phase transition up to recombination in the plot, for clarity.
