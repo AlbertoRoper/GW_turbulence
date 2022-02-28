@@ -35,7 +35,7 @@ The datasets are also available in [Zenodo](https://zenodo.org/record/5525504).
 
 * The run directories and results in [**PRD_2110_14456**](PRD_2110_14456) correspond to the paper Y. He, A. Roper Pol,
 & A. Brandenburg, *Leading-order nonlinear gravitational waves from reheating magnetogeneses,* *submitted to
-Phys. Rev. D* [arXiv:2110.14456](https://arxiv.org/abs/2110.14456) (2021).
+Phys. Rev. D*, [arXiv:2110.14456](https://arxiv.org/abs/2110.14456) (2021).
 The datasets are also available in [Zenodo](https://zenodo.org/record/5603013).
 
 * The run directories and results in [**PRD_2201_05630**](PRD_2201_05630) correspond to the paper A. Roper Pol,
