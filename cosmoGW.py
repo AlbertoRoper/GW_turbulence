@@ -19,16 +19,20 @@ def values_0(h0=1.):
     Arguments:
         h0 -- parameterizes the uncertainties (Hubble tension) in the value
               of the Hubble rate (default 1)
+              
     Returns:
-        g0 -- 2 relativistic degrees of freedom (massive neutrinos)
-        g0s -- 3.91 entropic/adiabatic degrees of freedom (including neutrinos)
+        g0 -- 2 relativistic degrees of freedom (photons, assuming massive neutrinos)
+        g0s -- 3.909 entropic/adiabatic degrees of freedom (including neutrinos)
         T0 -- temperature 2.72548 K, returned in energy units (MeV)
         H0 -- Hubble rate at the present time H0 = 100 h0 km/s/Mpc in frequency
               units (Hz)
+              
+    Reference: Notes on Cosmology by Syksy Räsänen, chapter 5: 'Thermal history of the early
+    universe' (http://www.courses.physics.helsinki.fi/teor/cos1/cosmo2015_05.pdf).
     """
 
     g0 = 2
-    g0s = 3.91
+    g0s = 3.909
     T0 = 2.72548*u.K*const.k_B
     T0 = T0.to(u.MeV)
     H0 = 100*u.km/u.s/u.Mpc*h0
@@ -118,6 +122,48 @@ def hc_Sf(f, Sf, d=1):
     if d==-1: hc = Sf**2/12/np.pi**2/f**(3/2)
 
     return hc
+
+def Omega_A(A=1, fref=0, beta=0, h0=1.):
+
+    """
+    Function that returns the amplitude of the SGWB energy density
+    spectrum, expressed as a power law (PL), given the amplitude A of the
+    characteristic strain, also expressed as a PL.
+    
+    Note that A is always given for the reference frequency of 1/(1 year)
+    and it is used in the common process reported by PTA collaborations.
+
+    The GW energy density and characteristic amplitude can be expressed as:
+
+    OmGW = Omref (f/fref)^beta
+    hc = A (f/fyr)^alpha
+
+    Arguments:
+        A -- amplitude of the characteristic strain PL using 1yr as the reference
+             frequency
+        fref -- reference frequency used for the PL expression of the
+                GW background given in units of frequency (default
+                1 yr^(-1))
+        h0 -- parameterizes the uncertainties (Hubble tension) in the value
+              of the Hubble rate (default 1); see values_0 function
+
+    Returns:
+        Omref -- amplitude of the GW energy density PL
+        
+    Reference: A. Roper Pol, C. Caprini, A. Neronov, D. Semikoz, "The gravitational wave
+    signal from primordial magnetic fields in the Pulsar Timing Array frequency band,"
+    https://arxiv.org/pdf/2201.05630.pdf (2022); eq. 44.
+    """
+
+    fac = fac_hc_OmGW(d=-1, h0=h0)
+    fyr = 1/u.yr
+    fyr = fyr.to(u.Hz)
+    Omref = fac*fyr**2*A**2
+    if fref != 0:
+        fref = fref.to(u.Hz)
+        Omref *= (fref.value/fyr.value)**beta
+
+    return Omref
 
 ########################  Radiation-dominated era ########################
 
@@ -379,3 +425,56 @@ def shift_hc_today(k, hc, g=10, T=100*u.MeV, d=1):
     f = shift_frequency_today(k, g=g, T=T, d=d)
 
     return f, hc0
+    
+############################ COSMOLOGY CALCULATIONS ############################
+
+def thermal_g(T=100*u.MeV, s=0, file=False):
+
+    """
+    Returns the relativistic dof g_* as a function of T_* according to the
+    thermal history of the Universe. Note that for T > 0.5 MeV, after neutrino
+    decoupling, entropic and relativistic g are approximately equal.
+
+    Arguments:
+        T -- temperature given in enery units (convertible to MeV)
+             (default 100 MeV, i.e., ~QCD scale)
+        s -- option to return adiabatic (s=1) dof instead of relativistic
+             (default 0)
+        file -- option to read g_* or gS from a file with numerical values,
+                based on numerical calculations (default False)
+
+    Returns:
+        g -- relativistic degrees of freedom
+
+    Reference: Notes on Cosmology by Syksy Räsänen, chapter 5:
+    'Thermal history of the early universe'
+    (http://www.courses.physics.helsinki.fi/teor/cos1/cosmo2015_05.pdf);
+    see table 3 and figure 1 (stored in file).
+    """
+
+    if file:
+        import pandas as pd
+        df = pd.read_csv('../cosmology/T_gs.csv')
+        Ts = np.array(df['T [GeV]'])
+        if s == 0: gs = np.array(df['g_*'])
+        if s == 1: gs = np.array(df['gS'])
+        T = T.to(u.GeV)    # values of T from file are in GeV
+        g = np.interp(T.value, np.sort(Ts), np.sort(gs))
+
+    else:
+        T = T.to(u.MeV)
+        T = T.value
+        # Check value of T in MeV and assign g_*
+        if T < 0.1:
+            if s == 0: g = 3.363
+            if s == 1: g = 3.909
+        elif T < 0.5: g = 7.25
+        elif T <= 100: g = 10.75
+        elif T <= 150: g = 17.25
+        elif T < 1e3: g = 61.75
+        elif T < 4e3: g = 75.75
+        elif T < 8e4: g = 86.25
+        elif T < 1.7e5: g = 96.25
+        else: g = 106.75
+
+    return g
