@@ -1,8 +1,8 @@
 cff-version: 1.0.0
 message: "If you use this software, please cite it as below."
 authors:
-- family-name: "Alberto"
-  given-names: "Roper Pol"
+- family-name: "Roper Pol"
+  given-names: "Alberto"
   orcid: "https://orcid.org/0000-0003-4979-4430"
 title: "GW_turbulence"
 version: v1.0.0
