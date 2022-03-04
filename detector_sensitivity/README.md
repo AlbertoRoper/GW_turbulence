@@ -12,13 +12,13 @@ following the methodology of the appendix B in:
 of gravitational waves from helical MHD turbulent sources," JCAP, in press
 (2022) (https://arxiv.org/pdf/2107.05356.pdf).
 
-- 'LISA_Omega.csv' 
-- 'LISA_Omega_PLS.csv'
-- 'LISA_Xi.csv'
-- 'LISA_Xi_PLS.csv'
-- 'Taiji_Omega.csv'
-- 'Taiji_Omega_PLS.csv'
-- 'Taiji_Xi.csv'
-- 'Taiji_Xi_PLS.csv'
-- 'LISA_Taiji_Xi.csv'
-- 'LISA_Taiji_Xi_PLS.csv'
+  - 'LISA_Omega.csv' 
+  - 'LISA_Omega_PLS.csv'
+  - 'LISA_Xi.csv'
+  - 'LISA_Xi_PLS.csv'
+  - 'Taiji_Omega.csv'
+  - 'Taiji_Omega_PLS.csv'
+  - 'Taiji_Xi.csv'
+  - 'Taiji_Xi_PLS.csv'
+  - 'LISA_Taiji_Xi.csv'
+  - 'LISA_Taiji_Xi_PLS.csv'
