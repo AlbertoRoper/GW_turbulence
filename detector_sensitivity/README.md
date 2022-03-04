@@ -32,10 +32,24 @@ of gravitational waves from helical MHD turbulent sources," JCAP, in press
   - 'LISA_response_f.csv'
   - 'Taiji_response_f.csv'
 
-- Under the directory 'power-law-integrated_sensitivities' one finds
-the PLS given in K. Schmitz, "New Sensitivity Curves for
-Gravitational-Wave Signals from Cosmological Phase Transitions,"
-JHEP 01, 097 (2021), [arXiv:2002.04615](https://arxiv.org/pdf/2002.04615.pdf);
+- The monopole response functions obtained by cross-correlating channels of the LISA-Taiji
+network are stored in the directory
+['LISA_Taiji'](https://github.com/AlbertoRoper/GW_turbulence/tree/master/detector_sensitivity/LISA_Taiji),
+from G. Orlando, M. Pieroni, A. Ricciardone, "Measuring Parity Violation
+in the Stochastic Gravitational Wave Background with the LISA-Taiji network,"
+JCAP 03, 069 (2021), [arXiv:2011.07059](https://arxiv.org/abs/2011.07059).
+
+  - 'MAC_V.csv'
+  - 'MAD_V.csv'
+  - 'MEC_V.csv'
+  - 'MED_I.csv'
+  - 'MED_V.csv'
+
+- The power law integrated sensitivities (PLS) of BBO and DECIGO are stored
+in the directory
+['power-law-integrated_sensitivities'](https://github.com/AlbertoRoper/GW_turbulence/tree/master/detector_sensitivity/power-law-integrated_sensitivities),
+from K. Schmitz, "New Sensitivity Curves for Gravitational-Wave Signals from Cosmological Phase
+Transitions," JHEP 01, 097 (2021), [arXiv:2002.04615](https://arxiv.org/abs/2002.04615);
 available in [Zenodo](https://doi.org/10.5281/zenodo.3689582).
 
   - 'plis_BBO.dat'
