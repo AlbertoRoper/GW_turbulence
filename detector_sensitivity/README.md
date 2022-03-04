@@ -32,7 +32,7 @@ of gravitational waves from helical MHD turbulent sources," JCAP, in press
   - 'LISA_response_f.csv'
   - 'Taiji_response_f.csv'
 
-- The monopole response functions obtained by cross-correlating channels of the LISA-Taiji
+- The monopole response functions (I and V Stokes parameters) obtained by cross-correlating channels of the LISA-Taiji
 network are stored in the directory
 ['LISA_Taiji'](https://github.com/AlbertoRoper/GW_turbulence/tree/master/detector_sensitivity/LISA_Taiji),
 from G. Orlando, M. Pieroni, A. Ricciardone, "Measuring Parity Violation
