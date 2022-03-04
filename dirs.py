@@ -247,21 +247,21 @@ def read_dirs(proj, dirs={}):
                 dirs.update({'E3_nl': 'P512b17c_k02b_nlin2_e1new'})
                 dirs.update({'E3_l': 'P512b17c_k02b_lin2_e1new'})
                 
-########################### PRD_2201_05630 ################################
+    ########################### PRD_2201_05630 ################################
                 
-        if proj == 'PRD_2201_05630':
+    if proj == 'PRD_2201_05630':
 
-            dirs.update({'A1': 'M768_k15_sig0_OmM01_k0_033'})
-            dirs.update({'A2': 'M768_k15_sig0_OmM01_k0_017'})
-            dirs.update({'B': 'M768_k11_sig0_OmM01_k0_033'})
-            dirs.update({'C1': 'M768_k8_sig0_OmM01_k0_033'})
-            dirs.update({'C2': 'M768_k8_sig0_OmM01_k0_017'})
-            dirs.update({'D1': 'M768_k7_sig0_OmM01_k0_033'})
-            dirs.update({'D2': 'M768_k7_sig0_OmM01_k0_017'})
-            dirs.update({'E1': 'M512_k6_sig0_OmM8em3_k0_05'})
-            dirs.update({'E2': 'M512_k6_sig0_OmM8em3_k0_02'})
-            dirs.update({'E3': 'M512_k6_sig0_OmM8em3_k0_01'})
-            dirs.update({'E4': 'M512_k6_sig0_OmM8em3_k0_0075'})
-            dirs.update({'E5': 'M512_k6_sig0_OmM8em3_k0_0033'})
+        dirs.update({'A1': 'M768_k15_sig0_OmM01_k0_033'})
+        dirs.update({'A2': 'M768_k15_sig0_OmM01_k0_017'})
+        dirs.update({'B': 'M768_k11_sig0_OmM01_k0_033'})
+        dirs.update({'C1': 'M768_k8_sig0_OmM01_k0_033'})
+        dirs.update({'C2': 'M768_k8_sig0_OmM01_k0_017'})
+        dirs.update({'D1': 'M768_k7_sig0_OmM01_k0_033'})
+        dirs.update({'D2': 'M768_k7_sig0_OmM01_k0_017'})
+        dirs.update({'E1': 'M512_k6_sig0_OmM8em3_k0_05'})
+        dirs.update({'E2': 'M512_k6_sig0_OmM8em3_k0_02'})
+        dirs.update({'E3': 'M512_k6_sig0_OmM8em3_k0_01'})
+        dirs.update({'E4': 'M512_k6_sig0_OmM8em3_k0_0075'})
+        dirs.update({'E5': 'M512_k6_sig0_OmM8em3_k0_0033'})
 
     return dirs
