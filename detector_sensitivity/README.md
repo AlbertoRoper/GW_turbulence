@@ -21,3 +21,12 @@ of gravitational waves from helical MHD turbulent sources," JCAP, in press
   - 'Taiji_Xi_PLS.csv'
   - 'LISA_Taiji_Xi.csv'
   - 'LISA_Taiji_Xi_PLS.csv'
+
+- Under the directory 'power-law-integrated_sensitivities' one finds
+the PLS given in K. Schmitz, "New Sensitivity Curves for
+Gravitational-Wave Signals from Cosmological Phase Transitions,"
+JHEP 01, 097 (2021) (https://arxiv.org/pdf/2002.04615.pdf);
+available in [Zenodo]('https://doi.org/10.5281/zenodo.3689582')
+
+  - 'plis_BBO.dat'
+  - 'plis_DECIGO.dat'
