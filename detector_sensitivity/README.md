@@ -26,7 +26,7 @@ of gravitational waves from helical MHD turbulent sources," JCAP, in press
 the PLS given in K. Schmitz, "New Sensitivity Curves for
 Gravitational-Wave Signals from Cosmological Phase Transitions,"
 JHEP 01, 097 (2021), [arXiv:2002.04615](https://arxiv.org/pdf/2002.04615.pdf);
-available in [Zenodo](https://doi.org/10.5281/zenodo.3689582)
+available in [Zenodo](https://doi.org/10.5281/zenodo.3689582).
 
   - 'plis_BBO.dat'
   - 'plis_DECIGO.dat'
