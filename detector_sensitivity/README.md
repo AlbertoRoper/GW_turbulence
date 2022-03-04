@@ -9,7 +9,7 @@ using the routine
 following the methodology of the appendix B in:
 A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, "Polarization
 of gravitational waves from helical MHD turbulent sources," JCAP, in press
-(2022) [arXiv:2107.05356](https://arxiv.org/pdf/2107.05356.pdf).
+(2022), [arXiv:2107.05356](https://arxiv.org/pdf/2107.05356.pdf).
 
   - 'LISA_Omega.csv' 
   - 'LISA_Omega_PLS.csv'
@@ -25,7 +25,7 @@ of gravitational waves from helical MHD turbulent sources," JCAP, in press
 - Under the directory 'power-law-integrated_sensitivities' one finds
 the PLS given in K. Schmitz, "New Sensitivity Curves for
 Gravitational-Wave Signals from Cosmological Phase Transitions,"
-JHEP 01, 097 (2021) [arXiv:2002.04615](https://arxiv.org/pdf/2002.04615.pdf);
+JHEP 01, 097 (2021), [arXiv:2002.04615](https://arxiv.org/pdf/2002.04615.pdf);
 available in [Zenodo](https://doi.org/10.5281/zenodo.3689582)
 
   - 'plis_BBO.dat'
