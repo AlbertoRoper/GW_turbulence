@@ -37,7 +37,8 @@ network are stored in the directory
 ['LISA_Taiji'](https://github.com/AlbertoRoper/GW_turbulence/tree/master/detector_sensitivity/LISA_Taiji),
 from G. Orlando, M. Pieroni, A. Ricciardone, "Measuring Parity Violation
 in the Stochastic Gravitational Wave Background with the LISA-Taiji network,"
-JCAP 03, 069 (2021), [arXiv:2011.07059](https://arxiv.org/abs/2011.07059).
+JCAP 03, 069 (2021), [arXiv:2011.07059](https://arxiv.org/abs/2011.07059);
+see Figure 2.
 
   - 'MAC_V.csv'
   - 'MAD_V.csv'
