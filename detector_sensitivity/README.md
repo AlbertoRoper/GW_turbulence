@@ -4,8 +4,8 @@ different detectors to gravitational wave (GW) signals.
 The sensitivities (given in ratio of GW energy density to
 present time critical energy density, Omega_GW) and power
 law sensitivities (PLS) for LISA and Taiji have been computed
-using the routine [interferometry.py]
-(https://github.com/AlbertoRoper/GW_turbulence/blob/master/interferometry.py),
+using the routine
+[interferometry.py](https://github.com/AlbertoRoper/GW_turbulence/blob/master/interferometry.py),
 following the methodology of the appendix B in:
 
 - A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, "Polarization
