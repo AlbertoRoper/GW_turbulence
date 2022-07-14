@@ -4,7 +4,7 @@
 !
 &run_pars
   cvsid='$Id: run.in,v 1.14 2018/06/09 23:39:28 brandenb Exp $',
-  nt=3000, it1=1, isave=1000, itorder=3
+  nt=20, it1=1, isave=1000, itorder=3
   dsnap=.01, dvid=.01, ialive=10
   dspec=.001, ou_spec=T, ab_spec=T, GWs_spec=T, GWh_spec=T, GWm_spec=T
   Str_spec=T, SCL_spec=T, VCT_spec=T, Tpq_spec=T
