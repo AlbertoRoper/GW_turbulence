@@ -1,0 +1,45 @@
+!  -*-f90-*-  (for Emacs)    vim:set filetype=fortran:  (for vim)
+! 
+!  run parameters for forced helical MHD turbulence
+!
+&run_pars
+  cvsid='$Id: run.in,v 1.14 2018/06/09 23:39:28 brandenb Exp $',
+  nt=20, it1=1, isave=1000, itorder=3
+  dsnap=.01, dvid=.01, ialive=10
+  dspec=.001, ou_spec=T, ab_spec=T, GWs_spec=T, GWh_spec=T, GWm_spec=T
+  Str_spec=T, SCL_spec=T, VCT_spec=T, Tpq_spec=T
+  cdt=.7
+  !dt=.05  !(cCFL=0.05)
+  !lpencil_check=F
+  !lpencil_check_small=T
+  lspec_start=T
+/
+&eos_run_pars
+/
+&hydro_run_pars
+  lupw_uu=T
+/
+&density_run_pars
+  lupw_lnrho=T
+/
+&special_run_pars
+  !lswitch_symmetric=F
+  !cstress_prefactor='24', nscale_factor_conformal=2.
+  !cstress_prefactor='16pi'
+  !nscale_factor_conformal=.0
+  !ldebug_print=F, lkinGW=T
+  !diffhh=0e-12
+  itorder_GW=2
+/
+&forcing_run_pars
+/
+&magnetic_run_pars
+  iresistivity='eta-tdep', eta=1e-6, eta_tdep_t0=1., eta_tdep_exponent=-.43
+  lupw_aa=T
+/
+&viscosity_run_pars
+  ivisc='nu-tdep', nu=1e-6, nu_tdep_t0=1., nu_tdep_exponent=-.43
+/
+&power_spectrum_run_pars
+/
+
