@@ -116,7 +116,7 @@ def read_dirs(proj, dirs={}):
             dirs.update({'M05': 'M512sig05_k6_ramp1a'})
             dirs.update({'M1': 'M512sig1_k6_ramp1a'})
             
-        if proj == 'PRR_2011_05556' or 'nohel' in proj
+        if proj == 'PRR_2011_05556' or 'nohel' in proj:
         
             dirs.update({'nohel_tau01': 'F1152a_sig0_t11_M4_ramp01b'})
             dirs.update({'nohel_tau02': 'F1152a_sig0_t11_M4_ramp02a'})
