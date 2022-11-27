@@ -44,3 +44,9 @@ The datasets are also available in [Zenodo](https://zenodo.org/record/5603013).
 C. Caprini, A. Neronov, D. Semikoz, *The gravitational wave signal from primordial magnetic fields in the Pulsar
 Timing Array frequency band,* [arXiv:2201.05630](https://arxiv.org/abs/2201.05630) (2022).
 The datasets are also available in [Zenodo](https://zenodo.org/record/5782752).
+
+* The run directory in [**cosmology**](cosmology) contains the calculations to study the cosmological evolution
+of the Universe and contains a solver to Friedmann equations.
+This has been used to generate input results for the Pencil Code. In particular for the results of Y. He, A.
+Roper Pol, A. Brandenburg, *Modified propagation of gravitational waves from the early radiation era,*
+*in preparation* (2022).
