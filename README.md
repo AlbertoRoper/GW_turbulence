@@ -1,6 +1,6 @@
 # GW_turbulence
 
-Author: Alberto Roper Pol (roperpol@apc.in2p3.fr)
+Author: Alberto Roper Pol (alberto.roperpol@unige.ch)
 
 This GitHub project produces results related to the MHD turbulence production of cosmological gravitational wave backgrounds.
 The routines use results from large-scale numerical simulations, which are performed using the [Pencil Code](https://github.com/pencil-code);
