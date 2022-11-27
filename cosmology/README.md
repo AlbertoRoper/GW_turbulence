@@ -9,3 +9,8 @@ The reference is: Notes on Cosmology by Syksy Räsänen,
 chapter 5: 'Thermal history of the early universe'
 (http://www.courses.physics.helsinki.fi/teor/cos1/cosmo2015_05.pdf);
 see figure 1.
+
+- The jupyter notebook cosmology.ipynb contains a tutorial to solve
+Friedmann equations and obtain the results applied to study the
+evolution of the Universe through radiation domination, matter
+domination, and dark-energy domination eras.
