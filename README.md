@@ -11,7 +11,7 @@ If you use any of the results presented within this project, please cite this [r
 and the Pencil Code paper, and preferrably notify me about it.
 
 If you have any issues, comments, suggestions, or you are just interested in discussing any of the presented results
-you can contact me: roperpol@apc.in2p3.fr
+you can contact me: alberto.roperpol@unige.ch
 
 ## Projects
 
