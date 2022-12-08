@@ -6,7 +6,7 @@ Date: 27/11/2022
 
 The code has been developed and used for the results of Y. He, A. Roper Pol,
 A. Brandenburg, "Modified propagation of gravitational waves from the early
-radiation era," in preparation.
+radiation era," submitted to JCAP (2022).
 """
 
 import astropy.constants as const
