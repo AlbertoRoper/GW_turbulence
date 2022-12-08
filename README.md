@@ -32,7 +32,7 @@ The datasets are also available in [Zenodo](https://zenodo.org/record/4256906).
 
 * The run directories and results in [**JCAP_2107_05356**](JCAP_2107_05356) correspond to the paper A. Roper Pol, S. Mandal,
 A. Brandenburg, & T. Kahniashvili, *Polarization of gravitational waves from helical MHD turbulent sources,*
-*in press at JCAP*, [arXiv:2107.05356](https://arxiv.org/abs/2107.05356) (2021).
+*JCAP* **04** (2022), 019, [arXiv:2107.05356](https://arxiv.org/abs/2107.05356).
 The datasets are also available in [Zenodo](https://zenodo.org/record/5525504).
 
 * The run directories and results in [**PRD_2110_14456**](PRD_2110_14456) correspond to the paper Y. He, A. Roper Pol,
