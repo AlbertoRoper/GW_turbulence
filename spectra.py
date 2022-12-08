@@ -1,6 +1,6 @@
 """
 spectra.py is a Python routine that contains postprocessing routines for
-spectral functions.
+spectral functions and other mathematical routines.
 """
 
 import numpy as np
@@ -281,6 +281,29 @@ def slope(y1, y2, x1, x2):
 
     return a, c
 
+def slope_A(x1, y1, x2, y2):
+
+    """
+    Function that computes the slope between points 1 and 2
+
+    Arguments:
+        x1 -- x coordinate of point 1
+        x2 -- x coordinate of point 2
+        y1 -- y coordinate of point 1
+        y2 -- y coordinate of point 2
+
+    Returns:
+        a -- slope between points 1 and 2
+        A -- amplitude of the fit y = A x^a
+    """
+
+    # slope
+    a = np.log10(y1/y2)/np.log10(x1/x2)
+    # amplitude
+    A = y2*x2**(-a)
+
+    return a, A
+
 def red_blue_func(x, f, col=0):
 
     """
@@ -423,3 +446,62 @@ def combine(k1, k2, E1, E2, facM, klim=10, exp=2):
     E = np.append(E2[np.where(k2 <= klim)]/facM**exp, E1[np.where(k1>klim)])
 
     return k, E
+
+def slopes_loglog(k, E):
+
+    """
+    Function that computes numerically the power law slope of a function
+    E(k), taken to be the exponent of the tangent power law, i.e.,
+    (\partial \ln E)/(\partial \ln k)
+
+    Arguments:
+        k -- independent variable
+        E -- dependent variable
+
+    Returns:
+        slopes -- slope of E at each k in a loglog plot
+
+    """
+    slopes = np.zeros(len(k))
+    slopes[0] = (np.log10(E[1]) - np.log10(E[0]))/ \
+                        (np.log10(k[1]) - np.log10(k[0]))
+    slopes[1] = (np.log10(E[2]) - np.log10(E[0]))/ \
+                        (np.log10(k[2]) - np.log10(k[0]))
+    for i in range(2, len(k) - 2):
+         slopes[i] = (np.log10(E[i + 2]) + np.log10(E[i + 1]) \
+                            - np.log10(E[i - 2]) - np.log10(E[i - 1]))/\
+                            (np.log10(k[i + 1])+ \
+                            np.log10(k[i + 2])-np.log10(k[i - 1]) - \
+                            np.log10(k[i - 2]))
+    slopes[-1] = (np.log10(E[-1]) - np.log10(E[-2]))/\
+                        (np.log10(k[-1]) - np.log10(k[-2]))
+    slopes[-2] = (np.log10(E[-1]) - np.log10(E[-3]))/\
+                        (np.log10(k[-1]) - np.log10(k[-3]))
+    return slopes
+
+def get_min_max(f, E_a, E_b):
+
+    """
+    Function that returns the minimum and maximum of the power laws constructed
+    for a different range of slopes.
+
+    Arguments:
+        f -- array of frequencies
+        E_a -- 2d array of the minimum amplitudes (first index correspond to
+               the slope and the second to the frequency)
+        E_b -- 2d array of the power laws corresponding to the maximum
+               amplitudes
+
+    Returns:
+        minE -- array of minimum values of the spectra over all slopes
+        maxE --  array of maximum values of the spectra over all slopes
+    """
+
+    minE = np.zeros(len(f)) + 1e30
+    maxE = np.zeros(len(f))
+    for i in range(0, len(f)):
+        good = np.where(E_a[:, i] != 0)
+        minE[i] = np.min(E_a[good, i])
+        maxE[i] = np.max(E_b[:, i])
+
+    return minE, maxE
