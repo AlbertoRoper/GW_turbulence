@@ -61,6 +61,10 @@ def read_dirs(proj, dirs={}):
                             signal from primordial magnetic fields in the Pulsar
                             Timing Array frequency band," submitted to Phys. Rev. D,
                             arxiv:2201.05630 (2022).
+                            
+        'horndeski'      -- runs of Y. He et al., "Modified propagation of
+                            gravitational waves from the early radiation era,"
+                            submitted to JCAP (2022).
 
     Returns:
         dirs -- updated dictionary of directories
@@ -265,3 +269,90 @@ def read_dirs(proj, dirs={}):
         dirs.update({'E5': 'M512_k6_sig0_OmM8em3_k0_0033'})
 
     return dirs
+
+    ########################### horndeski ################################
+    
+    if 'horndeski' in proj:
+
+        if proj == 'horndeski' or 'M0' in proj:
+
+            dirs.update({'M0A' : '46000cosmo_1D_alpM_m05'})
+            dirs.update({'M0A_LD2' : '46000cosmo_1D_alpM_m05_LD2'})
+            dirs.update({'M0B' : '46000cosmo_1D_alpM_m03'})
+            dirs.update({'M0B_LD2' : '46000cosmo_1D_alpM_m03_LD2'})
+            dirs.update({'M0C' : '46000cosmo_1D_alpM_m01'})
+            dirs.update({'M0C_LD2' : '46000cosmo_1D_alpM_m01_LD2'})
+            dirs.update({'M0D' : '46000cosmo_1D_alpM_m001'})
+            dirs.update({'M0D_LD2' : '46000cosmo_1D_alpM_m001_LD2'})
+            dirs.update({'M0E' : '46000cosmo_1D_alpM_p01'})
+            dirs.update({'M0E_LD2' : '46000cosmo_1D_alpM_p01_LD2'})
+            dirs.update({'M0F' : '46000cosmo_1D_alpM_p03'})
+            dirs.update({'M0F_LD2' : '46000cosmo_1D_alpM_p03_LD2'})
+            #### low k runs
+            dirs.update({'M0A_lowk' : '46000cosmo_1D_alpM_m05_wav1e7'})
+            dirs.update({'M0A_lowk_LD2' : '46000cosmo_1D_alpM_m05_wav1e7_LD2'})
+            dirs.update({'M0B_lowk' : '46000cosmo_1D_alpM_m03_wav1e7'})
+            dirs.update({'M0B_lowk_LD2' : '46000cosmo_1D_alpM_m03_wav1e7_LD2'})
+            dirs.update({'M0C_lowk' : '46000cosmo_1D_alpM_m01_wav1e7'})
+            dirs.update({'M0C_lowk_LD2' : '46000cosmo_1D_alpM_m01_wav1e7_LD2'})
+            dirs.update({'M0D_lowk' : '46000cosmo_1D_alpM_m001_wav1e7'})
+            dirs.update({'M0D_lowk_LD2' : '46000cosmo_1D_alpM_m001_wav1e7_LD2'})
+            dirs.update({'M0E_lowk' : '46000cosmo_1D_alpM_p01_wav1e7'})
+            dirs.update({'M0E_lowk_LD2' : '46000cosmo_1D_alpM_p01_wav1e7_LD2'})
+            dirs.update({'M0F_lowk' : '46000cosmo_1D_alpM_p03_wav1e7'})
+            dirs.update({'M0F_lowk_LD2' : '46000cosmo_1D_alpM_p03_wav1e7_LD2'})
+
+        if proj == 'horndeski' or 'M1' in proj:
+
+            dirs.update({'M1A' : '46000cosmo_1D_alpM_m05_a2'})
+            dirs.update({'M1A_LD2' : '46000cosmo_1D_alpM_m05_a2_LD2'})
+            dirs.update({'M1B' : '46000cosmo_1D_alpM_m03_a2'})
+            dirs.update({'M1B_LD2' : '46000cosmo_1D_alpM_m03_a2_LD2'})
+            dirs.update({'M1C' : '46000cosmo_1D_alpM_m01_a2'})
+            dirs.update({'M1C_LD2' : '46000cosmo_1D_alpM_m01_a2_LD2'})
+            dirs.update({'M1D' : '46000cosmo_1D_alpM_p01_a04'})
+            dirs.update({'M1D_LD2' : '46000cosmo_1D_alpM_p01_a04_LD2'})
+            dirs.update({'M1E' : '46000cosmo_1D_alpM_p03_a04'})
+            dirs.update({'M1E_LD2' : '46000cosmo_1D_alpM_p03_a04_LD2'})
+
+        if proj == 'horndeski' or 'M2' in proj:
+
+            dirs.update({'M2A' : '46000cosmo_1D_alpM_m05_Lambda'})
+            dirs.update({'M2A_LD2' : '46000cosmo_1D_alpM_m05_Lambda_LD2'})
+            dirs.update({'M2B' : '46000cosmo_1D_alpM_m03_Lambda'})
+            dirs.update({'M2B_LD2' : '46000cosmo_1D_alpM_m03_Lambda_LD2'})
+            dirs.update({'M2C' : '46000cosmo_1D_alpM_m01_Lambda'})
+            dirs.update({'M2C_LD2' : '46000cosmo_1D_alpM_m01_Lambda_LD2'})
+            dirs.update({'M2D' : '46000cosmo_1D_alpM_p01_Lambda'})
+            dirs.update({'M2D_LD2' : '46000cosmo_1D_alpM_p01_Lambda_LD2'})
+            dirs.update({'M2E' : '46000cosmo_1D_alpM_p03_Lambda'})
+            dirs.update({'M2E_LD2' : '46000cosmo_1D_alpM_p03_Lambda_LD2'})
+
+        if proj == 'horndeski' or 'M3' in proj:
+
+            dirs.update({'M3A' : '46000cosmo_1D_alpM_m05_mat'})
+            dirs.update({'M3A_LD2' : '46000cosmo_1D_alpM_m05_mat_LD2'})
+            dirs.update({'M3B' : '46000cosmo_1D_alpM_m03_mat'})
+            dirs.update({'M3B_LD2' : '46000cosmo_1D_alpM_m03_mat_LD2'})
+            dirs.update({'M3C' : '46000cosmo_1D_alpM_m01_mat'})
+            dirs.update({'M3C_LD2' : '46000cosmo_1D_alpM_m01_mat_LD2'})
+            dirs.update({'M3D' : '46000cosmo_1D_alpM_m001_mat'})
+            dirs.update({'M3D_LD2' : '46000cosmo_1D_alpM_m001_mat_LD2'})
+            dirs.update({'M3E' : '46000cosmo_1D_alpM_p01_mat'})
+            dirs.update({'M3E_LD2' : '46000cosmo_1D_alpM_p01_mat_LD2'})
+            dirs.update({'M3F' : '46000cosmo_1D_alpM_p03_mat'})
+            dirs.update({'M3F_LD2' : '46000cosmo_1D_alpM_p03_mat_LD2'})
+
+            #### lowk runs
+            dirs.update({'M3A_lowk' : '46000cosmo_1D_alpM_m05_mat_wav1e7'})
+            dirs.update({'M3A_lowk_LD2' : '46000cosmo_1D_alpM_m05_mat_wav1e7_LD2'})
+            dirs.update({'M3B_lowk' : '46000cosmo_1D_alpM_m03_mat_wav1e7'})
+            dirs.update({'M3B_lowk_LD2' : '46000cosmo_1D_alpM_m03_mat_wav1e7_LD2'})
+            dirs.update({'M3C_lowk' : '46000cosmo_1D_alpM_m01_mat_wav1e7'})
+            dirs.update({'M3C_lowk_LD2' : '46000cosmo_1D_alpM_m01_mat_wav1e7_LD2'})
+            dirs.update({'M3D_lowk' : '46000cosmo_1D_alpM_m001_mat_wav1e7'})
+            dirs.update({'M3D_lowk_LD2' : '46000cosmo_1D_alpM_m001_mat_wav1e7_LD2'})
+            dirs.update({'M3E_lowk' : '46000cosmo_1D_alpM_p01_mat_wav1e7'})
+            dirs.update({'M3E_lowk_LD2' : '46000cosmo_1D_alpM_p01_mat_wav1e7_LD2'})
+            dirs.update({'M3F_lowk' : '46000cosmo_1D_alpM_p03_mat_wav1e7'})
+            dirs.update({'M3F_lowk_LD2' : '46000cosmo_1D_alpM_p03_mat_wav1e7_LD2'})
