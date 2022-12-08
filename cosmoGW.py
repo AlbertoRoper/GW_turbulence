@@ -3,42 +3,13 @@ cosmoGW.py is a Python routine that contains functions relevant for
 cosmological sources of the stochastic gravitational wave background (SGWB).
 
 Author: Alberto Roper Pol
+Date: 01/12/2021
 """
 
 import astropy.constants as const
 import astropy.units as u
 import numpy as np
-
-######################### Values at present time #########################
-
-def values_0(h0=1.):
-
-    """
-    Function that returns the values of some parameters at the present time.
-
-    Arguments:
-        h0 -- parameterizes the uncertainties (Hubble tension) in the value
-              of the Hubble rate (default 1)
-              
-    Returns:
-        g0 -- 2 relativistic degrees of freedom (photons, assuming massive neutrinos)
-        g0s -- 3.909 entropic/adiabatic degrees of freedom (including neutrinos)
-        T0 -- temperature 2.72548 K, returned in energy units (MeV)
-        H0 -- Hubble rate at the present time H0 = 100 h0 km/s/Mpc in frequency
-              units (Hz)
-              
-    Reference: Notes on Cosmology by Syksy Räsänen, chapter 5: 'Thermal history of the early
-    universe' (http://www.courses.physics.helsinki.fi/teor/cos1/cosmo2015_05.pdf).
-    """
-
-    g0 = 2
-    g0s = 3.909
-    T0 = 2.72548*u.K*const.k_B
-    T0 = T0.to(u.MeV)
-    H0 = 100*u.km/u.s/u.Mpc*h0
-    H0 = H0.to(u.Hz)
-
-    return g0, g0s, T0, H0
+import cosmology as co
 
 ########################## SGWB at present time ##########################
 
@@ -62,7 +33,7 @@ def fac_hc_OmGW(d=1, h0=1.):
     https://arxiv.org/pdf/gr-qc/9909001.pdf (2000); eq. 17.
     """
 
-    g0, g0s, T0, H0 = values_0(h0=h0)
+    g0, g0s, T0, H0 = co.values_0(h0=h0)
     fac = H0*np.sqrt(3/2)/np.pi
     if d == -1: fac = 1/fac**2
 
@@ -164,122 +135,6 @@ def Omega_A(A=1, fref=0, beta=0, h0=1.):
         Omref *= (fref.value/fyr.value)**beta
 
     return Omref
-
-########################  Radiation-dominated era ########################
-
-def Hs_fact():
-
-    """
-    Function that computes the factor used in the calculation of the Hubble
-    parameter at the time of generation (within the radiation-dominated era).
-
-    The factor is given in units of Hz/MeV^2, such that the actual Hubble rate
-    is given after multiplying fact*sqrt(g)*T^2, being g the number of dof and
-    T the temperature scale (in MeV).
-    
-    Reference: A. Roper Pol, C. Caprini, A. Neronov, D. Semikoz, "The gravitational wave
-    signal from primordial magnetic fields in the Pulsar Timing Array frequency band,"
-    https://arxiv.org/pdf/2201.05630.pdf (2022); eq. 29.
-    """
-
-    fact = np.sqrt(4*np.pi**3*const.G/45/const.c**5/const.hbar**3)
-    fact = fact.to(u.Hz/u.MeV**2)
-
-    return fact
-
-def Hs_val(g=10, T=100*u.MeV):
-
-    """
-    Function that computes the Hubble parameter at the time of generation
-    (within the radiation-dominated era).
-
-    Arguments:
-        g -- number of relativistic degrees of freedom (dof) at the time of generation
-             (default 10, i.e., ~QCD scale)
-        T -- temperature scale at the time of generation in energy units
-             (convertible to MeV) (default 100 MeV, i.e., ~QCD scale)
-    Returns:
-        Hs -- Hubble rate in frequency units (Hz)
-        
-    Reference: A. Roper Pol, C. Caprini, A. Neronov, D. Semikoz, "The gravitational wave
-    signal from primordial magnetic fields in the Pulsar Timing Array frequency band,"
-    https://arxiv.org/pdf/2201.05630.pdf (2022); eq. 29.
-    """
-
-    Hs_f = Hs_fact()
-    T = T.to(u.MeV)
-    Hs = Hs_f*T**2*np.sqrt(g)
-
-    return Hs
-
-def Om_rad(h0=1.):
-
-    """
-    Function that computes the ratio of radiation energy density to critical
-    energy density at present time, Omrad^0.
-    
-    Arguments:
-        h0 -- parameterizes the uncertainties (Hubble tension) in the value
-              of the Hubble rate (default 1); see values_0 function
-              
-    Returns:
-        Om_rad -- ratio of energy density given in natural units (MeV^4)
-        
-    #### TO REVIEW!! ####
-    """
-
-    Hs = Hs_fact()
-    g0, g0s, T0, H0 = values_0(h0=h0)
-    Om_rad = Hs**2/H0**2*T0**4*g0
-
-    return Om_rad
-
-def as_fact():
-
-    """
-    Function that computes the factor used in the calculation of the ratio
-    between the scale factor at the time of generation and the present
-    time assuming adiabatic expansion of the universe.
-
-    The factor is in units of MeV and the ratio is obtained by multiplying
-    fact*g^(-1/3)/T, being g the number of dof and T the temperature scale
-    (in MeV).
-    
-    Reference: A. Roper Pol, C. Caprini, A. Neronov, D. Semikoz, "The gravitational wave
-    signal from primordial magnetic fields in the Pulsar Timing Array frequency band,"
-    https://arxiv.org/pdf/2201.05630.pdf (2022); eq. 28.
-    """
-
-    g0, g0s, T0, _ = values_0()
-    fact = T0*g0s**(1/3)
-
-    return fact
-
-def as_a0_rat(g=10, T=100*u.MeV):
-
-    """
-    Function that computes the ratio between the scale factor at the time
-    of generation (a*) and the present time (a_0) assuming adiabatic expansion of the
-    universe.
-    
-    Arguments:
-        g -- number of relativistic degrees of freedom (dof) at the time of generation
-             (default 10, i.e., ~QCD scale)
-        T -- temperature scale at the time of generation in energy units
-             (convertible to MeV) (default 100 MeV, i.e., ~QCD scale)
-    Returns:
-        as_a0 -- ratio of scale factors (a*/a0)
-        
-    Reference: A. Roper Pol, C. Caprini, A. Neronov, D. Semikoz, "The gravitational wave
-    signal from primordial magnetic fields in the Pulsar Timing Array frequency band,"
-    https://arxiv.org/pdf/2201.05630.pdf (2022); eq. 28.
-    """
-
-    as_f = as_fact()
-    T = T.to(u.MeV)
-    as_a0 = as_f*g**(-1/3)/T
-
-    return as_a0
 
 def shift_onlyOmGW_today(OmGW, g=10, d=1, h0=1.):
 
@@ -425,56 +280,3 @@ def shift_hc_today(k, hc, g=10, T=100*u.MeV, d=1):
     f = shift_frequency_today(k, g=g, T=T, d=d)
 
     return f, hc0
-    
-############################ COSMOLOGY CALCULATIONS ############################
-
-def thermal_g(T=100*u.MeV, s=0, file=False):
-
-    """
-    Returns the relativistic dof g_* as a function of T_* according to the
-    thermal history of the Universe. Note that for T > 0.5 MeV, after neutrino
-    decoupling, entropic and relativistic g are approximately equal.
-
-    Arguments:
-        T -- temperature given in enery units (convertible to MeV)
-             (default 100 MeV, i.e., ~QCD scale)
-        s -- option to return adiabatic (s=1) dof instead of relativistic
-             (default 0)
-        file -- option to read g_* or gS from a file with numerical values,
-                based on numerical calculations (default False)
-
-    Returns:
-        g -- relativistic degrees of freedom
-
-    Reference: Notes on Cosmology by Syksy Räsänen, chapter 5:
-    'Thermal history of the early universe'
-    (http://www.courses.physics.helsinki.fi/teor/cos1/cosmo2015_05.pdf);
-    see table 3 and figure 1 (stored in file).
-    """
-
-    if file:
-        import pandas as pd
-        df = pd.read_csv('../cosmology/T_gs.csv')
-        Ts = np.array(df['T [GeV]'])
-        if s == 0: gs = np.array(df['g_*'])
-        if s == 1: gs = np.array(df['gS'])
-        T = T.to(u.GeV)    # values of T from file are in GeV
-        g = np.interp(T.value, np.sort(Ts), np.sort(gs))
-
-    else:
-        T = T.to(u.MeV)
-        T = T.value
-        # Check value of T in MeV and assign g_*
-        if T < 0.1:
-            if s == 0: g = 3.363
-            if s == 1: g = 3.909
-        elif T < 0.5: g = 7.25
-        elif T <= 100: g = 10.75
-        elif T <= 150: g = 17.25
-        elif T < 1e3: g = 61.75
-        elif T < 4e3: g = 75.75
-        elif T < 8e4: g = 86.25
-        elif T < 1.7e5: g = 96.25
-        else: g = 106.75
-
-    return g
