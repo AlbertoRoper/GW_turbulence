@@ -1,12 +1,9 @@
 """
 cosmology.py is a Python routine that contains functions relevant
 for cosmological calculations, including a solver to Friedmann equations.
+
 Author: Alberto Roper Pol
 Date: 27/11/2022
-
-The code has been developed and used for the results of Y. He, A. Roper Pol,
-A. Brandenburg, "Modified propagation of gravitational waves from the early
-radiation era," submitted to JCAP (2022).
 """
 
 import astropy.constants as const
@@ -61,6 +58,8 @@ def values_0(h0=1., neut=False, Neff=3, ret_rad=False):
         return g0, g0s, T0, H0, rho_rad0, Om_rad0
     else:
         return g0, g0s, T0, H0
+    
+########################  Radiation-dominated era ########################
 
 def Hs_fact():
 
@@ -150,6 +149,23 @@ def as_a0_rat(g=10, T=100*u.MeV):
     as_a0 = as_f*g**(-1/3)/T
 
     return as_a0
+
+def Hs_from_a(a, dir0='', Neff=3.):
+    
+    """
+    Function that computes the Hubble rate H_* during the RD
+    era given only the temperature scale.
+    """
+    
+    # compute the dofs
+    gs, gS = dofs_vs_a(a, dir0=dir0, Neff=Neff)
+    # compute the temperature scale from adiabatic expansions
+    g0, g0s, T0, _ = values_0(neut=True, Neff=Neff)
+    T = T0.to(u.MeV)/a*(g0s/gs)**(1/3)
+    # get the Hubble rate
+    Hs = Hs_val(T=T, g=gs)
+    
+    return Hs
 
 def rho_radiation(T=100*u.GeV, g=100):
     
@@ -246,6 +262,14 @@ def thermal_g(dir0='', T=100*u.MeV, s=0, file=True):
     return g
 
 ############################### FRIEDMANN EQUATIONS ###############################
+
+"""
+The code has been developed and used for the results of Y. He, A. Roper Pol,
+A. Brandenburg, "Modified propagation of gravitational waves from the early
+radiation era," submitted to JCAP (2022).
+
+Friedmann solver included in 06/2022
+"""
 
 def RD_dofs(dir0='', Neff=3.):
     
@@ -359,7 +383,7 @@ def Omega_vs_a(a, a0=1, h0=0.6732, OmL0=0.6841, dir0='', dofs=True, Neff=3.):
         Om_matt -- matter energy density (normalized)
     
     Reference: Y. He, A. Roper Pol, A. Brandenburg, "Modified propagation of
-    gravitational waves from the early radiation era," in preparation.
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
     """
     
     ########## compute Om_rad0
@@ -477,3 +501,107 @@ def friedmann_solver(a, a0=1., h0=0.6732, OmL0=0.6841, dir0='', dofs=True, Neff=
     if return_all:
         return t, eta, Om_tot, Om_rad, Om_matt, w, ad, add, ap, app
     else: return t, eta
+    
+def normalized_variables(a, eta, ap_a, app_a, T=100*u.GeV, dir0='', h0=0.6372):
+    
+    """
+    Function that computes the normalized a, eta, HH, a'' for a given specific initial time of GW generation.
+    
+    Arguments:
+        a -- scale factors, normalized to present-time a_0 = 1
+        eta -- conformal times, normalized to present-time a_0 = 1
+        HH -- conformal Hubble time, normalized to present-time a_0 = 1
+        app -- a''/a, normalized to present-time a_0 = 1
+    """
+    
+    H0 = 100*h0*u.km/u.s/u.Mpc
+    H0 = H0.to(u.Hz)
+    
+    g = thermal_g(dir0=dir0, T=T, s=0)
+    gS = thermal_g(dir0=dir0, T=T, s=1)
+    ast = as_a0_rat(T=T, g=gS)
+    Hs = Hs_val(T=T, g=g)
+    
+    # normalized scale rates
+    a_n = a/ast
+    a0 = 1/ast
+    
+    ## Find value of eta at the initial time of generation
+    eta_ast = np.interp(ast, a, eta)
+    # normalized conformal times
+    eta_n = eta/eta_ast
+    eta_n_0 = np.interp(a0, a_n, eta_n)
+    
+    # normalized conformal Hubble rate
+    HH_n = ap_a/Hs/ast
+
+    # normalized acceleration
+    app_a_n = app_a/Hs**2/ast**2
+
+    ### we can recover the values of Omega and w
+    Omega = (HH_n.value*Hs)**2/a_n**2/H0**2
+    w = 1/3*(1 - app_a_n*2/HH_n**2)
+
+    # compute aEQ, aL, and a_acc
+    inds = np.argsort(w)
+    aEQ_n = np.interp(1/6, w[inds], a_n[inds])
+    aL_n = np.interp(-.5, w[inds], a_n[inds])
+    a_acc_n = np.interp(-1/3, w[inds], a_n[inds])
+    eta_n_EQ = np.interp(aEQ_n, a_n, eta_n)
+    eta_n_L = np.interp(aL_n, a_n, eta_n)
+    eta_n_acc = np.interp(a_acc_n, a_n, eta_n)
+    
+    return a_n, eta_n, HH_n, app_a_n, Omega, w, eta_n_0, aEQ_n, \
+            aL_n, a_acc_n, eta_n_EQ, eta_n_L, eta_n_acc
+
+def ratio_app_a_n_factor(a, a0=1, h0=0.6732, OmL0=0.6841, dir0='', dofs=True, Neff=3.):
+    
+    """
+    Function that computes the ratio of a''/a (normalized) to conformal Hubble rate H (normalized)
+    times a_*/a_0 using an approximation valid durin the RD era.
+    """
+    
+    g0, g0s, T0, H0, rho_rad0, OmR0 = values_0(h0=h0, neut=True, Neff=Neff, ret_rad=True)
+    OmM0 = 1 - OmL0 - OmR0
+    Om_rat_dof = Omega_rad_dof(a, dir0=dir0, Neff=Neff)
+    
+    factor = .5*OmM0/OmR0/Om_rat_dof
+    
+    return factor
+
+def norm_variables_cut(eta_n, HH_n, a_n, Omega, Omega_mat,
+                       eta_n_0, H0, Hs, ast, OmM0, OmR0):
+    
+    """
+    Function that cuts the normalized variables between the initial time \eta/\eta_* = 1
+    to present-time.
+    """
+    
+    inds = np.where(eta_n > 1)[0]
+    inds2 = np.where(eta_n[inds] < eta_n_0)[0]
+
+    eta_nn = eta_n[inds][inds2]
+    eta_nn = np.append(1, eta_nn)
+    eta_nn = np.append(eta_nn, eta_n_0)
+
+    HH_nn = HH_n[inds][inds2].value
+    HH_nn = np.append(np.interp(1, eta_n, HH_n.value), HH_nn)
+    HH_nn = np.append(HH_nn, H0/Hs/ast)
+
+    a_nn = a_n[inds][inds2]
+    a_nn = np.append(1, a_nn)
+    a_nn = np.append(a_nn, 1/ast)
+
+    Omega_nn = Omega[inds][inds2]
+    Omega_nn = np.append((Hs/H0)**2, Omega_nn)
+    Omega_nn = np.append(Omega_nn, 1)
+
+    Omega_mat_nn = Omega_mat[inds][inds2]
+    Omega_mat_nn = np.append(OmM0*ast**(-3), Omega_mat_nn)
+    Omega_mat_nn = np.append(Omega_mat_nn, OmM0)
+    
+    Omega_rad_nn = Omega_nn - Omega_mat_nn - (1 - OmM0)
+    w_nn = (1/3*Omega_rad_nn - (1 - OmM0))/Omega_nn
+    app_nn = .5*HH_nn**2*(1 - 3*w_nn)
+    
+    return eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn, app_nn, w_nn
