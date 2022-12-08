@@ -448,7 +448,7 @@ def friedmann_solver(a, a0=1., h0=0.6732, OmL0=0.6841, dir0='', dofs=True, Neff=
     the function Omega_vs_a.
     
     Reference: Y. He, A. Roper Pol, A. Brandenburg, "Modified propagation of
-    gravitational waves from the early radiation era," in preparation.
+    gravitational waves from the early radiation era," submitted to JCAP.
     """
     
     Om_tot, Om_rad, Om_matt = Omega_vs_a(a, a0=a0, h0=h0, OmL0=OmL0, dir0=dir0,
