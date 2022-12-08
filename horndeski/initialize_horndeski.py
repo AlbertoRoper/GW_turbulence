@@ -5,7 +5,9 @@ The simulations are those of Y. He, A. Roper Pol, A. Brandenburg,
 "Modified propagation of gravitational waves from the early radiation
 era," in preparation (2022).
 
-The function run() executes the code.
+The function run() executes the code. It is only required to be run once
+and once the pickle variables have been stored one can directly use the
+Jupyter notebook generate_results_horndeski.ipynb 
 """
 
 import os
@@ -19,18 +21,15 @@ os.chdir(HOME)
 import run as r
 from dirs import read_dirs as rd
 import spectra as sp
-import GW_analytical as an
-import reading as re
-import cosmoGW
 
 os.chdir(dir0)
 
-def run(g=10):
+def run(rsd='all'):
 
     os.chdir(HOME)
 
     # read the runs
-    runs = read_runs()
+    runs = read_runs(rsd=rsd)
 
     # save variables
     save_runs(runs)
@@ -39,13 +38,15 @@ def run(g=10):
     
     return runs
 
-def read_runs():
+def read_runs(rsd='all'):
 
     """
     Function that reads the runs from the Pencil Code simulations.
 
     Returns:
         runs -- dictionary that contains the run variables
+        rsd -- option that allows to read only one of the four subset of runs
+               (default 'all', options 'M0', 'M1', 'M2' or 'M3')
     """
 
     os.chdir(HOME)
@@ -53,12 +54,12 @@ def read_runs():
     # dictionary with the name identifying
     # the runs and pointing to the corresponding directory
     dirs = {}
-#    dirs = rd('horndeski_M0', dirs)
-    dirs = rd('horndeski_M1', dirs)
-#    dirs = rd('horndeski_M2', dirs)
-#    dirs = rd('horndeski_M3', dirs)
-#    dirs = rd('horndeski_lowk', dirs=dirs)
-    print(dirs)
+    if rsd == 'M0' or rsd == 'all': dirs = rd('horndeski_M0', dirs)
+    if rsd == 'M1' or rsd == 'all': dirs = rd('horndeski_M1', dirs)
+    if rsd == 'M2' or rsd == 'all': dirs = rd('horndeski_M2', dirs)
+    if rsd == 'M3' or rsd == 'all': dirs = rd('horndeski_M3', dirs)
+    print('List of runs: ', dirs)
+    print('\n')
     R = [s for s in dirs]
 
     # set quiet to False to see the spectra available, the runs read,
