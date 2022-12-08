@@ -42,7 +42,7 @@ The datasets are also available in [Zenodo](https://zenodo.org/record/5603013).
 
 * The run directories and results in [**PRD_2201_05630**](PRD_2201_05630) correspond to the paper A. Roper Pol,
 C. Caprini, A. Neronov, D. Semikoz, *The gravitational wave signal from primordial magnetic fields in the Pulsar
-Timing Array frequency band,* [arXiv:2201.05630](https://arxiv.org/abs/2201.05630) (2022).
+Timing Array frequency band,* Phys. Rev. D **105**, 123502 (2022), [arXiv:2201.05630](https://arxiv.org/abs/2201.05630).
 The datasets are also available in [Zenodo](https://zenodo.org/record/5782752).
 
 * The run directory in [**cosmology**](cosmology) contains the calculations to study the cosmological evolution
