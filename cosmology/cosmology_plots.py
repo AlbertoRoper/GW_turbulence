@@ -523,7 +523,18 @@ def plot_etaH_vs_a(a, ap, eta, aEQ, aL, save=True):
 def plot_an_vs_etan(eta_n, a_n, eta_n_0, eta_n_EQ, ast, epoch='EWPT', save=True):
     
     """
-    Function that plots normalized scale factor vs normalized conformal time.
+    Function that plots the normalized scale factor vs the normalized
+    conformal time.
+    
+    Arguments:
+        eta_n -- array of normalized conformal time
+        a_n -- array of normalized scale factors
+        eta_n_0 -- normalized conformal time at present time
+        eta_n_EQ -- normalized conformal time at equipartition
+        ast -- scale factor at the initial time 
+        epoch -- time of generation (default is EWPT)
+        save -- option to save the plot under
+                'friedmann/plots/an_vs_etan_' + epoch +'.pdf'
     """
 
     plt.figure(figsize=(8, 5))
@@ -532,39 +543,72 @@ def plot_an_vs_etan(eta_n, a_n, eta_n_0, eta_n_EQ, ast, epoch='EWPT', save=True)
     plt.ylim(1, 1e18)
     plt.loglog()
     plot_sets.axes_lines()
-    plt.xlabel(r'$\eta/\eta_*$')
-    plt.ylabel(r'$a$')
+    plt.xlabel(r'$\eta/\eta_*$', fontsize=36)
+    plt.ylabel(r'$a$', fontsize=36)
+    plt.title(r'$a_* = %.3f \times 10^{-16}$'%(ast*1e16), pad=10)
+    
     plt.text(3e12, 1e12, '$\eta_0$', fontsize=28)
+    plt.text(5e9, 1e5, r'$\eta_{\rm EQ}$', fontsize=28)
     plt.vlines(eta_n_0, 1e0, 1e20, color='black', lw=.8)
     plt.vlines(eta_n_EQ, 1e0, 1e20, color='black', lw=.8)
-    plt.text(5e9, 1e5, r'$\eta_{\rm EQ}$', fontsize=28)
-    plt.title(r'$a_* = %.3f \times 10^{-16}$'%(ast*1e16), pad=10)
+    
     if save:
-        print("saved figure 'friedmann/plots/HHn_vs_etan_%s.pdf'"%epoch)
         plt.savefig('friedmann/plots/an_vs_etan_' + epoch +'.pdf',
                     bbox_inches='tight')
         
 def plot_HHn_vs_etan(eta_n, HH_n, eta_n_0, eta_n_EQ, ast, epoch='EWPT', save=True):
+    
+    """
+    Function that plots the normalized conformal Hubble rate vs the normalized
+    conformal time.
+    
+    Arguments:
+        eta_n -- array of normalized conformal time
+        HH_n -- array of normalized conformal Hubble rate
+        eta_n_0 -- normalized conformal time at present time
+        eta_n_EQ -- normalized conformal time at equipartition
+        ast -- scale factor at the initial time 
+        epoch -- time of generation (default is EWPT)
+        save -- option to save the plot under
+                'friedmann/plots/HHn_vs_etan_' + epoch +'.pdf'
+    """
 
     plt.figure(figsize=(8, 5))
     plt.plot(eta_n, HH_n, color='blue')
     plt.xlim(1, 1e14)
     plt.ylim(1e-14, 1)
     plt.loglog()
+    plt.xlabel(r'$\eta/\eta_*$', fontsize=36)
+    plt.ylabel(r'${\cal H} (\eta)$', fontsize=36)
     plot_sets.axes_lines()
-    plt.xlabel(r'$\eta/\eta_*$')
-    plt.ylabel(r'${\cal H} (\eta)$')
+    plt.title(r'$a_* = %.3f \times 10^{-16}$'%(ast*1e16), pad=10)
+    
     plt.vlines(eta_n_0, 1e-15, 1e0, color='black', lw=.8)
     plt.vlines(eta_n_EQ, 1e-15, 1e20, color='black', lw=.8)
     plt.text(3e12, 1e-3, '$\eta_0$', fontsize=28)
     plt.text(5e9, 1e-12, r'$\eta_{\rm EQ}$', fontsize=28)
-    plt.title(r'$a_* = %.3f \times 10^{-16}$'%(ast*1e16), pad=10)
+
     if save:
-        print("saved figure 'friedmann/plots/HHn_vs_etan_%s.pdf'"%epoch)
         plt.savefig('friedmann/plots/HHn_vs_etan_' + epoch +'.pdf',
                     bbox_inches='tight')
         
-def plot_app_a_n_vs_etan(eta_n, app_a_n, eta_n_0, eta_n_EQ, ast, epoch='EWPT', save=True):
+def plot_app_a_n_vs_etan(eta_n, app_a_n, eta_n_0, eta_n_EQ, ast,
+                         epoch='EWPT', save=True):
+    
+    """
+    Function that plots the normalized a''/a vs the normalized
+    conformal time.
+    
+    Arguments:
+        eta_n -- array of normalized conformal time
+        app_a_n -- array of normalized a''/a
+        eta_n_0 -- normalized conformal time at present time
+        eta_n_EQ -- normalized conformal time at equipartition
+        ast -- scale factor at the initial time 
+        epoch -- time of generation (default is EWPT)
+        save -- option to save the plot under
+                'friedmann/plots/app_n_vs_etan_' + epoch +'.pdf'
+    """
 
     plt.figure(figsize=(8, 5))
     plt.plot(eta_n, app_a_n, color='blue')
@@ -572,21 +616,22 @@ def plot_app_a_n_vs_etan(eta_n, app_a_n, eta_n_0, eta_n_EQ, ast, epoch='EWPT', s
     plt.ylim(1e-27, 1e-10)
     plt.loglog()
     plot_sets.axes_lines()
-    plt.xlabel(r'$\eta/\eta_*$')
-    plt.ylabel(r"$a''/a$")
+    plt.xlabel(r'$\eta/\eta_*$', fontsize=36)
+    plt.ylabel(r"$a''/a$", fontsize=36)
+    plt.title(r'$a_* = %.3f \times 10^{-16}$'%(ast*1e16), pad=10)
+    
     plt.vlines(eta_n_0, 1e-30, 1e0, color='black', lw=.8)
-    plt.text(3e12, 1e-20, '$\eta_0$', fontsize=28)
     plt.vlines(eta_n_EQ, 1e-30, 1e20, color='black', lw=.8)
     plt.text(5e9, 1e-17, r'$\eta_{\rm EQ}$', fontsize=28)
-    plt.title(r'$a_* = %.3f \times 10^{-16}$'%(ast*1e16), pad=10)
+    plt.text(3e12, 1e-20, '$\eta_0$', fontsize=28)
+    
     if save:
-        print("saved figure 'friedmann/plots/app_n_vs_etan_%s.pdf'"%epoch)
         plt.savefig('friedmann/plots/app_n_vs_etan_' + epoch +'.pdf',
                     bbox_inches='tight')
         
 def plot_factor_app_a_normalized(a, app_a_n, fact_app, epoch='EWPT', save=True):
     
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(8, 5))
     plt.plot(a, app_a_n/a, color='blue')
     plt.plot(a, fact_app, color='blue', ls='dashed')
     plt.loglog()
