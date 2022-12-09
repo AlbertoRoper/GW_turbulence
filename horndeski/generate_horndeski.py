@@ -49,7 +49,7 @@ k = np.logspace(-7, 3, 2000)
 # reference values and constants
 Tref = 100*u.GeV
 h0_ref = 0.6372
-  
+
 def read_cosmology_results():
     
     """
@@ -69,7 +69,7 @@ def read_cosmology_results():
     os.chdir(dir0)
     
     return a, eta, ap_a, app_a
-  
+
 def cosmology_normalized_vars(a, eta, ap_a, app_a, T=Tref, h0=h0_ref):
     
     """
@@ -115,7 +115,7 @@ def cosmology_normalized_vars(a, eta, ap_a, app_a, T=Tref, h0=h0_ref):
     
     return a_n, eta_n, HH_n, app_a_n, Omega, w, eta_n_0, aEQ_n, \
            aL_n, a_acc_n, eta_n_EQ, eta_n_L, eta_n_acc
-  
+
 def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L, eta_n_0, OmM0,
                                 comp_exp=1, compp=1, nn_exp=1, save=True, primes=False,
                                 n2=False, n04=False, n1=True, figg=1):
@@ -369,13 +369,13 @@ def plot_late_time_WKB(save=True):
     if save:
         plt.savefig('plots/spectrum_WKB_normalized.pdf',
                     bbox_inches='tight')
-
+        
 def time_evolution_WKB(eta_nn, HH_nn, a_nn, ast, Omega_nn,
                        OmM0, Omega_mat_nn, read=True,
                        save=True):
 
     """
-    Function that computes the D = .5 int alpM HH d \eta integral
+    Function that computes the D = .5 int alpM HH d eta integral
     for the different choices of alphaM parameterization that appears
     in the WKB approximation for the increase in GW energy density.
     
@@ -432,7 +432,7 @@ def time_evolution_WKB(eta_nn, HH_nn, a_nn, ast, Omega_nn,
                 pickle.dump(DDs, f)
         
     return DDs_0, DDs_I, DDs_I_n04, DDs_I_n2, DDs_II, DDs_III
-  
+
 def run(rsd='all', dirs={}):
     
     """
@@ -458,9 +458,9 @@ def run(rsd='all', dirs={}):
     os.chdir(dir0)
 
     return runs
-  
-def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
-                            choice='0', txt=True, save=True):
+        
+def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=0, ordr=20,
+                            txt=True, save=True, save_pl=True, plot=True, read=False):
     
     """
     Function that plots the time evolution of the GW energy density from
@@ -474,8 +474,13 @@ def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
     Figures saved in 'plots/time_series_EEGW_choice'#'.pdf'
     """
         
-    fig, ax = plt.subplots(figsize=(12, 8))
-    plot_sets.axes_lines()
+    if plot:
+        fig, ax = plt.subplots(figsize=(12, 8))
+        plot_sets.axes_lines()
+        ax.loglog()
+        ax.set_xlim(1, eta_nn[-1])
+        ax.set_xlabel(r'$\eta/\eta_*$')
+        ax.loglog()
     
     p = '0'
     if choice == '0' or choice == 'III':
@@ -489,23 +494,17 @@ def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
         runsA = runs_n2g
         alpsM0 = alpsM02_g
         cols = cols2_g
-        from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-        iax = inset_axes(ax, width="90%", height=2.5, loc=4)
-        plot_sets.axes_lines()
+        if plot:
+            from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+            iax = inset_axes(ax, width="90%", height=2.5, loc=4)
+            plot_sets.axes_lines()
         
     rrs = ['M' + p + i for i in runsA]
     rrs_b = ['M' + p + i + '_LD2' for i in runsA]
         
     for i in range(0, len(rrs)):
+        
         alpM0 = alpsM0[i]
-        MM = runs.get(rrs[i])
-        sp = MM.spectra
-        ts = MM.ts
-        ksp, GWs, GWs0, tsp, tts, EEGW, A = spec_tts(sp, ts)
-        MMb = runs.get(rrs_b[i])
-        spb = MMb.spectra
-        tsb = MMb.ts
-        kspb, GWsb, GWs0b, tspb, ttsb, EEGWb, Ab = spec_tts(spb, tsb)
         WKB = np.exp(-2*DDs[:, i])
         if choice == 'I' or choice == 'II':
             if choice == 'I':
@@ -514,51 +513,88 @@ def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
                 WKB = np.exp(-2*DD)
             if choice == 'II':
                 if alpM0 > 0: WKB = np.exp(-2*DDs[:, i+1])
-        rel_err, inds_min, inds_max, tts_corr, rel_err_corr, EGW_num_corr = \
-                rel_error(tts, eta_nn, WKB, EEGW/EEGW[0], order=20, tts_lim=0)
+                    
+        if read:
+            
+            import pickle
+            fll = 'results/ts_' + rrs[i] + '.pkl'
+            print('Reading file for time series from %s'%fll)
+            with open(fll, 'rb') as f:
+                tsd = pickle.load(f)
+            tts_corr = np.array(tsd.get('ts'))
+            ttsb = np.array(tsd.get('tsb'))
+            EGW_num_corr = np.array(tsd.get('EGW'))
+            EGWb_norm = np.array(tsd.get('EGWb'))
+            
+        else:
+            
+            MM = runs.get(rrs[i])
+            sp = MM.spectra
+            ts = MM.ts
+            ksp, GWs, GWs0, tsp, tts, EEGW, A = spec_tts(sp, ts)
+            MMb = runs.get(rrs_b[i])
+            spb = MMb.spectra
+            tsb = MMb.ts
+            kspb, GWsb, GWs0b, tspb, ttsb, EEGWb, Ab = spec_tts(spb, tsb)
+            EGWb_norm = EEGWb/EEGW[0]
+            rel_err, inds_min, inds_max, tts_corr, rel_err_corr, EGW_num_corr = \
+                    rel_error(tts, eta_nn, WKB, EEGW/EEGW[0], order=ordr, tts_lim=0)
+            rel_errb, inds_minb, inds_maxb, tts_corrb, rel_err_corrb, EGWb_num_corr = \
+                    rel_error(ttsb, eta_nn, WKB, EGWb_norm, order=ordr, tts_lim=0)
+            
+            if save:
+            
+                tsd = ({'ts': tts_corr, 'tsb': tts_corrb, 'EGW': EGW_num_corr,
+                        'EGWb': EGWb_num_corr, 'rel_err': rel_err_corr,
+                        'rel_errb': rel_err_corrb})
+
+                import pickle
+                fll = 'results/ts_' + rrs[i] + '.pkl'
+                print('Saving file for time series in %s'%fll)
+                with open(fll, 'wb') as f:
+                    pickle.dump(tsd, f)
+        
         if value0:
-            value00 = np.interp(eta_nn[-1], ttsb, EEGWb/EEGW[0])
+            value00 = np.interp(eta_nn[-1], ttsb, EGWb_norm)
             print('For run ', rrs[i], 'the value at \eta_0 of EEGW is ',
                   value00)
         
-        ax.plot(eta_nn, WKB, color=cols[i], alpha=.5)
-        ax.plot(tts_corr, EGW_num_corr, color=cols[i], ls='dashed')
-        ax.plot(ttsb, EEGWb/EEGW[0], color=cols[i], ls='dashed')
+        if plot:
+            
+            ax.plot(eta_nn, WKB, color=cols[i], alpha=.5)
+            ax.plot(tts_corr, EGW_num_corr, color=cols[i], ls='dashed')
+            ax.plot(ttsb, EGWb_norm, color=cols[i], ls='dashed')
+            if choice == 'I' or choice == 'II':
+                iax.plot(tts_corr, EGW_num_corr, color=cols[i], ls='dashed')
+                iax.plot(eta_nn, WKB, color=cols[i], alpha=.5)
+                iax.plot(ttsb, EGWb_norm, color=cols[i])
+
+    if plot:
+        if choice == '0' or choice == 'III':
+            ax.set_ylim(1e-5, 1e9)
+            ax.set_yticks(np.logspace(-5, 9, 8))
+            ax.set_ylabel(r'${\cal E}_{\rm GW} (\eta)/{\cal E}_{\rm GW}^*$')
         if choice == 'I' or choice == 'II':
-            iax.plot(tts_corr, EGW_num_corr, color=cols[i], ls='dashed')
-            iax.plot(eta_nn, WKB, color=cols[i], alpha=.5)
-            iax.plot(ttsb, EEGWb/EEGW[0], color=cols[i])
+            ax.set_ylim(4.5e-1, 1.6)
+            ax.set_ylabel(r'${\cal E}_{\rm GW} (\eta)/{\cal E}_{\rm GW}^*$',
+                          labelpad=-40)
+            iax.loglog()
+            if choice == 'I':
+                iax.set_xlim(1e12, eta_nn[-1])
+            if choice == 'II':
+                iax.set_xlim(1.3e12, eta_nn[-1])
 
-    ax.loglog()
-    ax.set_xlim(1, eta_nn[-1])
-    ax.set_xlabel(r'$\eta/\eta_*$')
-    ax.loglog()
+            iax.set_xticks([1e12, 1e13])
+            iax.set_yticks([])
+            iax.set_ylim(4.5e-1, 1.6)
+            iax.xaxis.tick_top()
+            iax.tick_params(axis='both', which='major', pad=10)
+            for i in iax.get_xticklabels() + iax.get_yticklabels():
+                i.set_fontsize(18)
+            iax.set_xticks([1e13, 2e13])
+            iax.axes.get_yaxis().set_visible(False)
 
-    if choice == '0' or choice == 'III':
-        ax.set_ylim(1e-5, 1e9)
-        ax.set_yticks(np.logspace(-5, 9, 8))
-        ax.set_ylabel(r'${\cal E}_{\rm GW} (\eta)/{\cal E}_{\rm GW}^*$')
-    if choice == 'I' or choice == 'II':
-        ax.set_ylim(4.5e-1, 1.6)
-        ax.set_ylabel(r'${\cal E}_{\rm GW} (\eta)/{\cal E}_{\rm GW}^*$',
-                      labelpad=-40)
-        iax.loglog()
-        if choice == 'I':
-            iax.set_xlim(1e12, eta_nn[-1])
-        if choice == 'II':
-            iax.set_xlim(1.3e12, eta_nn[-1])
-
-        iax.set_xticks([1e12, 1e13])
-        iax.set_yticks([])
-        iax.set_ylim(4.5e-1, 1.6)
-        iax.xaxis.tick_top()
-        iax.tick_params(axis='both', which='major', pad=10)
-        for i in iax.get_xticklabels() + iax.get_yticklabels():
-            i.set_fontsize(18)
-        iax.set_xticks([1e13, 2e13])
-        iax.axes.get_yaxis().set_visible(False)
-
-    if txt:
+    if plot and txt:
         if choice == '0':
             plt.text(1e8, 1e6, r'$\alpha_{{\rm M}, 0} = -0.5$',
                      color='blue', fontsize=30)
@@ -568,7 +604,7 @@ def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
                      color='red', fontsize=30)
             plt.text(5e9, 2.5, r'$\alpha_{{\rm M}, 0} = -0.01$',
                      color='magenta', fontsize=30)
-            plt.text(1e10, 7e-3, r'$\alpha_{{\rm M}, 0} = 0.1$',
+            plt.text(1e10, 5e-3, r'$\alpha_{{\rm M}, 0} = 0.1$',
                      color='purple', fontsize=30)
             plt.text(1e7, 1.5e-4, r'$\alpha_{{\rm M}, 0} = 0.3$',
                      color='orange', fontsize=30)
@@ -658,10 +694,11 @@ def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
             ax.text(5, 5e6, 'choice III', fontsize=28,
                      bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
                 
-    if save:
-        plt.savefig('plots/time_series_EEGW_choice' + choice + '.pdf',
-                    bbox_inches='tight')
-        
+    if save_pl and plot:
+        ffl = 'plots/time_series_EEGW_choice' + choice + '.pdf'
+        print('Saving figure %s'%ffl)
+        plt.savefig(ffl, bbox_inches='tight')
+    
 def spec_tts(sp, ts):
     
     """
@@ -698,7 +735,7 @@ def spec_tts(sp, ts):
     A = popt[0]
     
     return ksp, GWs, GWs0, tsp, tts, EEGW, A
-  
+
 def rel_error(tts, etas, EGW_WKB, EGW_num, order=40, tts_lim=1e3):
     
     """
@@ -722,8 +759,9 @@ def rel_error(tts, etas, EGW_WKB, EGW_num, order=40, tts_lim=1e3):
     
     return rel_err, inds_min, inds_max, tts_corr, rel_err_corr, \
             EGW_num_corr
-  
-def plot_time_series_error_WKB(runs, DDs, eta_nn, DDs2=0, choice='0', ordr=20, save=True):
+
+def plot_time_series_error_WKB(DDs, eta_nn, DDs2=0, choice='0',
+                               plot=True, save_pl=True, quiet=True):
     
     """
     Function that plots the error of the time evolution of the GW energy
@@ -735,10 +773,36 @@ def plot_time_series_error_WKB(runs, DDs, eta_nn, DDs2=0, choice='0', ordr=20, s
     gravitational waves from the early radiation era,"
     submitted to JCAP (2022).
     
+    It requires to first generate the results for the time series
+    using plot_time_evolution_EGW
+    
     Figures saved in 'plots/time_series_alpM_choice#_error_WKB.pdf'
     """
     
-    fig, ax = plt.subplots(figsize=(8, 5))
+    if plot:
+        
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.set_xscale('log')
+        if choice == '0' or choice == 'III':
+            ax.set_ylim(-0.06, .15)
+            ax.set_yticks(np.linspace(-.05, .15, 5))
+        if choice == 'I' or choice == 'II':
+            from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+            plot_sets.axes_lines()
+            if choice == 'I':
+                iax = inset_axes(ax, width="58%", height=1.6, loc=1)
+                ax.set_ylim(-0.005, 0.01)
+                ax.set_yticks(np.linspace(-.005, .01, 7))
+            if choice == 'II':
+                ax.set_ylim(-0.02, 0.1)
+                ax.set_yticks(np.linspace(0, .075, 4))
+                iax = inset_axes(ax, width="55%", height=2.2, loc=1)
+        ax.set_xlim(1, eta_nn[-1])
+        ax.set_xlabel(r'$\eta/\eta_*$')
+        ax.set_ylabel(r'$\varepsilon^{\rm WKB} ({\cal E}_{\rm GW})$')
+        ax.set_xticks(np.logspace(1, 13, 7))
+        plot_sets.axes_lines()
+        ax.set_title(r'$\alpha_{\rm M}$ choice %s'%choice, pad=15)
     
     p = '0'
     if choice == '0' or choice == 'III':
@@ -752,80 +816,462 @@ def plot_time_series_error_WKB(runs, DDs, eta_nn, DDs2=0, choice='0', ordr=20, s
         runsA = runs_n2g
         alpsM0 = alpsM02_g
         cols = cols2_g
-        from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-        plot_sets.axes_lines()
         
     rrs = ['M' + p + i for i in runsA]
     rrs_b = ['M' + p + i + '_LD2' for i in runsA]
-
-    ax.set_xscale('log')
-    if choice == '0' or choice == 'III':
-        ax.set_ylim(-0.06, .15)
-        ax.set_yticks(np.linspace(-.05, .15, 5))
-    if choice == 'I' or choice == 'II':
-        if choice == 'I':
-            iax = inset_axes(ax, width="58%", height=1.6, loc=1)
-            ax.set_ylim(-0.005, 0.01)
-            ax.set_yticks(np.linspace(-.005, .01, 7))
-        if choice == 'II':
-            ax.set_ylim(-0.02, 0.1)
-            ax.set_yticks(np.linspace(0, .075, 4))
-            iax = inset_axes(ax, width="55%", height=2.2, loc=1)
-        
-    ax.set_xlim(1, eta_nn[-1])
-    ax.set_xlabel(r'$\eta/\eta_*$')
-    ax.set_ylabel(r'$\varepsilon^{\rm WKB} ({\cal E}_{\rm GW})$')
-    ax.set_xticks(np.logspace(1, 13, 7))
-    plot_sets.axes_lines()
-    ax.set_title(r'$\alpha_{\rm M}$ choice %s'%choice, pad=15)
     
     for i in range(0, len(rrs)):
+        
         alpM0 = alpsM0[i]
-        MM = runs.get(rrs[i])
-        sp = MM.spectra
-        ts = MM.ts
-        ksp, GWs, GWs0, tsp, tts, EEGW, A = spec_tts(sp, ts)
-        MMb = runs.get(rrs_b[i])
-        spb = MMb.spectra
-        tsb = MMb.ts
-        kspb, GWsb, GWs0b, tspb, ttsb, EEGWb, Ab = spec_tts(spb, tsb)
         WKB = np.exp(-2*DDs[:, i])
         if choice == 'I':
             if alpM0 < 0.1: DD = DDs[:, i]
             if alpM0 > 0: DD = DDs2[:, i+1]
             WKB = np.exp(-2*DD)
         if choice == 'II' and alpM0 > 0: WKB = np.exp(-2*DDs[:, i+1])
-        rel_err, inds_min, inds_max, tts_corr, rel_err_corr, _ = \
-                rel_error(tts, eta_nn, WKB, EEGW/EEGW[0], order=ordr, tts_lim=0)
-        if alpsM0[i] == -0.01: lbl = r'$\alpha_{{\rm M}, 0} = %.2f$'%alpM0
-        else: lbl = r'$\alpha_{{\rm M}, 0} = %.1f$'%alpM0
-        ax.plot(tts_corr, rel_err_corr, '.', color=cols[i],
-                 label=lbl)
-        rel_errb, inds_minb, inds_maxb, tts_corrb, rel_err_corrb, _ = \
-                rel_error(ttsb, eta_nn, WKB, EEGWb/EEGW[0], order=ordr, tts_lim=0)
-        ax.plot(tts_corrb, rel_err_corrb, '.', color=cols[i])
-        if choice=='I' or choice == 'II':
-            iax.plot(tts_corr, rel_err_corr, '.', color=cols[i])
-            iax.plot(tts_corrb, rel_err_corrb, '.', color=cols[i]) 
-    
-    lc = 'upper right'
-    if choice == 'I' or choice == 'II':
-        lc = 'upper left'
-        iax.set_xscale('log')
-        if choice == 'I':
-            iax.set_ylim(-0.005, 0.01)
-            iax.set_xlim(1e12, eta_nn[-1])
-            iax.set_xticks([1e12, 1e13])
-        if choice == 'II':
-            iax.set_ylim(-.02, 0.1)
-            iax.set_xlim(8e12, eta_nn[-1])
-            iax.set_xticks([1e13, 2e13])
-        iax.set_yticks([])
-        iax.tick_params(axis='both', which='major', pad=8)
-        for i in iax.get_xticklabels() + iax.get_yticklabels():
-            i.set_fontsize(16)
-    ax.legend(frameon=False, fontsize=18, labelcolor='linecolor', loc=lc)
+                    
+        import pickle
+        fll = 'results/ts_' + rrs[i] + '.pkl'
+        if not quiet: print('Reading file for time series from %s'%fll)
+        with open(fll, 'rb') as f:
+            tsd = pickle.load(f)
+        tts_corr = np.array(tsd.get('ts'))
+        tts_corrb = np.array(tsd.get('tsb'))
+        EGW_num_corr = np.array(tsd.get('EGW'))
+        EGWb_num_corr = np.array(tsd.get('EGWb'))
+        rel_err_corr = np.array(tsd.get('rel_err'))
+        rel_err_corrb = np.array(tsd.get('rel_errb'))
 
+        if plot:
+            if alpsM0[i] == -0.01: lbl = r'$\alpha_{{\rm M}, 0} = %.2f$'%alpM0
+            else: lbl = r'$\alpha_{{\rm M}, 0} = %.1f$'%alpM0
+            ax.plot(tts_corr, rel_err_corr, '.', color=cols[i],
+                     label=lbl)
+            ax.plot(tts_corrb, rel_err_corrb, '.', color=cols[i])
+            if choice=='I' or choice == 'II':
+                iax.plot(tts_corr, rel_err_corr, '.', color=cols[i])
+                iax.plot(tts_corrb, rel_err_corrb, '.', color=cols[i]) 
+    
+    if plot:
+        lc = 'upper right'
+        if choice == 'I' or choice == 'II':
+            lc = 'upper left'
+            iax.set_xscale('log')
+            if choice == 'I':
+                iax.set_ylim(-0.005, 0.01)
+                iax.set_xlim(1e12, eta_nn[-1])
+                iax.set_xticks([1e12, 1e13])
+            if choice == 'II':
+                iax.set_ylim(-.02, 0.1)
+                iax.set_xlim(8e12, eta_nn[-1])
+                iax.set_xticks([1e13, 2e13])
+            iax.set_yticks([])
+            iax.tick_params(axis='both', which='major', pad=8)
+            for i in iax.get_xticklabels() + iax.get_yticklabels():
+                i.set_fontsize(16)
+        ax.legend(frameon=False, fontsize=18, labelcolor='linecolor', loc=lc)
+        
+        if save_pl:
+            ffl = 'plots/time_series_alpM_choice' + choice + '_error_WKB.pdf'
+            print('Saving figure %s'%ffl)
+            plt.savefig(ffl, bbox_inches='tight')
+        
+def read_four_runs(runs, eta_nn, a, Omega, Omega_mat, OmM0, DDs, DDs2=0,
+                   ch='0', A='A', lowk=True, runs_lowk=0):
+    
+    """
+    Function that reads the 4 runs that have been dedicated to each case:
+    1. Normal run
+    2. Run with time data points refined and only during LD era (_LD2)
+    3. Run with larger domain (smaller k) covering the lowk part of the spectrum
+    4. Run with larger domain (smaller k) covering the lowk part of the spectrum
+            and with time data points refined and only during LD era (_LD2)
+    """
+    
+    p = '0'
+    if ch == '0' or ch == 'III':
+        if ch == 'III': p = '3'
+        runsA = runs_ng
+        ind = np.where([A in i for i in runsA])[0][0]
+        runA = 'M' + p + runsA[ind]
+        alpM0 = alpsM0_g[ind]
+        col = cols_g[ind]
+        DD = DDs[:, ind]
+    if ch == 'I' or ch == 'II':
+        if ch == 'I': p = '1'
+        if ch == 'II': p = '2'
+        runsA = runs_n2g
+        ind = np.where([A in i for i in runsA])[0][0]
+        runA = 'M' + p + runsA[ind]
+        alpM0 = alpsM02_g[ind]
+        col = cols2_g[ind]
+        DDDs = DDs
+        if alpM0 < 0: DD = DDs[:, ind]
+        else:
+            if ch == 'I': DD = DDs2[:, ind + 1]
+            else: DD = DDs[:, ind + 1]
+        
+    MM = runs.get(runA)
+    sp = MM.spectra
+    ts = MM.ts
+    MMb = runs.get(runA + '_LD2')
+    spb = MMb.spectra
+    tsb = MMb.ts
+    if lowk:
+        MMc = runs_lowk.get(runA + '_lowk')
+        spc = MMc.spectra
+        tsc = MMc.ts
+        MMd = runs_lowk.get(runA + '_lowk_LD2')
+        spd = MMd.spectra
+        tsd = MMd.ts
+        
+    alpM, _ = ho.parameterizations_alpM(eta_nn, alpM0=alpM0, choice=ch, a=a,
+                                       Omega=Omega, Omega_mat=Omega_mat,
+                                       OmM0=OmM0)
+    
+    if lowk:
+        return sp, ts, spb, tsb, spc, tsc, spd, tsd, DD, \
+                alpM0, col, runA, alpM
+    else:
+        return sp, ts, spb, tsb, DD, alpM0, col, runA, alpM
+    
+def compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn, OmM0, DDs,
+                    DDs2=0, ch='I', A='A', col='green', plot=True,
+                    lowk=True, WKB_sols=False, runs_lowk=0, save=True):
+    
+    """
+    Function that computes the spectra combining the 4 runs for each
+    case considered.
+    It uses the numerical spectra to obtain the envelope over oscillations
+    at each wave number and compensates by the total growth in the GW
+    energy density obtained (and verified) from the WKB approximation.
+    It also returns the WKB estimated spectra at late times.
+    """
+        
+    #### Numerical spectra of 4 runs for each case
+    if lowk:
+        sp, ts, spb, tsb, spc, tsc, spd, tsd, DD, alpM0, col, runA, alpM = \
+                read_four_runs(runs, eta_nn, a_nn, Omega_nn, Omega_mat_nn,
+                               OmM0, DDs, DDs2=DDs2, ch=ch, A=A, lowk=lowk,
+                               runs_lowk=runs_lowk)
+    else:
+        sp, ts, spb, tsb, DD, alpM0, col, runA, alpM = \
+                read_four_runs(runs, eta_nn, a_nn, Omega_nn, Omega_mat_nn,
+                               OmM0, DDs, DDs2=DDs2, ch=ch, A=A, lowk=lowk)
+        
+    ksp, GWs, GWs0, tsp, tts, EEGW, A = spec_tts(sp, ts)
+    kspb, GWsb, GWs0b, tspb, ttsb, EEGWb, Ab = spec_tts(spb, tsb)
+    if lowk:
+        kspc, GWsc, GWs0c, tspc, ttsc, EEGWc, Ac = spec_tts(spc, tsc)
+        kspd, GWsd, GWs0d, tspd, ttsd, EEGWd, Ad = spec_tts(spd, tsd)
+        
+    #### Analytical spectra using smoothed double broken power law (has to be
+    #### the same parameters as those used in spec_tts to obtain A from the numerical
+    #### values)
+    S = an.smoothed_dbpl(k, A=1, kb=1, ks=10, a=2, b=0, c=11/3, alpha1=2, alpha2=2)
+    g0 = np.sqrt(S)
+    h0 = np.sqrt(S/k**2)
+    
+    #### Compute solutions using WKB approximation
+    WKB_sp_lt = ho.WKB_envelope_late_times_const(k, alpT=0, alpM0=alpM0)
+    
+    #### interpolate WKB functions in time arrays of the simulations
+    if WKB_sols:
+        SgtGR, SgtmodGR = ho.sol_WKB(k, eta_nn, HH_nn, DD, eta_ini=1, h0=h0, g0=g0,
+                                     alpM=alpM, alpM0=alpM0)
+        WKB_sp = ho.WKB_envelope(k, eta_nn, HH_nn, DD,
+                                 alpM=alpM, alpT=[0], alpM0=alpM0)
+        SgtGRt = np.zeros((len(tsp), len(k)))
+        SgtmodGRt = np.zeros((len(tsp), len(k)))
+        WKB_spt = np.zeros((len(tsp), len(k)))
+        SgtGRtb = np.zeros((len(tspb), len(k)))
+        SgtmodGRtb = np.zeros((len(tspb), len(k)))
+        WKB_sptb = np.zeros((len(tspb), len(k)))
+        for i in range(0, len(k)):
+            SgtGRt[:, i] = np.interp(tsp, eta_nn, SgtGR[:, i])
+            SgtmodGRt[:, i] = np.interp(tsp, eta_nn, SgtmodGR[:, i])
+            WKB_spt[:, i] = np.interp(tsp, eta_nn, WKB_sp[:, i])
+            SgtGRtb[:, i] = np.interp(tspb, eta_nn, SgtGR[:, i])
+            SgtmodGRtb[:, i] = np.interp(tspb, eta_nn, SgtmodGR[:, i])
+            WKB_sptb[:, i] = np.interp(tspb, eta_nn, WKB_sp[:, i])
+    DDt = np.interp(tsp, eta_nn, DD)
+    DDtb = np.interp(tspb, eta_nn, DD)
+    if lowk:
+        DDtc = np.interp(tspc, eta_nn, DD)
+        DDtd = np.interp(tspd, eta_nn, DD)
+
+    #### Growth of GW energy density at times t
+    QQ = np.exp(-2*DDt)
+    QQb = np.exp(-2*DDtb)
+    if lowk:
+        QQc = np.exp(-2*DDtc)
+        QQd = np.exp(-2*DDtd)
+        
+    #### Compute the envelope function and the average
+    #### over relevant time spans (where k mode is oscillating)
+    #### from the numerical simulations
+    QQ_ij, kij = np.meshgrid(QQ, ksp, indexing='ij')
+    envl, avg = spec.envelope_avg(ksp, tsp, eta_nn[-1], GWs/QQ_ij, lk=10, tini=1)
+    QQb_ij, kij = np.meshgrid(QQb, kspb, indexing='ij')
+    envlb, avgb = spec.envelope_avg(kspb, tspb, eta_nn[-1], GWsb/QQb_ij, lk=10, tini=1)
+    if lowk:
+        QQc_ij, kij = np.meshgrid(QQc, kspc, indexing='ij')
+        envlc, avgc = spec.envelope_avg(kspc, tspc, eta_nn[-1], GWsc/QQc_ij, lk=10, tini=1)
+        QQd_ij, kij = np.meshgrid(QQd, kspd, indexing='ij')
+        envld, avgd = spec.envelope_avg(kspd, tspd, eta_nn[-1], GWsd/QQd_ij, lk=10, tini=1)
+
+    #### klim at which WKB is estimated to break down
+    klimaM = np.sqrt(abs(alpM0)/2*(1 + .5*alpM0))
+    
+    if plot:
+        plt.plot(k, S*A, color='black', lw=3)
+        plt.plot(ksp[1:], GWs[0, 1:])
+        plt.plot(k, WKB_sp_lt*S*A, color=col, lw=2, ls='dashed')
+        plt.plot(ksp[1:], .5*envl[1:], color=col)
+        if lowk:
+            plt.plot(kspc[1:], .5*envlc[1:]*A/Ac, color=col)
+        plt.vlines(klimaM, 1e-20, 1e0, color=col, ls='dotted')
+        
+    if lowk: return ksp, kspc, klimaM, WKB_sp_lt*S*A, envl, envlc*A/Ac, S*A
+    else: return ksp, klimaM, WKB_sp_lt*S*A, envl, S*A
+    
+def compute_all_spectra(eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn, OmM0, DDs,
+                        runs, runs_lowk=0, DDs2=0, save=True, read=False, ch='0'):
+    
+    """
+    Function that computes all spectra for a specific choice of alpM parameterization:
+        '0', 'I', 'II' or 'III'
+    It returns the results for the different values of alpM0: 'A' to 'F' (choices 0 or III)
+    or 'A' to 'E' (choices I and II).
+    It returns separately the results for positive and negative values of alpM
+    
+    If save = True and read = False, then it computes the spectra and saves the results in
+            'results/pos_alpM_sp_ch#ch.pkl'
+    
+    If read = True, then it reads the already computed results.
+    """
+    
+    if read:
+        
+        import pickle
+        fll = 'results/neg_alpM_sp_ch' + ch + '.pkl'
+        print('Reading results from pickle variable %s'%fll)
+        with open(fll, 'rb') as f:
+            neg_alpM_sp_ch = pickle.load(f)
+        fll = 'results/pos_alpM_sp_ch' + ch + '.pkl'
+        print('Reading results from pickle variable %s'%fll)
+        with open(fll, 'rb') as f:
+            pos_alpM_sp_ch = pickle.load(f)
+
+    else:
+        
+        if ch == '0' or ch == 'III':
+    
+            ##### choices 0 or III (negative alpM)
+            ksp_A, kspc_A, klimaM_A, WKB_A, env_A, envc_A, S_A = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, ch=ch, A='A', plot=False,
+                                    lowk=True, runs_lowk=runs_lowk)
+            ksp_B, kspc_B, klimaM_B, WKB_B, env_B, envc_B, S_B = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, ch=ch, A='B', plot=False,
+                                    lowk=True, runs_lowk=runs_lowk)
+            ksp_C, kspc_C, klimaM_C, WKB_C, env_C, envc_C, S_C = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, ch=ch, A='C', plot=False,
+                                    lowk=True, runs_lowk=runs_lowk)
+            ksp_D, kspc_D, klimaM_D, WKB_D, env_D, envc_D, S_D = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, ch=ch, A='D', plot=False,
+                                    lowk=True, runs_lowk=runs_lowk)
+
+            neg_alpM_sp_ch = ({'k': k, 'kA': ksp_A, 'kcA': kspc_A, 'klimA': klimaM_A,
+                               'WKBA': WKB_A, 'sp_envA': env_A, 'sp_envcA': envc_A,
+                               'SA': S_A, 'kB': ksp_B, 'kcB': kspc_B, 'klimB': klimaM_B,
+                               'WKBB': WKB_B, 'sp_envB': env_B, 'sp_envcB': envc_B,
+                               'SB': S_B, 'kC': ksp_C, 'kcC': kspc_C, 'klimC': klimaM_C,
+                               'WKBC': WKB_C, 'sp_envC': env_C, 'sp_envcC': envc_C,
+                               'SC': S_C, 'kD': ksp_D, 'kcD': kspc_D, 'klimD': klimaM_D,
+                               'WKBD': WKB_D, 'sp_envD': env_D, 'sp_envcD': envc_D,
+                               'SD': S_D})
+            
+                        
+            ##### choices 0 or III (positive alpM)
+            ksp_E, kspc_E, klimaM_E, WKB_E, env_E, envc_E, S_E = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, ch=ch, A='E', plot=False,
+                                    lowk=True, runs_lowk=runs_lowk)
+            ksp_F, kspc_F, klimaM_F, WKB_F, env_F, envc_F, S_F = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, ch=ch, A='F', plot=False,
+                                    lowk=True, runs_lowk=runs_lowk)
+
+            pos_alpM_sp_ch = ({'k': k, 'kE': ksp_E, 'kcE': kspc_E, 'klimE': klimaM_E,
+                               'WKBE': WKB_E, 'sp_envE': env_E, 'sp_envcE': envc_E,
+                               'SE': S_E, 'kF': ksp_F, 'kcF': kspc_F, 'klimF': klimaM_F,
+                               'WKBF': WKB_F, 'sp_envF': env_F, 'sp_envcF': envc_F,
+                               'SF': S_F})
+            
+        else:
+            
+            # choices I or II (negative alpM)
+            ksp_A, klimaM_A, WKB_A, env_A, S_A = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='A', plot=False, lowk=False)
+            ksp_B, klimaM_B, WKB_B, env_B, S_B = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='B', plot=False, lowk=False)
+            ksp_C, klimaM_C, WKB_C, env_C, S_C = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='C', plot=False, lowk=False)
+            
+            neg_alpM_sp_ch = ({'k': k, 'kA': ksp_A, 'klimA': klimaM_A, 'WKBA': WKB_A,
+                               'sp_envA': env_A, 'SA': S_A, 'kB': ksp_B, 'klimB': klimaM_B,
+                               'WKBB': WKB_B, 'sp_envB': env_B, 'SB': S_B, 'kC': ksp_C,
+                               'klimC': klimaM_C, 'WKBC': WKB_C, 'sp_envC': env_C, 'SC': S_C})
+            
+            ##### choices I or II (positive alpM)
+            ksp_D, klimaM_D, WKB_D, env_D, S_D = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='D', plot=False, lowk=False)
+            ksp_E, klimaM_E, WKB_E, env_E, S_E = \
+                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='E', plot=False, lowk=False)
+            
+            pos_alpM_sp_ch = ({'k': k, 'kD': ksp_D, 'klimD': klimaM_E, 'WKBD': WKB_D, 'sp_envD': env_D,
+                               'SD': S_D, 'kE': ksp_E, 'klimE': klimaM_E, 'WKBE': WKB_E,
+                               'sp_envE': env_E, 'SE': S_E})
+        
+        if save:
+            
+            import pickle
+            fll = 'results/neg_alpM_sp_ch' + ch + '.pkl'
+            print('Saving results in pickle variable %s'%fll)
+            with open(fll, 'wb') as f:
+                pickle.dump(neg_alpM_sp_ch, f)
+ 
+            fll = 'results/pos_alpM_sp_ch' + ch + '.pkl'
+            print('Saving results in pickle variable %s'%fll)
+            with open(fll, 'wb') as f:
+                pickle.dump(pos_alpM_sp_ch, f)
+                
+    return neg_alpM_sp_ch, pos_alpM_sp_ch
+
+def plot_spectra(ks, S, WKB, ksp, env, klimaM, kspc=0, envlc=0, S_p=True, nkk=100,
+                 nkk2=100, lowk=True, col='blue', v0=1e-16, v1=1e0, WKB_p=True, lss='solid'):
+    
+    """
+    Function that plots the spectra for one single case of \alpM0 and choice.
+    """
+    
+    if S_p: plt.plot(ks, S, color='black', lw=2)
+    if WKB_p: plt.plot(ks, WKB, color=col, lw=.7, ls='dashed')
+    kka = np.logspace(np.log10(ksp[1]), np.log10(ksp[-1]), nkk)
+    plt.plot(kka, np.interp(kka, ksp[1:], .5*env[1:]), color=col, ls=lss)
+    kkc = np.logspace(np.log10(kspc[1]), -3, nkk)
+    if lowk: plt.plot(kkc, np.interp(kkc, kspc[1:], .5*envlc[1:]), color=col, ls=lss)
+    plt.vlines(klimaM, v0, v1, color=col, lw=.8)
+    
+def read_values_spectra(spectra, A='A'):
+    
+    """
+    Function that reads the variables of a specific spectra of choice and alpM0.
+    """
+    
+    S = np.array(spectra.get('S%s'%A))
+    WKB = np.array(spectra.get('WKB%s'%A))
+    ks = np.array(spectra.get('k%s'%A))
+    env = np.array(spectra.get('sp_env%s'%A))
+    klim = np.array(spectra.get('klim%s'%A))
+    kspc = np.array(spectra.get('kc%s'%A))
+    envc = np.array(spectra.get('sp_envc%s'%A))
+    
+    return S, WKB, ks, env, klim, kspc, envc
+    
+def plot_all_spectra(spectra, app=0, kspcD=0, envcD=0, ch='0', save=True, newf=True,
+                     lss='solid', txt=True, fact=3.5e-10):
+    
+    """
+    Function that computes the spectra combining the 4 runs for all cases A to D
+    for choices 0 and III (negative values of alpha_M)
+    It uses the numerical spectra to obtain the envelope over oscillations
+    at each wave number and compensates by the total growth in the GW
+    energy density obtained (and verified) from the WKB approximation.
+    It also returns the WKB estimated spectra at late times.
+    
+    It generates the plots corresponding to figure 5 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era,"
+    submitted to JCAP (2022).
+    
+    Figure saved in 'plots/spectra_envelope_choices_0_III.pdf'
+    """
+    
+    if newf:
+        
+        plt.figure(figsize=(12, 8))
+        plt.loglog()
+        plot_sets.axes_lines()
+        plt.xlabel(r'$k$')
+        plt.title(r"$e^{2 {\cal D}} \, S_{h'}^{\rm num} (k)/S_{h'}^*$", pad=15)
+        plt.vlines(np.sqrt(app), 1e-20, 1e3, color='black')
+        plt.ylim(3e-8, 3)
+        plt.xlim(1e-7, 1e1)
+        plt.xticks(np.logspace(-7, 1, 9))
+        plt.yticks(np.logspace(-7, 0, 8))
+        if txt:
+            plt.text(2.2e-6, 1e-10/fact, r"$k_{{\rm lim}, a''}^{\rm EW}$", fontsize=30)
+            plt.text(6e-1, 1e-12/fact, r'$k_{{\rm lim}, \alpha_{\rm M}}$', fontsize=30)
+            plt.text(1e-3, 4e-11/fact, r'$\alpha_{\rm M} = -0.5$',
+                     color='blue', fontsize=24)
+            plt.text(4e-5, 7e-14/fact, r'$\alpha_{\rm M} = -0.01$',
+                     color='magenta', fontsize=24)
+            plt.text(3e-4, 2.3e-13/fact, r'$\alpha_{\rm M} = -0.1$',
+                     color='red', fontsize=24)
+            plt.text(2e-7, 1.7e-12/fact, r'$\alpha_{\rm M} = -0.3$',
+                     color='green', fontsize=24,
+                     bbox=dict(boxstyle='round', pad=.3, facecolor='white',
+                               edgecolor='white', alpha=1))
+            plt.text(1e-4, 1e-16/fact, 'GR', fontsize=30)
+    
+    lowk = False
+    if ch == '0' or ch == 'III':
+
+        ks = np.array(spectra.get('k'))
+
+        SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
+                read_values_spectra(spectra, A='A')
+        SB, WKBB, ksB, envB, klimB, kspcB, envcB = \
+                read_values_spectra(spectra, A='B')
+        SC, WKBC, ksC, envC, klimC, kspcC, envcC = \
+                read_values_spectra(spectra, A='C')
+        SD, WKBD, ksD, envD, klimD, kspcD, envcD = \
+                read_values_spectra(spectra, A='D')
+        
+        lowk = True
+        
+        plot_spectra(k, SA/fact, WKBA/fact, ksA, envA/fact, klimA, kspc=kspcA, envlc=envcA/fact,
+                     S_p=True, lowk=lowk, col='blue', WKB_p=True, lss=lss, v1=1e3)
+        plot_spectra(k, SB/fact, WKBB/fact, ksB, envB/fact, klimB, kspc=kspcB, envlc=envcB/fact,
+                     S_p=False, lowk=lowk, col='green', WKB_p=True, lss=lss, v1=1e3)
+        plot_spectra(k, SC/fact, WKBC/fact, ksC, envC/fact, klimC, kspc=kspcC, envlc=envcC/fact,
+                     S_p=False, lowk=lowk, col='red', WKB_p=True, lss=lss, v1=1e3)
+        plot_spectra(k, SD/fact, WKBD/fact, ksD, envD/fact, klimD, kspc=kspcD, envlc=envcD/fact,
+                     S_p=False, lowk=lowk, col='magenta', WKB_p=True, lss=lss, v1=1e3)
+
+    if newf: plt.plot([], [], color='black', ls='dashed', label='WKB')
+    plt.plot([], [], color='black', ls=lss, label='numerical (choice %s)'%ch)
+    plt.legend(loc='lower right', framealpha=1, fontsize=24)
+    
     if save:
-        plt.savefig('plots/time_series_alpM_choice' + choice + '_error_WKB.pdf',
+        print('Saving figure in plots/spectra_envelope_choices_0_III.pdf')
+        plt.savefig('plots/spectra_envelope_choices_0_III.pdf',
                     bbox_inches='tight')
+        
+def interpolate_lowk(kkc, ks, S, ksp, kspc, env):
+        
+    Sc = np.interp(kkc, ks, S)
+    SA = np.interp(ksp, ks, S)
+    envk = np.interp(kkc, kspc, env)
+    
+    return Sc, SA, envk
