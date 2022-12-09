@@ -457,7 +457,7 @@ def run(rsd='all', dirs={}):
 
     return runs
   
-  def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
+def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
                             choice='0', txt=True, save=True):
     
     """
