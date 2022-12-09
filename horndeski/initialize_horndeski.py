@@ -3,7 +3,7 @@ initialize_horndeski.py is a Python routine that reads the data
 and stores the resulting run variables as pickle files.
 The simulations are those of Y. He, A. Roper Pol, A. Brandenburg,
 "Modified propagation of gravitational waves from the early radiation
-era," in preparation (2022).
+era," submitted to JCAP (2022).
 
 The function run() executes the code. It is only required to be run once
 and once the pickle variables have been stored one can directly use the
