@@ -659,3 +659,40 @@ def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
     if save:
         plt.savefig('plots/time_series_EEGW_choice' + choice + '.pdf',
                     bbox_inches='tight')
+        
+def spec_tts(sp, ts):
+    
+    """
+    Function that reads the variables of a specific run
+    and returns the relevant ones.
+    
+    Arguments:
+      sp -- spectra dictionary, part of a run object
+      ts -- time series dictionary, part of a run object
+      
+    Returns:
+      ksp -- wave number array of the spectrum
+      GWs -- array of spectral strains derivative S_h' vs time and k
+      GWs0 -- array of spectral strains derivative S_h' at initial time
+      tsp -- array of spectral times
+      tts -- array of time series times
+      EEGW -- array of time series GW energy density 
+      A -- spectral amplitude using the smoothed double broken power law
+    """
+    
+    import scipy.optimize as opt
+    
+    ksp = sp.get('k')
+    GWs = sp.get('GWs')
+    GWs0 = GWs[0, :]
+    tsp = sp.get('t_GWs')
+    tts = ts.get('t')
+    EEGW = ts.get('EEGW')
+    
+    # fit the initial time spectrum to the smoothed double broken
+    # power law to infer the amplitude
+    popt, pcov = opt.curve_fit(an.smoothed_dbpl, ksp[1:], GWs0[1:],
+                                   p0=(1))
+    A = popt[0]
+    
+    return ksp, GWs, GWs0, tsp, tts, EEGW, A
