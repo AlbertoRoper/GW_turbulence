@@ -1037,7 +1037,7 @@ def compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn, OmM0, DDs
     else: return ksp, klimaM, WKB_sp_lt*S*A, envl, S*A
     
 def compute_all_spectra(eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn, OmM0, DDs,
-                        runs, runs_lowk=0, DDs2=0, save=True, read=False, ch='0'):
+                        runs=0, runs_lowk=0, DDs2=0, save=True, read=False, ch='0'):
     
     """
     Function that computes all spectra for a specific choice of alpM parameterization:
