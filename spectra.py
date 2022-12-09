@@ -505,3 +505,23 @@ def get_min_max(f, E_a, E_b):
         maxE[i] = np.max(E_b[:, i])
 
     return minE, maxE
+
+def envelope_avg(k, t, ft, GWs, lk=10, tini=1):
+    
+    """
+    Function that computes the average and the envelope over a GW
+    spectrum for a range of wave numbers k > lk/(t - tini), where
+    the modes are already oscillating.
+    """
+
+    env = np.zeros(len(k))
+    avg = np.zeros(len(k))
+    for i in range(1, len(k)):
+        inds1 = np.where(t - tini > lk/k[i])[0]
+        inds2 = np.where(t[inds1] - tini < ft)
+        env[i] = np.max(GWs[inds1, i][inds2])
+        ts = t[inds1][inds2]
+        dt = ts[-1] - ts[0]
+        avg[i] = np.trapz(GWs[inds1, i][inds2],
+                          t[inds1][inds2])/dt
+    return env, avg
