@@ -369,6 +369,69 @@ def plot_late_time_WKB(save=True):
     if save:
         plt.savefig('plots/spectrum_WKB_normalized.pdf',
                     bbox_inches='tight')
+
+def time_evolution_WKB(eta_nn, HH_nn, a_nn, ast, Omega_nn,
+                       OmM0, Omega_mat_nn, read=True,
+                       save=True):
+
+    """
+    Function that computes the D = .5 int alpM HH d \eta integral
+    for the different choices of alphaM parameterization that appears
+    in the WKB approximation for the increase in GW energy density.
+    
+    Reference: Y. He, A. Roper Pol, A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    If read is False, it computes D and stores it as a pickle variable in
+    'WKB/DDs.pkl', otherwise it directly reads it.
+    """
+    
+    alpsM0 = alpsM0_g
+    
+    if read:
+        import pickle
+        with open('WKB/DDs.pkl', 'rb') as f:
+            DDs = pickle.load(f)
+        DDs_0 = DDs.get('0')
+        DDs_I = DDs.get('I')
+        DDs_I_n2 = DDs.get('I_n2')
+        DDs_I_n04 = DDs.get('I_n04')
+        DDs_II = DDs.get('II')
+        DDs_III = DDs.get('III')
+        
+    else:
+        NN = len(alpsM0)
+        DDs_0 = np.zeros((len(eta_nn), NN))
+        DDs_I = np.zeros((len(eta_nn), NN))
+        DDs_I_n04 = np.zeros((len(eta_nn), NN))
+        DDs_I_n2 = np.zeros((len(eta_nn), NN))
+        DDs_II = np.zeros((len(eta_nn), NN))
+        DDs_III = np.zeros((len(eta_nn), NN))
+
+        for i in range(0, len(alpsM0)):
+            alpM0 = alpsM0[i]
+            alpM, _ = ho.parameterizations_alpM(eta_nn, alpM0=alpM0, choice='0')
+            DDs_0[:, i] = ho.damping_fact(eta_nn, alpM, HH_nn)
+            alpM, _ = ho.parameterizations_alpM(eta_nn, alpM0=alpM0, choice='I', a=a_nn*ast, n=2)
+            DDs_I_n2[:, i] = ho.damping_fact(eta_nn, alpM, HH_nn)
+            alpM, _ = ho.parameterizations_alpM(eta_nn, alpM0=alpM0, choice='I', a=a_nn*ast, n=0.4)
+            DDs_I_n04[:, i] = ho.damping_fact(eta_nn, alpM, HH_nn)
+            alpM, _ = ho.parameterizations_alpM(eta_nn, alpM0=alpM0, choice='I', a=a_nn*ast, n=1)
+            DDs_I[:, i] = ho.damping_fact(eta_nn, alpM, HH_nn)
+            alpM, _ = ho.parameterizations_alpM(eta_nn, alpM0=alpM0, choice='II', Omega=Omega_nn)
+            DDs_II[:, i] = ho.damping_fact(eta_nn, alpM, HH_nn)
+            alpM, _ = ho.parameterizations_alpM(eta_nn, alpM0=alpM0, choice='III', OmM0=OmM0,
+                                                Omega=Omega_nn, Omega_mat=Omega_mat_nn)
+            DDs_III[:, i] = ho.damping_fact(eta_nn, alpM, HH_nn)
+
+        if save:
+            import pickle
+            DDs = {'0' : DDs_0, 'I' : DDs_I, 'I_n2' : DDs_I_n2, 'I_n04' : DDs_I_n04,
+                   'II' : DDs_II, 'III' : DDs_III, 'alpsM' : alpsM0, 'eta' : eta_nn}
+            with open('WKB/DDs.pkl', 'wb') as f:
+                pickle.dump(DDs, f)
+        
+    return DDs_0, DDs_I, DDs_I_n04, DDs_I_n2, DDs_II, DDs_III
   
 def run(rsd='all', dirs={}):
     
