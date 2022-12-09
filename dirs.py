@@ -270,26 +270,29 @@ def read_dirs(proj, dirs={}):
 
     return dirs
 
-    ########################### horndeski ################################
+    ############################### horndeski #################################
     
     if 'horndeski' in proj:
 
         if proj == 'horndeski' or 'M0' in proj:
-
-            dirs.update({'M0A' : '46000cosmo_1D_alpM_m05'})
-            dirs.update({'M0A_LD2' : '46000cosmo_1D_alpM_m05_LD2'})
-            dirs.update({'M0B' : '46000cosmo_1D_alpM_m03'})
-            dirs.update({'M0B_LD2' : '46000cosmo_1D_alpM_m03_LD2'})
-            dirs.update({'M0C' : '46000cosmo_1D_alpM_m01'})
-            dirs.update({'M0C_LD2' : '46000cosmo_1D_alpM_m01_LD2'})
-            dirs.update({'M0D' : '46000cosmo_1D_alpM_m001'})
-            dirs.update({'M0D_LD2' : '46000cosmo_1D_alpM_m001_LD2'})
-            dirs.update({'M0E' : '46000cosmo_1D_alpM_p01'})
-            dirs.update({'M0E_LD2' : '46000cosmo_1D_alpM_p01_LD2'})
-            dirs.update({'M0F' : '46000cosmo_1D_alpM_p03'})
-            dirs.update({'M0F_LD2' : '46000cosmo_1D_alpM_p03_LD2'})
             
-            if 'lowk' in proj:
+            if 'lowk' not in proj:
+
+                dirs.update({'M0A' : '46000cosmo_1D_alpM_m05'})
+                dirs.update({'M0A_LD2' : '46000cosmo_1D_alpM_m05_LD2'})
+                dirs.update({'M0B' : '46000cosmo_1D_alpM_m03'})
+                dirs.update({'M0B_LD2' : '46000cosmo_1D_alpM_m03_LD2'})
+                dirs.update({'M0C' : '46000cosmo_1D_alpM_m01'})
+                dirs.update({'M0C_LD2' : '46000cosmo_1D_alpM_m01_LD2'})
+                dirs.update({'M0D' : '46000cosmo_1D_alpM_m001'})
+                dirs.update({'M0D_LD2' : '46000cosmo_1D_alpM_m001_LD2'})
+                dirs.update({'M0E' : '46000cosmo_1D_alpM_p01'})
+                dirs.update({'M0E_LD2' : '46000cosmo_1D_alpM_p01_LD2'})
+                dirs.update({'M0F' : '46000cosmo_1D_alpM_p03'})
+                dirs.update({'M0F_LD2' : '46000cosmo_1D_alpM_p03_LD2'})
+
+            else:
+                
                 dirs.update({'M0A_lowk' : '46000cosmo_1D_alpM_m05_wav1e7'})
                 dirs.update({'M0A_lowk_LD2' : '46000cosmo_1D_alpM_m05_wav1e7_LD2'})
                 dirs.update({'M0B_lowk' : '46000cosmo_1D_alpM_m03_wav1e7'})
@@ -330,21 +333,24 @@ def read_dirs(proj, dirs={}):
             dirs.update({'M2E_LD2' : '46000cosmo_1D_alpM_p03_Lambda_LD2'})
 
         if proj == 'horndeski' or 'M3' in proj:
+            
+            if 'lowk' not in proj:
 
-            dirs.update({'M3A' : '46000cosmo_1D_alpM_m05_mat'})
-            dirs.update({'M3A_LD2' : '46000cosmo_1D_alpM_m05_mat_LD2'})
-            dirs.update({'M3B' : '46000cosmo_1D_alpM_m03_mat'})
-            dirs.update({'M3B_LD2' : '46000cosmo_1D_alpM_m03_mat_LD2'})
-            dirs.update({'M3C' : '46000cosmo_1D_alpM_m01_mat'})
-            dirs.update({'M3C_LD2' : '46000cosmo_1D_alpM_m01_mat_LD2'})
-            dirs.update({'M3D' : '46000cosmo_1D_alpM_m001_mat'})
-            dirs.update({'M3D_LD2' : '46000cosmo_1D_alpM_m001_mat_LD2'})
-            dirs.update({'M3E' : '46000cosmo_1D_alpM_p01_mat'})
-            dirs.update({'M3E_LD2' : '46000cosmo_1D_alpM_p01_mat_LD2'})
-            dirs.update({'M3F' : '46000cosmo_1D_alpM_p03_mat'})
-            dirs.update({'M3F_LD2' : '46000cosmo_1D_alpM_p03_mat_LD2'})
+                dirs.update({'M3A' : '46000cosmo_1D_alpM_m05_mat'})
+                dirs.update({'M3A_LD2' : '46000cosmo_1D_alpM_m05_mat_LD2'})
+                dirs.update({'M3B' : '46000cosmo_1D_alpM_m03_mat'})
+                dirs.update({'M3B_LD2' : '46000cosmo_1D_alpM_m03_mat_LD2'})
+                dirs.update({'M3C' : '46000cosmo_1D_alpM_m01_mat'})
+                dirs.update({'M3C_LD2' : '46000cosmo_1D_alpM_m01_mat_LD2'})
+                dirs.update({'M3D' : '46000cosmo_1D_alpM_m001_mat'})
+                dirs.update({'M3D_LD2' : '46000cosmo_1D_alpM_m001_mat_LD2'})
+                dirs.update({'M3E' : '46000cosmo_1D_alpM_p01_mat'})
+                dirs.update({'M3E_LD2' : '46000cosmo_1D_alpM_p01_mat_LD2'})
+                dirs.update({'M3F' : '46000cosmo_1D_alpM_p03_mat'})
+                dirs.update({'M3F_LD2' : '46000cosmo_1D_alpM_p03_mat_LD2'})
 
-            if lowk in proj:
+            else:
+                
                 dirs.update({'M3A_lowk' : '46000cosmo_1D_alpM_m05_mat_wav1e7'})
                 dirs.update({'M3A_lowk_LD2' : '46000cosmo_1D_alpM_m05_mat_wav1e7_LD2'})
                 dirs.update({'M3B_lowk' : '46000cosmo_1D_alpM_m03_mat_wav1e7'})
