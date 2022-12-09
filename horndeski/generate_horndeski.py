@@ -260,6 +260,115 @@ def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L
         else: lsave = 'params_WKB_lims_EWPT'
         plt.savefig('plots/' + lsave + '.pdf',
                     bbox_inches='tight')
+        
+def plot_late_time_WKB(save=True):
+    
+    """
+    Function that plots the spectra obtained using the WKB approximation
+    in modified gravity for an initial GW background following a smoothed
+    double broken power law.
+    
+    It generates the plots corresponding to figure 2 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP
+    (2022).
+    
+    Figures saved in 'plots/spectrum_WKB_late_times.pdf', 'plots/spectrum_WKB_normalized.pdf'
+    """
+    
+    alpsM0 = np.array([-0.5, -0.3, -0.1, -0.01, 0.5, 0.3, 0.1, 0.01])
+    cols = np.array(['blue', 'green', 'red', 'magenta']*2)
+    TT_lt_ct = np.zeros((len(k), len(alpsM0)))
+    for i in range(0, len(alpsM0)):
+        TT_lt_ct[:, i] = ho.WKB_envelope_late_times_const(k, alpT=0, alpM0=alpsM0[i])
+        
+    S = an.smoothed_dbpl(k, A=1, kb=1, ks=10, a=2, b=0, c=11/3, alpha1=2, alpha2=2)
+    
+    from matplotlib.patches import Rectangle
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    plt.plot(k, S, color='black', lw=3)
+    plot_sets.axes_lines()
+    plt.loglog()
+    plt.xlim(1e-5, 2e1)
+    plt.ylim(7e-7, 1e1)
+    plt.xticks(np.logspace(-5, 1, 7))
+    plt.yticks(np.logspace(-6, 1, 8))
+    plt.xlabel(r'$k$')
+    plt.title(r"$e^{2 {\cal D}} \, S_{h'}^{\rm WKB} (k)/S_{h'}^*$", pad=15)
+
+    for i in range(0, len(alpsM0)):
+        ls = 'solid'
+        if alpsM0[i] < 0: ls = 'dashed'
+        plt.plot(k, S*TT_lt_ct[:, i], color=cols[i], ls=ls)
+
+    plt.text(2e-5, 4e-5, r'$\alpha_{{\rm M}, 0} = \pm 0.01$',
+             color='magenta', fontsize=26)
+    plt.text(2e-5, 4e-4, r'$\alpha_{{\rm M}, 0} = \pm 0.1$',
+             color='red', fontsize=26)
+    plt.text(2e-5, 4e-3, r'$\alpha_{{\rm M}, 0} = \pm 0.3$',
+             color='green', fontsize=26)
+    plt.text(2e-5, 8e-2, r'$\alpha_{{\rm M}, 0} = \pm 0.5$',
+             color='blue', fontsize=26)
+
+    for i in range(0, 4):
+        plt.vlines(np.sqrt(abs(alpsM0[i])/2*(1 + .5*alpsM0[i])), 1e-7,
+                   1e2, color=cols[i], lw=.8)
+
+    plt.gca().add_patch(Rectangle((0.7,1),9.3,.6,
+                        edgecolor='black',
+                        facecolor='none',
+                        lw=4, alpha=.5))
+
+    ax.annotate("", xy=(3, .8), xytext=(1, 2.5e-3),
+                arrowprops=dict(arrowstyle="->"))
+
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+    iax = inset_axes(ax, width="35%", height=1.6, loc=4)
+    for i in range(0, len(alpsM0)):
+        ls = 'solid'
+        if alpsM0[i] < 0: ls = 'dashed'
+        plt.plot(k, S*TT_lt_ct[:, i], color=cols[i], ls=ls)
+    plt.plot(k, S, color='black')
+    plt.loglog()
+    plt.xlim(7e-1, 1e1)
+    plt.ylim(1, 2)
+    iax.set_yticks([])
+    iax.get_yaxis().set_visible(False)
+    plt.xticks([])
+    plt.yticks([])
+    xx = np.logspace(.3, .8)
+    plt.plot(xx, 1.75*xx**(-0.06), color='black', lw=.8)
+    xx = np.logspace(.35, .75)
+    plt.plot(xx, 1.12*xx**(.08), color='black', lw=.8)
+    plt.text(3, 1.7, r'$k^{-0.06}$')
+    plt.text(3, 1.1, r'$k^{0.08}$')
+    
+    if save:
+        plt.savefig('plots/spectrum_WKB_late_times.pdf',
+                    bbox_inches='tight')
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(k, k**0, color='black', lw=3)
+    plot_sets.axes_lines()
+    plt.loglog()
+    plt.xlim(1e-2, 2e1)
+    plt.ylim(3e-1, 1e1)
+    plt.xlabel(r'$k$')
+
+    for i in range(0, len(alpsM0)):
+        ls = 'solid'
+        if alpsM0[i] < 0: ls = 'dashed'
+        plt.plot(k, TT_lt_ct[:, i], color=cols[i], ls=ls)
+
+    for i in range(0, 4):
+        plt.vlines(np.sqrt(abs(alpsM0[i])/2*(1 + .5*alpsM0[i])), 1e-7, 1e2, color=cols[i],
+                   lw=.8)
+    plt.title(r"$\xi^{\rm WKB} (k)$", pad=15)
+    
+    if save:
+        plt.savefig('plots/spectrum_WKB_normalized.pdf',
+                    bbox_inches='tight')
   
 def run(rsd='all', dirs={}):
     
