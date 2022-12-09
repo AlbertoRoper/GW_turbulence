@@ -4,8 +4,8 @@ The run directories correspond to the runs in Table I of the paper Y.He, A. Rope
 *Modified propagation of gravitational waves from the early radiation era,* submitted to JCAP (2022).
 
 The reference for the data sets is: *Datasets of “Modified propagation of gravitational
-waves from the early radiation era", doi: 10.5281/zenodo.7408601 (v2022.12.07),
-[Zenodo](https://zenodo.org/record/7408601).
+waves from the early radiation era",
+[doi:10.5281/Zenodo(v2022.12.07)](https://zenodo.org/record/7408601).
 
 ## Abstract
 
