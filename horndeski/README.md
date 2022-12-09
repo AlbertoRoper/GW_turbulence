@@ -12,22 +12,23 @@ waves from the early radiation era", doi: 10.5281/zenodo.7408601 (v2022.12.07),
 We study the propagation of cosmological gravitational wave (GW) backgrounds
 produced in the early radiation era until the present day in modified theories of gravity.
 Compared to general relativity (GR), we study the effects that Horndeski parameters, such
-as the run rate of the effective Planck mass αM and the tensor speed excess $\alpha_{\rm T}$, have on the
+as the run rate of the effective Planck mass $\alpha_{\rm M}$ and the tensor speed excess
+$\alpha_{\rm T}$, have on the
 present-day GW spectrum using the WKB estimate, which provides an analytical description
 but fails at superhorizon scales, and numerical simulations that allows us to go beyond the
-WKB approximation. We show that αT makes relatively insignificant changes to the GR
+WKB approximation. We show that $\alpha_{\rm T}$ makes relatively insignificant changes to the GR
 solution, especially taking into account the constraints on its value from GW observations by
-the LIGO-Virgo collaboration, while αM can introduce modifications to the spectral slopes of
+the LIGO-Virgo collaboration, while $\alpha_{\rm M}$ can introduce modifications to the spectral slopes of
 the GW energy spectrum in the low-frequency regime depending on the considered time evo-
-lution parameterization of αM. This effect is additional to the damping or growth occurring
-equally at all scales that can be predicted by the WKB approximation. We discuss the obser-
-vational implications in light of the recent observations by pulsar timing array collaborations
+lution parameterization of $\alpha_{\rm M}$. This effect is additional to the damping or growth occurring
+equally at all scales that can be predicted by the WKB approximation. We discuss the observational
+implications in light of the recent observations by pulsar timing array collaborations
 and future detectors such as SKA, LISA, and DECIGO.
 
 ## Tables of runs
 
-<p align="center">
-<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/tableI.png" width="800">
+%<p align="center">
+%<img src="https://github.com/AlbertoRoper/GW_turbulence/blob/master/PRD_2201_05630/tableI.png" width="800">
 
 ## Figures
 
