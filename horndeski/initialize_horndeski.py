@@ -7,7 +7,10 @@ era," submitted to JCAP (2022).
 
 The function run() executes the code. It is only required to be run once
 and once the pickle variables have been stored one can directly use the
-Jupyter notebook generate_results_horndeski.ipynb 
+Jupyter notebook generate_results_horndeski.ipynb.
+
+Author: Alberto Roper Pol
+created: 01/12/2022
 """
 
 import os
@@ -20,7 +23,6 @@ os.chdir(HOME)
 
 import run as r
 from dirs import read_dirs as rd
-import spectra as sp
 
 os.chdir(dir0)
 
@@ -54,10 +56,13 @@ def read_runs(rsd='all'):
     # dictionary with the name identifying
     # the runs and pointing to the corresponding directory
     dirs = {}
-    if rsd == 'M0' or rsd == 'all': dirs = rd('horndeski_M0', dirs)
-    if rsd == 'M1' or rsd == 'all': dirs = rd('horndeski_M1', dirs)
-    if rsd == 'M2' or rsd == 'all': dirs = rd('horndeski_M2', dirs)
-    if rsd == 'M3' or rsd == 'all': dirs = rd('horndeski_M3', dirs)
+    if rsd == 'all': dirs = rd('horndeski', dirs={})
+    if rsd == 'M0': dirs = rd('horndeski_M0', dirs={})
+    if rsd == 'M0_lowk': dirs = rd('horndeski_M0_lowk', dirs)
+    if rsd == 'M1': dirs = rd('horndeski_M1', dirs={})
+    if rsd == 'M2': dirs = rd('horndeski_M2', dirs={})
+    if rsd == 'M3': dirs = rd('horndeski_M3', dirs={})
+    if rsd == 'M3_lowk': dirs = rd('horndeski_M3_lowk', dirs)
     print('List of runs: ', dirs)
     print('\n')
     R = [s for s in dirs]
