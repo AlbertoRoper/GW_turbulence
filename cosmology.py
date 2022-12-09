@@ -241,18 +241,15 @@ def thermal_g(T=Tref, s=0, file=True):
     if file:
         import pandas as pd
         try:
-            df = pd.read_csv(HOME + 'cosmology/T_gs.csv')
+            df = pd.read_csv(HOME + '/cosmology/T_gs.csv')
+            Ts = np.array(df['T [GeV]'])
+            if s == 0: gs = np.array(df['g_*'])
+            if s == 1: gs = np.array(df['gS'])
+            T = T.to(u.GeV)    # values of T from file are in GeV
+            g = np.interp(T.value, np.sort(Ts), np.sort(gs))
+            return g
         except:
             print('thermal_g reads the file cosmology/T_gs.csv, which does not exist!')
-            file = False
-
-    if file:
-        Ts = np.array(df['T [GeV]'])
-        if s == 0: gs = np.array(df['g_*'])
-        if s == 1: gs = np.array(df['gS'])
-        T = T.to(u.GeV)    # values of T from file are in GeV
-        g = np.interp(T.value, np.sort(Ts), np.sort(gs))
-
     else:
         T = T.to(u.MeV)
         T = T.value
@@ -268,8 +265,8 @@ def thermal_g(T=Tref, s=0, file=True):
         elif T < 8e4: g = 86.25
         elif T < 1.7e5: g = 96.25
         else: g = 106.75
-
-    return g
+            
+        return g
 
 ############################### FRIEDMANN EQUATIONS ###############################
 
@@ -384,7 +381,7 @@ def Hs_from_a(a, Neff=Neff_ref):
     
     return Hs
 
-def Omega_rad_dof(a, Neff=Neff_eff):
+def Omega_rad_dof(a, Neff=Neff_ref):
     
     """
     Function that computes the factor that takes into account the radiation
@@ -568,7 +565,7 @@ def friedmann_solver(a, a0=1., h0=h0_ref, OmL0=OmL0_ref, dofs=True, Neff=Neff_re
     print('Leaving Friedmann solver')
     
     if return_all:
-        return t, eta, Om_tot, Om_rad, Om_matt, w, ad, add, ap, app
+        return t, eta, Om_tot, Om_rad, Om_mat, w, ad, add, ap, app
     else: return t, eta
     
 def normalized_variables(a, eta, ap_a, app_a, T=Tref, h0=h0_ref):
@@ -668,7 +665,7 @@ def ratio_app_a_n_factor(a, a0=1, h0=h0_ref, OmL0=OmL0_ref, dofs=True, Neff=Neff
     return factor
 
 def norm_variables_cut(eta_n, HH_n, a_n, Omega, Omega_mat,
-                       eta_n_0, T=T_ref, OmM0=OmM0_ref, h0=h0_ref):
+                       eta_n_0, T=Tref, OmM0=OmM0_ref, h0=h0_ref):
     
     """
     Function that cuts the normalized variables between the initial time \eta/\eta_* = 1
