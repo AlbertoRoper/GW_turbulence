@@ -444,12 +444,11 @@ def run(rsd='all', dirs={}):
     # import dictionary with the names identifying
     # the runs and pointing to the corresponding directory
     dirs = {}
-    if rs == 'all': dirs = rd('horndeski', dirs={})
-    if rs == 'M0': dirs = rd('horndeski_M0', dirs={})
-    if rs == 'M1': dirs = rd('horndeski_M1', dirs={})
-    if rs == 'M2': dirs = rd('horndeski_M2', dirs={})
-    if rs == 'M3': dirs = rd('horndeski_M3', dirs={})
-    if rs == 'lowk': dirs = rd('horndeski_lowk', dirs={})
+    if rsd == 'all': dirs = rd('horndeski', dirs={})
+    if rsd == 'M0': dirs = rd('horndeski_M0', dirs={})
+    if rsd == 'M1': dirs = rd('horndeski_M1', dirs={})
+    if rsd == 'M2': dirs = rd('horndeski_M2', dirs={})
+    if rsd == 'M3': dirs = rd('horndeski_M3', dirs={})
     R = [s for s in dirs]
 
     # read the runs stored in the pickle variables
@@ -457,3 +456,206 @@ def run(rsd='all', dirs={}):
     os.chdir(dir0)
 
     return runs
+  
+  def plot_time_evolution_EGW(runs, DDs, eta_nn, DDs2=0, value0=False,
+                            choice='0', txt=True, save=True):
+    
+    """
+    Function that plots the time evolution of the GW energy density from
+    the numerical simulations and using the WKB approximation in modified
+    gravity.
+    
+    It generates the plots corresponding to figure 3 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    Figures saved in 'plots/time_series_EEGW_choice'#'.pdf'
+    """
+        
+    fig, ax = plt.subplots(figsize=(12, 8))
+    plot_sets.axes_lines()
+    
+    p = '0'
+    if choice == '0' or choice == 'III':
+        runsA = runs_ng
+        alpsM0 = alpsM0_g
+        cols = cols_g
+        if choice == 'III': p = '3'
+    if choice == 'I' or choice == 'II':
+        if choice == 'I': p = '1'
+        if choice == 'II': p = '2'
+        runsA = runs_n2g
+        alpsM0 = alpsM02_g
+        cols = cols2_g
+        from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+        iax = inset_axes(ax, width="90%", height=2.5, loc=4)
+        plot_sets.axes_lines()
+        
+    rrs = ['M' + p + i for i in runsA]
+    rrs_b = ['M' + p + i + '_LD2' for i in runsA]
+        
+    for i in range(0, len(rrs)):
+        alpM0 = alpsM0[i]
+        MM = runs.get(rrs[i])
+        sp = MM.spectra
+        ts = MM.ts
+        ksp, GWs, GWs0, tsp, tts, EEGW, A = spec_tts(sp, ts)
+        MMb = runs.get(rrs_b[i])
+        spb = MMb.spectra
+        tsb = MMb.ts
+        kspb, GWsb, GWs0b, tspb, ttsb, EEGWb, Ab = spec_tts(spb, tsb)
+        WKB = np.exp(-2*DDs[:, i])
+        if choice == 'I' or choice == 'II':
+            if choice == 'I':
+                if alpM0 < 0.1: DD = DDs[:, i]
+                if alpM0 > 0: DD = DDs2[:, i+1]
+                WKB = np.exp(-2*DD)
+            if choice == 'II':
+                if alpM0 > 0: WKB = np.exp(-2*DDs[:, i+1])
+        rel_err, inds_min, inds_max, tts_corr, rel_err_corr, EGW_num_corr = \
+                rel_error(tts, eta_nn, WKB, EEGW/EEGW[0], order=20, tts_lim=0)
+        if value0:
+            value00 = np.interp(eta_nn[-1], ttsb, EEGWb/EEGW[0])
+            print('For run ', rrs[i], 'the value at \eta_0 of EEGW is ',
+                  value00)
+        
+        ax.plot(eta_nn, WKB, color=cols[i], alpha=.5)
+        ax.plot(tts_corr, EGW_num_corr, color=cols[i], ls='dashed')
+        ax.plot(ttsb, EEGWb/EEGW[0], color=cols[i], ls='dashed')
+        if choice == 'I' or choice == 'II':
+            iax.plot(tts_corr, EGW_num_corr, color=cols[i], ls='dashed')
+            iax.plot(eta_nn, WKB, color=cols[i], alpha=.5)
+            iax.plot(ttsb, EEGWb/EEGW[0], color=cols[i])
+
+    ax.loglog()
+    ax.set_xlim(1, eta_nn[-1])
+    ax.set_xlabel(r'$\eta/\eta_*$')
+    ax.loglog()
+
+    if choice == '0' or choice == 'III':
+        ax.set_ylim(1e-5, 1e9)
+        ax.set_yticks(np.logspace(-5, 9, 8))
+        ax.set_ylabel(r'${\cal E}_{\rm GW} (\eta)/{\cal E}_{\rm GW}^*$')
+    if choice == 'I' or choice == 'II':
+        ax.set_ylim(4.5e-1, 1.6)
+        ax.set_ylabel(r'${\cal E}_{\rm GW} (\eta)/{\cal E}_{\rm GW}^*$',
+                      labelpad=-40)
+        iax.loglog()
+        if choice == 'I':
+            iax.set_xlim(1e12, eta_nn[-1])
+        if choice == 'II':
+            iax.set_xlim(1.3e12, eta_nn[-1])
+
+        iax.set_xticks([1e12, 1e13])
+        iax.set_yticks([])
+        iax.set_ylim(4.5e-1, 1.6)
+        iax.xaxis.tick_top()
+        iax.tick_params(axis='both', which='major', pad=10)
+        for i in iax.get_xticklabels() + iax.get_yticklabels():
+            i.set_fontsize(18)
+        iax.set_xticks([1e13, 2e13])
+        iax.axes.get_yaxis().set_visible(False)
+
+    if txt:
+        if choice == '0':
+            plt.text(1e8, 1e6, r'$\alpha_{{\rm M}, 0} = -0.5$',
+                     color='blue', fontsize=30)
+            plt.text(3e7, 2e3, r'$\alpha_{{\rm M}, 0} = -0.3$',
+                     color='green', fontsize=30)
+            plt.text(1e10, 5e1, r'$\alpha_{{\rm M}, 0} = -0.1$',
+                     color='red', fontsize=30)
+            plt.text(5e9, 2.5, r'$\alpha_{{\rm M}, 0} = -0.01$',
+                     color='magenta', fontsize=30)
+            plt.text(1e10, 7e-3, r'$\alpha_{{\rm M}, 0} = 0.1$',
+                     color='purple', fontsize=30)
+            plt.text(1e7, 1.5e-4, r'$\alpha_{{\rm M}, 0} = 0.3$',
+                     color='orange', fontsize=30)
+            # place a text box in upper left in axes coords
+            plt.text(5, 5e6, 'choice 0', fontsize=28,
+                     bbox=dict(boxstyle='round', facecolor='white',
+                               alpha=0.5))
+
+            xx = np.logspace(3, 10)
+            plt.plot(xx, 3*xx**(.5), color='blue', ls='dashed')
+            xx = np.logspace(12, 14)
+            plt.plot(xx, 5e-7*xx**(.5*2), color='blue', ls='dashed')
+            xx = np.logspace(3, 7)
+            plt.plot(xx, 2*xx**(.3), color='green', ls='dashed')
+            xx = np.logspace(12, 14)
+            plt.plot(xx, 2e-4*xx**(.3*2), color='green', ls='dashed')
+            xx = np.logspace(3, 10)
+            plt.plot(xx, 1.7*xx**(.1), color='red', ls='dashed')
+            xx = np.logspace(12, 14)
+            plt.plot(xx, 5e-2*xx**(.1*2), color='red', ls='dashed')
+            xx = np.logspace(3, 10)
+            plt.plot(xx, 1.7*xx**(-.1), color='purple', ls='dashed')
+            xx = np.logspace(12, 14)
+            plt.plot(xx, 1e1*xx**(-.1*2), color='purple', ls='dashed')
+            xx = np.logspace(3, 10)
+            plt.plot(xx, 1.7*xx**(-.3), color='orange', ls='dashed')
+            xx = np.logspace(12, 14)
+            plt.plot(xx, 2e3*xx**(-.3*2), color='orange', ls='dashed')
+            plt.text(1e5, 1e4, r'$\sim\!\eta^{-\alpha_{{\rm M}, 0}}$',
+                     fontsize=26, color='black')
+            plt.text(3e11, 1.3e5, r'$\sim\!\eta^{-2 \alpha_{{\rm M}, 0}}$',
+                     fontsize=26, color='black')
+            
+        if choice == 'I':
+            iax.text(8e12, 1.3, r'$\alpha_{{\rm M}, 0} = -0.5$, $n = 2$',
+                     color='blue', fontsize=26)
+            iax.text(6e12, 1.1, r'$\alpha_{{\rm M}, 0} = -0.3$, $n = 2$',
+                     color='green', fontsize=26)
+            iax.text(1.5e12, 1.05, r'$\alpha_{{\rm M}, 0} = -0.1$, $n = 2$',
+                     color='red', fontsize=26)
+            iax.text(7e12, .67, r'$\alpha_{{\rm M}, 0} = 0.1$, $n = 0.4$',
+                     color='purple', fontsize=26)
+            iax.text(2e12, 6.5e-1, r'$\alpha_{{\rm M}, 0} = 0.3$, $n = 0.4$',
+                     color='orange', fontsize=26)
+            # place a text box in upper left in axes coords
+            ax.text(5, 1.33e0, 'choice I', fontsize=28,
+                     bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
+            
+        if choice == 'II':
+            iax.text(1.05e13, 1.22, r'$\alpha_{{\rm M}, 0} = -0.5$',
+                     color='blue', fontsize=26)
+            iax.text(8e12, 1.06, r'$\alpha_{{\rm M}, 0} = -0.3$',
+                     color='green', fontsize=26)
+            iax.text(3e12, 1.05, r'$\alpha_{{\rm M}, 0} = -0.1$',
+                     color='red', fontsize=26)
+            iax.text(1.1e13, .83, r'$\alpha_{{\rm M}, 0} = 0.1$',
+                     color='purple', fontsize=26)
+            iax.text(1.3e13, 7e-1, r'$\alpha_{{\rm M}, 0} = 0.3$',
+                     color='orange', fontsize=26)
+            # place a text box in upper left in axes coords
+            ax.text(5, 1.33e0, 'choice II', fontsize=28,
+                     bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
+            
+        if choice == 'III':
+            ax.text(1e8, 2e5, r'$\alpha_{{\rm M}, 0} = -0.5$',
+                    color='blue', fontsize=30)
+            ax.text(5e7, 8e2, r'$\alpha_{{\rm M}, 0} = -0.3$',
+                    color='green', fontsize=30)
+            ax.text(1e10, 1e2, r'$\alpha_{{\rm M}, 0} = -0.1$',
+                    color='red', fontsize=30)
+            ax.text(5e9, 2.5, r'$\alpha_{{\rm M}, 0} = -0.01$',
+                    color='magenta', fontsize=30)
+            ax.text(5e6, 5e-3, r'$\alpha_{{\rm M}, 0} = 0.1$',
+                    color='purple', fontsize=30)
+            ax.text(1e4, 1.5e-4, r'$\alpha_{{\rm M}, 0} = 0.3$',
+                     color='orange', fontsize=30)
+            xx = np.logspace(3, 10)
+            ax.plot(xx, 3*xx**(.5*1.5), color='blue', ls='dashed')
+            xx = np.logspace(12, 14)
+            ax.plot(xx, 1e8*xx**(0), color='blue', ls='dashed')
+            xx = np.logspace(12, 14)
+            ax.plot(xx, 5e4*xx**(0), color='green', ls='dashed')
+            ax.text(1e5, 6e5, r'$\sim\!\eta^{-1.5 \, \alpha_{{\rm M}, 0}}$',
+                    fontsize=26, color='black')
+            ax.text(1.5e12, 1e7, r'$\sim\!\eta^{0}$',
+                    fontsize=26, color='black')
+            ax.text(5, 5e6, 'choice III', fontsize=28,
+                     bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
+                
+    if save:
+        plt.savefig('plots/time_series_EEGW_choice' + choice + '.pdf',
+                    bbox_inches='tight')
