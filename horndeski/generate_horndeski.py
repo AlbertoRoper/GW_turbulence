@@ -446,9 +446,11 @@ def run(rsd='all', dirs={}):
     dirs = {}
     if rsd == 'all': dirs = rd('horndeski', dirs={})
     if rsd == 'M0': dirs = rd('horndeski_M0', dirs={})
+    if rsd == 'M0_lowk': dirs = rd('horndeski_M0_lowk', dirs={})
     if rsd == 'M1': dirs = rd('horndeski_M1', dirs={})
     if rsd == 'M2': dirs = rd('horndeski_M2', dirs={})
     if rsd == 'M3': dirs = rd('horndeski_M3', dirs={})
+    if rsd == 'M3_lowk': dirs = rd('horndeski_M3_lowk', dirs={})
     R = [s for s in dirs]
 
     # read the runs stored in the pickle variables
@@ -696,3 +698,134 @@ def spec_tts(sp, ts):
     A = popt[0]
     
     return ksp, GWs, GWs0, tsp, tts, EEGW, A
+  
+def rel_error(tts, etas, EGW_WKB, EGW_num, order=40, tts_lim=1e3):
+    
+    """
+    Function that computes the relative error in the time
+    series of the WKB approximation compared to the numerical
+    solutions and removes points out of the curve.
+    """
+
+    import scipy.signal as sig
+    
+    WKB = np.interp(tts, etas, EGW_WKB)
+    rel_err = (WKB - EGW_num)/EGW_num
+    ind_lim = np.argmin(abs(tts - tts_lim))
+    inds_min = sig.argrelmin(rel_err[ind_lim:], order=order)
+    inds_max = sig.argrelmax(rel_err[ind_lim:], order=order)
+    inds_min += ind_lim
+    inds_max += ind_lim
+    tts_corr = np.delete(tts, np.append(inds_min, inds_max))
+    rel_err_corr = np.delete(rel_err, np.append(inds_min, inds_max))
+    EGW_num_corr = np.delete(EGW_num, np.append(inds_min, inds_max))
+    
+    return rel_err, inds_min, inds_max, tts_corr, rel_err_corr, \
+            EGW_num_corr
+  
+def plot_time_series_error_WKB(runs, DDs, eta_nn, DDs2=0, choice='0', ordr=20, save=True):
+    
+    """
+    Function that plots the error of the time evolution of the GW energy
+    density computed using the WKB approximation in modified gravity,
+    compared to the results from numerical simulations.
+    
+    It generates the plots corresponding to figure 4 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era,"
+    submitted to JCAP (2022).
+    
+    Figures saved in 'plots/time_series_alpM_choice#_error_WKB.pdf'
+    """
+    
+    fig, ax = plt.subplots(figsize=(8, 5))
+    
+    p = '0'
+    if choice == '0' or choice == 'III':
+        runsA = runs_ng
+        alpsM0 = alpsM0_g
+        cols = cols_g
+        if choice == 'III': p = '3'
+    if choice == 'I' or choice == 'II':
+        if choice == 'I': p = '1'
+        if choice == 'II': p = '2'
+        runsA = runs_n2g
+        alpsM0 = alpsM02_g
+        cols = cols2_g
+        from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+        plot_sets.axes_lines()
+        
+    rrs = ['M' + p + i for i in runsA]
+    rrs_b = ['M' + p + i + '_LD2' for i in runsA]
+
+    ax.set_xscale('log')
+    if choice == '0' or choice == 'III':
+        ax.set_ylim(-0.06, .15)
+        ax.set_yticks(np.linspace(-.05, .15, 5))
+    if choice == 'I' or choice == 'II':
+        if choice == 'I':
+            iax = inset_axes(ax, width="58%", height=1.6, loc=1)
+            ax.set_ylim(-0.005, 0.01)
+            ax.set_yticks(np.linspace(-.005, .01, 7))
+        if choice == 'II':
+            ax.set_ylim(-0.02, 0.1)
+            ax.set_yticks(np.linspace(0, .075, 4))
+            iax = inset_axes(ax, width="55%", height=2.2, loc=1)
+        
+    ax.set_xlim(1, eta_nn[-1])
+    ax.set_xlabel(r'$\eta/\eta_*$')
+    ax.set_ylabel(r'$\varepsilon^{\rm WKB} ({\cal E}_{\rm GW})$')
+    ax.set_xticks(np.logspace(1, 13, 7))
+    plot_sets.axes_lines()
+    ax.set_title(r'$\alpha_{\rm M}$ choice %s'%choice, pad=15)
+    
+    for i in range(0, len(rrs)):
+        alpM0 = alpsM0[i]
+        MM = runs.get(rrs[i])
+        sp = MM.spectra
+        ts = MM.ts
+        ksp, GWs, GWs0, tsp, tts, EEGW, A = spec_tts(sp, ts)
+        MMb = runs.get(rrs_b[i])
+        spb = MMb.spectra
+        tsb = MMb.ts
+        kspb, GWsb, GWs0b, tspb, ttsb, EEGWb, Ab = spec_tts(spb, tsb)
+        WKB = np.exp(-2*DDs[:, i])
+        if choice == 'I':
+            if alpM0 < 0.1: DD = DDs[:, i]
+            if alpM0 > 0: DD = DDs2[:, i+1]
+            WKB = np.exp(-2*DD)
+        if choice == 'II' and alpM0 > 0: WKB = np.exp(-2*DDs[:, i+1])
+        rel_err, inds_min, inds_max, tts_corr, rel_err_corr, _ = \
+                rel_error(tts, eta_nn, WKB, EEGW/EEGW[0], order=ordr, tts_lim=0)
+        if alpsM0[i] == -0.01: lbl = r'$\alpha_{{\rm M}, 0} = %.2f$'%alpM0
+        else: lbl = r'$\alpha_{{\rm M}, 0} = %.1f$'%alpM0
+        ax.plot(tts_corr, rel_err_corr, '.', color=cols[i],
+                 label=lbl)
+        rel_errb, inds_minb, inds_maxb, tts_corrb, rel_err_corrb, _ = \
+                rel_error(ttsb, eta_nn, WKB, EEGWb/EEGW[0], order=ordr, tts_lim=0)
+        ax.plot(tts_corrb, rel_err_corrb, '.', color=cols[i])
+        if choice=='I' or choice == 'II':
+            iax.plot(tts_corr, rel_err_corr, '.', color=cols[i])
+            iax.plot(tts_corrb, rel_err_corrb, '.', color=cols[i]) 
+    
+    lc = 'upper right'
+    if choice == 'I' or choice == 'II':
+        lc = 'upper left'
+        iax.set_xscale('log')
+        if choice == 'I':
+            iax.set_ylim(-0.005, 0.01)
+            iax.set_xlim(1e12, eta_nn[-1])
+            iax.set_xticks([1e12, 1e13])
+        if choice == 'II':
+            iax.set_ylim(-.02, 0.1)
+            iax.set_xlim(8e12, eta_nn[-1])
+            iax.set_xticks([1e13, 2e13])
+        iax.set_yticks([])
+        iax.tick_params(axis='both', which='major', pad=8)
+        for i in iax.get_xticklabels() + iax.get_yticklabels():
+            i.set_fontsize(16)
+    ax.legend(frameon=False, fontsize=18, labelcolor='linecolor', loc=lc)
+
+    if save:
+        plt.savefig('plots/time_series_alpM_choice' + choice + '_error_WKB.pdf',
+                    bbox_inches='tight')
