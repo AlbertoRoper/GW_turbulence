@@ -460,7 +460,8 @@ def run(rsd='all', dirs={}):
     return runs
         
 def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=0, ordr=20,
-                            txt=True, save=True, save_pl=True, plot=True, read=False):
+                            txt=True, save=True, save_pl=True, plot=True, read=False,
+                            quiet=False):
     
     """
     Function that plots the time evolution of the GW energy density from
@@ -518,7 +519,7 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
             
             import pickle
             fll = 'results/ts_' + rrs[i] + '.pkl'
-            print('Reading file for time series from %s'%fll)
+            if not quiet: print('Reading file for time series from %s'%fll)
             with open(fll, 'rb') as f:
                 tsd = pickle.load(f)
             tts_corr = np.array(tsd.get('ts'))
@@ -550,7 +551,7 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
 
                 import pickle
                 fll = 'results/ts_' + rrs[i] + '.pkl'
-                print('Saving file for time series in %s'%fll)
+                if not quiet: print('Saving file for time series in %s'%fll)
                 with open(fll, 'wb') as f:
                     pickle.dump(tsd, f)
         
