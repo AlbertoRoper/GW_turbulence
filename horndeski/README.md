@@ -1,6 +1,6 @@
 # GW_turbulence/horndeski
 
-The run directories correspond to the runs in Table I of the paper Y.He, A. Roper Pol, A. Brandenburg
+The run directories correspond to the runs in Table I of the paper Y.He, A. Roper Pol, A. Brandenburg,
 *Modified propagation of gravitational waves from the early radiation era,* submitted to JCAP (2022).
 
 The reference for the data sets is: *Datasets of “Modified propagation of gravitational
