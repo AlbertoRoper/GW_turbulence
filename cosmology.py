@@ -693,7 +693,7 @@ def norm_variables_cut(eta_n, HH_n, a_n, Omega, Omega_mat,
         Omega_nn -- ratio of total energy to present-time critical energy denstiy
         Omega_mat_nn -- matter energy density (normalized)
         app_nn -- second time derivative of the scale factor
-        w_nn -- equation of state p/\rho
+        w_nn -- equation of state p/rho
     """
     
     H0 = h0*H0_ref
@@ -711,7 +711,7 @@ def norm_variables_cut(eta_n, HH_n, a_n, Omega, Omega_mat,
     
     eta_nn = cut_var(eta_n, 1, eta_n_0, inds, inds2)
     HH_n0 = np.interp(1, eta_n, HH_n.value)
-    HH_nn = cut_var(HH_n, HH_n0, H0/Hs/ast, inds, inds2)
+    HH_nn = cut_var(HH_n.value, HH_n0, H0/Hs/ast, inds, inds2)
     a_nn = cut_var(a_n, 1, 1/ast, inds, inds2)
     Omega_nn = cut_var(Omega, (Hs/H0)**2, 1, inds, inds2)
     Omega_mat_nn = cut_var(Omega_mat, OmM0*ast**(-3), OmM0, inds, inds2)
