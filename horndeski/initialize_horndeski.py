@@ -7,7 +7,7 @@ era," submitted to JCAP (2022).
 
 The function run() executes the code. It is only required to be run once
 and once the pickle variables have been stored one can directly use the
-Jupyter notebook generate_results_horndeski.ipynb.
+Jupyter notebook generate_horndeski.ipynb.
 
 Author: Alberto Roper Pol
 created: 01/12/2022
