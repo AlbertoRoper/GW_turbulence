@@ -13,6 +13,12 @@ import astropy.units as u
 import pandas as pd
 import numpy as np
 import spectra as sp
+import cosmology as co
+
+### reference values for cosmology
+OmM0_ref = .3159
+h0_ref = .6732
+T_ref = 100*u.GeV
 
 def parameterizations_alpM(eta, alpM0=1., a=[], Omega=[], Omega_mat=[], OmM0=0, choice='0', n=1):
     
@@ -211,3 +217,62 @@ def WKB_envelope_late_times_const(k, alpT=0, alpM0=0):
     TT = .5*(1 + alpT + (1 + alpM0/2/k)**2)
     
     return TT
+
+def damping_amplification(eta, H, a=[], Omega=[], Omega_mat=[], OmM0=0, n=1, ch='0'):
+    
+    """
+    Function that computes the damping or the amplification of a GW signal
+    from its time of generation within the RD era until present time using
+    one of the four choices of alpM parameterization with time.
+    """
+    
+    alpsM0, _ = parameterizations_alpM(eta, alpM0=1, a=a, Omega=Omega, Omega_mat=Omega_mat,
+                                       OmM0=OmM0, choice=ch)
+    # compute damping term at present time
+    D = .5*np.trapz(alpsM0*H, eta)
+    Q = np.exp(-2*D)
+    
+    return Q
+
+def compute_Qs(a, eta, ap_a, app_a, T=T_ref, OmM0=OmM0_ref, h0=h0_ref):
+    
+    """
+    Function that computes the amplification for the 4 different choices
+    of alpM parameterization from the time of generation until present time
+    given the temperature scale within the RD at which the signal was generated.
+    
+    It takes alpM0 = 1, so for other values of alpM0, one can compute them
+    as Q**alpM0.
+    
+    Arguments:
+        a -- scale factor from Friedmann solver (normalized to a0 = 1)
+        eta -- conformal time (normalized to a0 = 1)
+        ap_a -- a'/a (normalized to a0 = 1)
+        app_a -- a''/a (normalized to a0 = 1)
+        T -- temperature scale (default EWPT)
+        OmM0 -- present day amount of matter
+        h0 -- present day Hubble rate H0 = 100 h0 km/s/Mpc
+        
+    Returns:
+        Q0, Q1, Q2, Q3 -- amplification (damping) factor of reference
+                          (alpM0 = 1) for the 4 choices of alpM parameterization
+    """
+    
+    g = co.thermal_g(T=T, s=0)
+    ast = co.as_a0_rat(T=T, g=g)
+    a_n, eta_n, HH_n, app_a_n, Omega, w, eta_n_0, aEQ_n, \
+    aL_n, a_acc_n, eta_n_EQ, eta_n_L, eta_n_acc = \
+        co.normalized_variables(a, eta, ap_a, app_a, T=T, h0=h0)
+    Omega_mat = OmM0*a**(-3)
+    
+    eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn, app_nn, w_nn = \
+            co.norm_variables_cut(eta_n, HH_n, a_n, Omega, Omega_mat, 
+                                  eta_n_0, T=T, OmM0=OmM0, h0=h0)
+    
+    Q0 = damping_amplification(eta_nn, HH_nn, ch='0')
+    Q1 = damping_amplification(eta_nn, HH_nn, ch='I', a=a_nn*ast, n=1)
+    Q2 = damping_amplification(eta_nn, HH_nn, ch='II', Omega=Omega_nn)
+    Q3 = damping_amplification(eta_nn, HH_nn, ch='III', Omega=Omega_nn,
+                                  Omega_mat=Omega_mat_nn, OmM0=OmM0)
+    
+    return Q0, Q1, Q2, Q3
