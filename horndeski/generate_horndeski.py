@@ -48,6 +48,7 @@ k = np.logspace(-7, 3, 2000)
 
 # reference values and constants
 Tref = 100*u.GeV
+gref = 100
 h0_ref = 0.6372
 
 def read_cosmology_results():
@@ -69,52 +70,6 @@ def read_cosmology_results():
     os.chdir(dir0)
     
     return a, eta, ap_a, app_a
-
-def cosmology_normalized_vars(a, eta, ap_a, app_a, T=Tref, h0=h0_ref):
-    
-    """
-    Function that computes the normalized variables in terms of the solutions to
-    the Friedmann solver for a specific temperature scale.
-    
-    Arguments:
-        a -- scale factor
-        eta -- conformal time
-        ap_a -- conformal Hubble rate HH = a'/a
-        app_a -- conformal acceleration a''/a
-        T -- temperature scale (default is 100 GeV, EWPT)
-        h0 -- Hubble rate at present time (default is CMB observation 67.32 km/s/Mpc)
-        
-    Returns:
-        a_n -- normalized scale factor a/a_*
-        eta_n -- normalized conformal time eta/eta_*
-        HH_n -- normalized conformal Hubble rate HH/HH_*
-        app_a_n -- normalized conformal acceleration (a''/a)/HH_*^2
-        Omega -- ratio of energy density to critical energy at present time
-        w -- equation of state
-        eta_n_0 -- normalized conformal present time eta_0/eta_*
-        aEQ_n -- normalized scale factor at equipartition aEQ/a_*
-        aL_n -- id at dark-energy domination
-        a_acc_n -- id at beginning of accelerated universe
-        eta_n_EQ -- normalized conformal time at equipartition eta_EQ/eta_*
-        eta_n_L -- id at dark-energy domination
-        eta_n_acc -- id at beginning of accelerated universe
-    """
-
-    os.chdir(HOME)
-    # choice of the initial time and computation of scale factor and Hubble rate
-    g = co.thermal_g(T=T, s=0)
-    ast = co.as_a0_rat(T=T, g=g)
-    Hs = co.Hs_val(T=T, g=g)
-
-    # computation of normalized variables
-    a_n, eta_n, HH_n, app_a_n, Omega, w, eta_n_0, aEQ_n, \
-        aL_n, a_acc_n, eta_n_EQ, eta_n_L, eta_n_acc = \
-            co.normalized_variables(a, eta, ap_a, app_a, T=T, h0=h0)
-    
-    os.chdir(dir0)
-    
-    return a_n, eta_n, HH_n, app_a_n, Omega, w, eta_n_0, aEQ_n, \
-           aL_n, a_acc_n, eta_n_EQ, eta_n_L, eta_n_acc
 
 def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L, eta_n_0, OmM0,
                                 comp_exp=1, compp=1, nn_exp=1, save=True, primes=False,
@@ -1066,82 +1021,37 @@ def compute_all_spectra(eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn, OmM0, DDs,
 
     else:
         
+        neg_alpM_sp_ch = ({'k': k})
+        pos_alpM_sp_ch = ({'k': k})
         if ch == '0' or ch == 'III':
-    
-            ##### choices 0 or III (negative alpM)
-            ksp_A, kspc_A, klimaM_A, WKB_A, env_A, envc_A, S_A = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, ch=ch, A='A', plot=False,
-                                    lowk=True, runs_lowk=runs_lowk)
-            ksp_B, kspc_B, klimaM_B, WKB_B, env_B, envc_B, S_B = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, ch=ch, A='B', plot=False,
-                                    lowk=True, runs_lowk=runs_lowk)
-            ksp_C, kspc_C, klimaM_C, WKB_C, env_C, envc_C, S_C = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, ch=ch, A='C', plot=False,
-                                    lowk=True, runs_lowk=runs_lowk)
-            ksp_D, kspc_D, klimaM_D, WKB_D, env_D, envc_D, S_D = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, ch=ch, A='D', plot=False,
-                                    lowk=True, runs_lowk=runs_lowk)
+            for i in range(0, len(runs_ng)):
+                A = runs_ng[i]
+                ksp_A, kspc_A, klimaM_A, WKB_A, env_A, envc_A, S_A = \
+                        compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                        OmM0, DDs, ch=ch, A=A, plot=False,
+                                        lowk=True, runs_lowk=runs_lowk)
+                if i < 4:
+                    neg_alpM_sp_ch.update({'k%s'%A: ksp_A, 'kc%s'%A: kspc_A, 'klimaM_%s'%A: klimaM_A,
+                                          'WKB%s'%A : WKB_A, 'sp_env%s'%A: env_A, 'sp_envc%s'%A: envc_A,
+                                          'S%s'%A: S_A})
+                else:
+                    pos_alpM_sp_ch.update({'k%s'%A: ksp_A, 'kc%s'%A: kspc_A, 'klimaM_%s'%A: klimaM_A,
+                                          'WKB%s'%A : WKB_A, 'sp_env%s'%A: env_A, 'sp_envc%s'%A: envc_A,
+                                          'S%s'%A: S_A})
 
-            neg_alpM_sp_ch = ({'k': k, 'kA': ksp_A, 'kcA': kspc_A, 'klimA': klimaM_A,
-                               'WKBA': WKB_A, 'sp_envA': env_A, 'sp_envcA': envc_A,
-                               'SA': S_A, 'kB': ksp_B, 'kcB': kspc_B, 'klimB': klimaM_B,
-                               'WKBB': WKB_B, 'sp_envB': env_B, 'sp_envcB': envc_B,
-                               'SB': S_B, 'kC': ksp_C, 'kcC': kspc_C, 'klimC': klimaM_C,
-                               'WKBC': WKB_C, 'sp_envC': env_C, 'sp_envcC': envc_C,
-                               'SC': S_C, 'kD': ksp_D, 'kcD': kspc_D, 'klimD': klimaM_D,
-                               'WKBD': WKB_D, 'sp_envD': env_D, 'sp_envcD': envc_D,
-                               'SD': S_D})
-            
-                        
-            ##### choices 0 or III (positive alpM)
-            ksp_E, kspc_E, klimaM_E, WKB_E, env_E, envc_E, S_E = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, ch=ch, A='E', plot=False,
-                                    lowk=True, runs_lowk=runs_lowk)
-            ksp_F, kspc_F, klimaM_F, WKB_F, env_F, envc_F, S_F = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, ch=ch, A='F', plot=False,
-                                    lowk=True, runs_lowk=runs_lowk)
-
-            pos_alpM_sp_ch = ({'k': k, 'kE': ksp_E, 'kcE': kspc_E, 'klimE': klimaM_E,
-                               'WKBE': WKB_E, 'sp_envE': env_E, 'sp_envcE': envc_E,
-                               'SE': S_E, 'kF': ksp_F, 'kcF': kspc_F, 'klimF': klimaM_F,
-                               'WKBF': WKB_F, 'sp_envF': env_F, 'sp_envcF': envc_F,
-                               'SF': S_F})
-            
         else:
-            
-            # choices I or II (negative alpM)
-            ksp_A, klimaM_A, WKB_A, env_A, S_A = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='A', plot=False, lowk=False)
-            ksp_B, klimaM_B, WKB_B, env_B, S_B = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='B', plot=False, lowk=False)
-            ksp_C, klimaM_C, WKB_C, env_C, S_C = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='C', plot=False, lowk=False)
-            
-            neg_alpM_sp_ch = ({'k': k, 'kA': ksp_A, 'klimA': klimaM_A, 'WKBA': WKB_A,
-                               'sp_envA': env_A, 'SA': S_A, 'kB': ksp_B, 'klimB': klimaM_B,
-                               'WKBB': WKB_B, 'sp_envB': env_B, 'SB': S_B, 'kC': ksp_C,
-                               'klimC': klimaM_C, 'WKBC': WKB_C, 'sp_envC': env_C, 'SC': S_C})
-            
-            ##### choices I or II (positive alpM)
-            ksp_D, klimaM_D, WKB_D, env_D, S_D = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='D', plot=False, lowk=False)
-            ksp_E, klimaM_E, WKB_E, env_E, S_E = \
-                    compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
-                                    OmM0, DDs, DDs2=DDs2, ch=ch, A='E', plot=False, lowk=False)
-            
-            pos_alpM_sp_ch = ({'k': k, 'kD': ksp_D, 'klimD': klimaM_E, 'WKBD': WKB_D, 'sp_envD': env_D,
-                               'SD': S_D, 'kE': ksp_E, 'klimE': klimaM_E, 'WKBE': WKB_E,
-                               'sp_envE': env_E, 'SE': S_E})
+            for i in range(0, len(runs_n2g)):
+                A = runs_n2g[i]
+                ksp_A, klimaM_A, WKB_A, env_A, S_A = \
+                        compute_spectra(runs, eta_nn, HH_nn, a_nn, Omega_nn, Omega_mat_nn,
+                                        OmM0, DDs, DDs2=DDs2, ch=ch, A=A, plot=False, lowk=False)
+                
+                if i < 3:
+                    neg_alpM_sp_ch.update({'k%s'%A: ksp_A, 'klimaM_%s'%A: klimaM_A,
+                                          'WKB%s'%A : WKB_A, 'sp_env%s'%A: env_A, 'S%s'%A: S_A})
+                else:
+                    pos_alpM_sp_ch.update({'k%s'%A: ksp_A, 'klimaM_%s'%A: klimaM_A,
+                                          'WKB%s'%A : WKB_A, 'sp_env%s'%A: env_A, 'S%s'%A: S_A})
         
         if save:
             
@@ -1183,13 +1093,13 @@ def read_values_spectra(spectra, A='A'):
     WKB = np.array(spectra.get('WKB%s'%A))
     ks = np.array(spectra.get('k%s'%A))
     env = np.array(spectra.get('sp_env%s'%A))
-    klim = np.array(spectra.get('klim%s'%A))
+    klim = np.array(spectra.get('klimaM_%s'%A))
     kspc = np.array(spectra.get('kc%s'%A))
     envc = np.array(spectra.get('sp_envc%s'%A))
     
     return S, WKB, ks, env, klim, kspc, envc
     
-def plot_all_spectra(spectra, app=0, kspcD=0, envcD=0, ch='0', save=True, newf=True,
+def plot_all_spectra(spectra, neg=True, app=0, kspcD=0, envcD=0, ch='0', save=True, newf=True,
                      lss='solid', txt=True, fact=3.5e-10):
     
     """
@@ -1204,6 +1114,8 @@ def plot_all_spectra(spectra, app=0, kspcD=0, envcD=0, ch='0', save=True, newf=T
     Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
     gravitational waves from the early radiation era,"
     submitted to JCAP (2022).
+    Negative values of alpM (left panel) if neg is True and positive
+    values (right panel) if neg is False.
     
     Figure saved in 'plots/spectra_envelope_choices_0_III.pdf'
     """
@@ -1223,51 +1135,61 @@ def plot_all_spectra(spectra, app=0, kspcD=0, envcD=0, ch='0', save=True, newf=T
         if txt:
             plt.text(2.2e-6, 1e-10/fact, r"$k_{{\rm lim}, a''}^{\rm EW}$", fontsize=30)
             plt.text(6e-1, 1e-12/fact, r'$k_{{\rm lim}, \alpha_{\rm M}}$', fontsize=30)
-            plt.text(1e-3, 4e-11/fact, r'$\alpha_{\rm M} = -0.5$',
-                     color='blue', fontsize=24)
-            plt.text(4e-5, 7e-14/fact, r'$\alpha_{\rm M} = -0.01$',
-                     color='magenta', fontsize=24)
-            plt.text(3e-4, 2.3e-13/fact, r'$\alpha_{\rm M} = -0.1$',
-                     color='red', fontsize=24)
-            plt.text(2e-7, 1.7e-12/fact, r'$\alpha_{\rm M} = -0.3$',
-                     color='green', fontsize=24,
-                     bbox=dict(boxstyle='round', pad=.3, facecolor='white',
-                               edgecolor='white', alpha=1))
-            plt.text(1e-4, 1e-16/fact, 'GR', fontsize=30)
+            
+            if neg:
+                plt.text(1e-3, 4e-11/fact, r'$\alpha_{\rm M} = -0.5$',
+                         color='blue', fontsize=24)
+                plt.text(4e-5, 7e-14/fact, r'$\alpha_{\rm M} = -0.01$',
+                         color='magenta', fontsize=24)
+                plt.text(3e-4, 2.3e-13/fact, r'$\alpha_{\rm M} = -0.1$',
+                         color='red', fontsize=24)
+                plt.text(2e-7, 1.7e-12/fact, r'$\alpha_{\rm M} = -0.3$',
+                         color='green', fontsize=24,
+                         bbox=dict(boxstyle='round', pad=.3, facecolor='white',
+                                   edgecolor='white', alpha=1))
+                plt.text(1e-4, 1e-16/fact, 'GR', fontsize=30)
+
+            else:
+                plt.text(1.3e-4, 4e-14/fact, r'$\alpha_{\rm M} = 0.3$',
+                color='orange', fontsize=24)
+                plt.text(1e-5, 2e-13/fact, r'$\alpha_{\rm M} = 0.1$',
+                     color='purple', fontsize=24)
+                plt.text(8e-3, 1e-14/fact, 'GR', fontsize=30)
+                plt.text(1.7e-5, 1e-15/fact, r'$\sim\!k^{1.5}$', fontsize=24)
+                xx = np.logspace(-4.7, -3.4)
+                plt.plot(xx, 9e-7*(xx/5e-5)**(1.5), lw=.8, color='black')
     
     lowk = False
     if ch == '0' or ch == 'III':
-
-        ks = np.array(spectra.get('k'))
-
-        SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
-                read_values_spectra(spectra, A='A')
-        SB, WKBB, ksB, envB, klimB, kspcB, envcB = \
-                read_values_spectra(spectra, A='B')
-        SC, WKBC, ksC, envC, klimC, kspcC, envcC = \
-                read_values_spectra(spectra, A='C')
-        SD, WKBD, ksD, envD, klimD, kspcD, envcD = \
-                read_values_spectra(spectra, A='D')
-        
         lowk = True
+        ks = np.array(spectra.get('k'))
         
-        plot_spectra(k, SA/fact, WKBA/fact, ksA, envA/fact, klimA, kspc=kspcA, envlc=envcA/fact,
-                     S_p=True, lowk=lowk, col='blue', WKB_p=True, lss=lss, v1=1e3)
-        plot_spectra(k, SB/fact, WKBB/fact, ksB, envB/fact, klimB, kspc=kspcB, envlc=envcB/fact,
-                     S_p=False, lowk=lowk, col='green', WKB_p=True, lss=lss, v1=1e3)
-        plot_spectra(k, SC/fact, WKBC/fact, ksC, envC/fact, klimC, kspc=kspcC, envlc=envcC/fact,
-                     S_p=False, lowk=lowk, col='red', WKB_p=True, lss=lss, v1=1e3)
-        plot_spectra(k, SD/fact, WKBD/fact, ksD, envD/fact, klimD, kspc=kspcD, envlc=envcD/fact,
-                     S_p=False, lowk=lowk, col='magenta', WKB_p=True, lss=lss, v1=1e3)
+        for i in range(0, len(runs_ng)):
+            A = runs_ng[i]
+            if neg and i < 4:
+                SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
+                        read_values_spectra(spectra, A=A)
+                plot_spectra(k, SA/fact, WKBA/fact, ksA, envA/fact, klimA,
+                             kspc=kspcA, envlc=envcA/fact, S_p=True, lowk=lowk,
+                             col=cols_g[i], WKB_p=True, lss=lss, v1=1e3)
+            if not neg and i > 3:
+                SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
+                        read_values_spectra(spectra, A=A)
+                plot_spectra(k, SA/fact, WKBA/fact, ksA, envA/fact, klimA,
+                             kspc=kspcA, envlc=envcA/fact, v1=1e3, S_p=True, lowk=True,
+                             col=cols_g[i], WKB_p=True, lss=lss, v0=1e-22, nkk=30,
+                             nkk2=30)
 
-    if newf: plt.plot([], [], color='black', ls='dashed', label='WKB')
+    if newf: plt.plot([], [], color='black', ls='dotted', label='WKB')
     plt.plot([], [], color='black', ls=lss, label='numerical (choice %s)'%ch)
     plt.legend(loc='lower right', framealpha=1, fontsize=24)
     
     if save:
-        print('Saving figure in plots/spectra_envelope_choices_0_III.pdf')
-        plt.savefig('plots/spectra_envelope_choices_0_III.pdf',
-                    bbox_inches='tight')
+        ngg = ''
+        if not neg: ngg = '_posaM'
+        fll = 'plots/spectra_envelope_choices_0_III' + ngg + '.pdf'
+        print('Saving figure in %s'%fll)
+        plt.savefig(fll, bbox_inches='tight')
         
 def interpolate_lowk(kkc, ks, S, ksp, kspc, env):
         
@@ -1276,3 +1198,504 @@ def interpolate_lowk(kkc, ks, S, ksp, kspc, env):
     envk = np.interp(kkc, kspc, env)
     
     return Sc, SA, envk
+        
+def plot_all_spectra_norm(spectrapos, spectraneg, ch='0', save=True, txt=True, newf=True,
+                          ax=0, iax=0, lss='solid'):
+    
+    """
+    Function that computes the spectra combining the 4 runs for all cases A to F
+    for choices 0 and III.
+    It uses the numerical spectra to obtain the envelope over oscillations
+    at each wave number and compensates by the total growth in the GW
+    energy density obtained (and verified) from the WKB approximation.
+    It also returns the WKB estimated spectra at late times.
+    
+    It generates the plots corresponding to figure 6 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    Figure saved in 'plots/spectra_envelope_choices_0_III_norm.pdf'
+    """
+    
+    if newf:
+        
+        fig, ax = plt.subplots(figsize=(8, 5))
+        plt.loglog()
+        plot_sets.axes_lines()
+        plt.xlabel(r'$k$')
+        plt.title(r"$\xi^{\rm num} (k)$", pad=15)
+        plt.ylim(1e-1, 1e11)
+        plt.xlim(1e-7, 4)
+        plt.xticks(np.logspace(-6, 0, 4))
+        plt.yticks(np.logspace(0, 10, 6))
+        
+        if txt:
+            xx = np.logspace(-6, -4)
+            plt.plot(xx, 1e-2*xx**(-2), color='black', lw=.8)
+            plt.text(1e-5, 2e8, r'$\sim\!k^{-2}$', fontsize=24)
+            xx = np.logspace(-6.5, -5)
+            plt.plot(xx, .8*xx**(-1), color='black', lw=.8)
+            plt.text(2e-7, 5e4, r'$\sim\!k^{-1}$', fontsize=24)
+            xx = np.logspace(-6.5, -4)
+            plt.plot(xx, 2*xx**(-.5), color='black', lw=.8)
+            plt.text(3e-6, 2e3, r'$\sim\!k^{-{1\over 2}}$', fontsize=24)
+        
+        # inset
+        from matplotlib.patches import Rectangle
+        from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+
+        plt.gca().add_patch(Rectangle((5e-3, 5e-1),2-5e-3,1e1-5e-1,
+                                edgecolor='black',
+                                facecolor='none',
+                                lw=4, alpha=.5))
+        plt.gca().annotate("", xy=(.4, 7e3), xytext=(.3, 15),
+                    arrowprops=dict(arrowstyle="->"))
+
+        iax = inset_axes(ax, width="40%", height=2, loc=1)
+        iax.loglog()
+        plot_sets.axes_lines()
+        iax.set_xlim(5e-3, 2)
+        iax.set_ylim(5e-1, 1e1)
+        iax.set_xticks([1])
+        iax.set_yticks([1])
+        
+        if txt:
+            
+            inds1 = np.where(k<.21)
+            inds2 = np.where(k[inds1]>.135)
+            plt.plot(k[inds1][inds2], .15/k[inds1][inds2]**2, color='black', lw=.8)
+            plt.text(.2, 5, r'$\sim\!k^{-2}$', fontsize=24)
+    
+    kkc = np.logspace(-7, -3, 100)
+    
+    if ch == '0' or ch == 'III':
+        for i in range(0, len(runs_ng)):
+            A = runs_ng[i]
+            if i < 4: spectra = spectraneg
+            else: spectra = spectrapos
+            ks = np.array(spectra.get('k'))
+            SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
+                    read_values_spectra(spectra, A=A)
+            SAc, SAA, envkA = \
+                    interpolate_lowk(kkc, ks, SA, ksA[1:], kspcA[1:],
+                                     .5*envcA[1:])
+        
+            ax.plot(ksA[1:], .5*envA[1:]/SAA, color=cols_g[i], ls=lss)
+            ax.plot(kkc, envkA/SAc, color=cols_g[i], ls=lss)
+            iax.plot(ksA[1:], .5*envA[1:]/SAA, color=cols_g[i], ls=lss)
+            iax.plot(kkc, envkA/SAc, color=cols_g[i], ls=lss)
+
+    if save:
+        fll = 'plots/spectra_envelope_choices_0_III_norm.pdf'
+        print('Saving figure in %s'%fll)
+        plt.savefig(fll, bbox_inches='tight')
+        
+    if newf:
+        return ax, iax
+    
+def combine_runs(k1, k2, env1, env2, kdisc=100):
+    
+    """
+    Function that appends two arrays of spectra and interpolates
+    the results with kdisc points.
+    It can be used to smooth the result from the slopes calculation.
+    """
+    
+    inds = np.where(k1[1:] >= k2[-1])[0]
+    kk = np.append(k2[1:], k1[1:][inds])
+    envv = np.append(env2[1:], env1[1:][inds])
+    
+    kks = np.logspace(np.log10(kk[0]), np.log10(kk[-1]), kdisc)
+    envvs = np.interp(kks, kk, envv)
+
+    return kks, envvs
+    
+def plot_spectra_slopes(spectrapos, spectraneg, ch='0', txt=True, newf=True,
+                        save=True, lss='solid', kdisc=100):
+    
+    """
+    Function that plots the slopes of the spectra after averaging over
+    oscillations (by using the envelope).
+    
+    It generates the plots corresponding to figure 6 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    Figure saved in 'plots/slopes_choices0_III.pdf'
+    """
+    
+    if newf:
+        plt.figure(1, figsize=(8, 5))
+        plt.xscale('log')
+        plt.ylim(-.6, 3.75)
+        plt.xlim(1e-5, 4)
+        plt.xticks(np.logspace(-6, 0, 7))
+        plt.yticks([0, 1, 2, 3])
+        plt.xlabel(r'$k$')
+        plt.title(r"$\beta \equiv - \frac{\partial  \log \xi^{\rm num} (k)}" + 
+                  r"{\partial \log k}$", pad=20)
+        plot_sets.axes_lines()
+        
+        if txt:
+            plt.hlines(0, 1e-6, 1e1, color='black', lw=.7)
+            plt.hlines(2, 1e-6, 1e1, color='black', lw=.7)
+    
+    if ch == '0' or ch == 'III':
+        for i in range(0, len(runs_ng)):
+            A = runs_ng[i]
+            if i < 4: spectra = spectraneg
+            else: spectra = spectrapos
+            ks = np.array(spectra.get('k'))
+            SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
+                    read_values_spectra(spectra, A=A)
+            #kks, envsA, slopesA = envelope_soles(ks, SA, ksA, kspcA, envA,
+            #                                     envcA, col=cols_g[i], ls=lss)
+            kks, envsA = combine_runs(ksA, kspcA, envA, envcA, kdisc=kdisc)
+            Sks = np.interp(kks, ks, SA)
+            slope = spec.slopes_loglog(kks, envsA/Sks)
+            plt.plot(kks, -slope, color=cols_g[i], ls=lss)
+            
+            if newf:
+                if alpsM0_g[i] == -0.5 or alpsM0_g[i] == 0.3:
+                    slWKB = spec.slopes_loglog(ks, WKBA/SA)
+                    plt.plot(ks, -slWKB, color=cols_g[i], ls='dotted')
+
+    if newf: plt.plot([], [], color='black', ls='dotted', label='WKB (choice %s)'%ch)
+    plt.plot([], [], color='black', ls=lss, label='numerical (choice %s)'%ch)
+    plt.legend(frameon=False, loc='upper left', fontsize=18)
+
+    if save:
+        fll = 'plots/slopes_choices0_III.pdf'
+        print('Saving figure in %s'%fll)
+        plt.savefig(fll, bbox_inches='tight')
+    
+def plot_spectra_error_WKB(spectrapos, spectraneg, ch='0', err_fill=True,
+                           save=True):
+    
+    """
+    Function that computes the error in the spectrum from the WKB estimate
+    compared with the resulting averaged saturated spectra obtained from
+    the numerical simulations for choices 0 and III.
+    
+    It generates the plots corresponding to figure 7 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    Figure saved in 'plots/spectra_envelope_error_WKB_choice#ch.pdf'
+    
+    Arguments:
+        spectrapos -- dictionary with numerical spectra for positive values
+                      of alpha_M
+        spectraneg -- id for negative values of alpha_M
+        ch -- choice of alpha_M parameterization
+        err_fill -- option to fill between -15 to 15% error
+    """
+    
+    plt.figure(figsize=(8, 5))
+    kkc = np.logspace(-7, -3, 1000)
+    kkc2 = np.logspace(-3, 1, 1000)
+    plt.xscale('log')
+    plt.xlim(1e-7, 1e1)
+    plt.ylim(-1.1, .5)
+    plt.xticks(np.logspace(-7, 1, 9))
+    plt.yticks(np.linspace(-1, .5, 7))
+    plt.xlabel(r'$k$')
+    plt.ylabel(r"$\varepsilon^{\rm WKB} (S_{h'})$")
+    plt.title(r'$\alpha_{\rm M}$ choice %s'%ch, pad=15)
+    plot_sets.axes_lines()
+    
+    if err_fill:
+        plt.hlines(.15, 1e-7, 1e1, color='black', ls='dashed')
+        plt.hlines(-.15, 1e-7, 1e1, color='black', ls='dashed')
+        xx = np.logspace(-7, 1)
+        plt.fill_between(xx, xx**0*-.15, xx**0*.15, alpha=.2, color='black')
+    
+    if ch == '0' or ch == 'III':
+        for i in range(0, len(runs_ng)):
+            A = runs_ng[i]
+            if i < 4: spectra = spectraneg
+            else: spectra = spectrapos
+            ks = np.array(spectra.get('k'))
+            SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
+                    read_values_spectra(spectra, A=A)
+            WKBAA = np.interp(ksA, ks, WKBA)
+            WKBAAc = np.interp(kspcA, ks, WKBA)
+            err_relA = 2*((WKBAA[1:] - .5*envA[1:])/envA[1:])
+            err_relAc = 2*((WKBAAc[1:] - .5*envcA[1:])/envcA[1:])
+            plt.plot(kkc, np.interp(kkc, kspcA[1:], err_relAc),
+                     '.', color=cols_g[i])
+            plt.plot(kkc2, np.interp(kkc2, ksA[1:], err_relA),
+                     '.', color=cols_g[i])
+            plt.vlines(klimA, -1e1, 1e1, color=cols_g[i], lw=.8)
+
+    if save:
+        fll = 'plots/spectra_envelope_error_WKB_choice%s.pdf'%ch
+        print('Saving figure in %s'%fll)
+        plt.savefig(fll, bbox_inches='tight')
+        
+def plot_present_time(k, EGW, g=gref, T=Tref, h0=h0_ref, col='blue',
+                      cut=True, kc=5, plot=True, ret=False):
+    
+    if cut: indk_cut = np.where(k < kc)[0]
+    else: indk_cut = np.where(k < 1e10)[0]
+    f, OmGW = cosmoGW.shift_OmGW_today(k[indk_cut], EGW[indk_cut]*k[indk_cut]/6,
+                                       g=g, T=T, h0=h0)
+    if plot: plt.plot(f, OmGW, color=col)
+    if ret: return OmGW
+    
+def compute_spectra(kk, kGW=10, EEGW=1.):#, q2=10):
+    
+    # get spectral peak and recompute such that the final peak is at kss
+    # and integrated value is EEGW
+    S_kk_ref = an.smoothed_dbpl(kk, A=1, kb=1, ks=kGW, a=2, b=0, c=11/3, alpha1=2, alpha2=2)
+    ind_max = np.argmax(S_kk_ref*kk)
+    kp_ks = kk[ind_max]/kGW
+    S_kk_ref = an.smoothed_dbpl(kk, A=1, kb=1, ks=kGW/kp_ks, a=2, b=0, c=11/3, alpha1=2, alpha2=2)
+    A = 6*EEGW/np.trapz(S_kk_ref, kk)
+    S_kk_ref = an.smoothed_dbpl(kk, A=A, kb=1, ks=kGW/kp_ks, a=2, b=0, c=11/3, alpha1=2, alpha2=2)
+
+    return A, kGW/kp_ks, S_kk_ref
+        
+def plot_OmegaGW_mod_today(spectrapos, spectraneg, DDs, ch='0', EEGW_st=1, newf=True,
+                           dets=True, kGWp=10, T=Tref, g=gref, kc=5, kdisc=1000,
+                           fact=3.5e-10, epoch='EWPT', txt=True, save=True, ax=0, iax=0):
+    
+    """
+    Function that generates the plot of the present-time GW spectra obtained for different
+    values of alpM0 for a given choice of alphaM parameterization (choice 0 or III are
+    available).
+    
+    It plots the spectra from the numerical simulations assuming the signal has been
+    generated at a specific epoch within RD, determined by T and g.
+    
+    It generates the plots corresponding to figure 8 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    Figures saved in 'plots/OmGW_detectorsEWPT.pdf' and 'plots/OmGW_detectorsQCDT.pdf'
+    
+    Arguments:
+    
+        spectrapos -- 
+        spectraneg -- 
+        DDs -- array of damping factor as a function of time for different values of alpM
+        ch -- choice of alpM parameterization (default 0)
+        EEGW_st -- integrated GW energy density normalized by the radiation energy density
+                    (default is 1)
+        newf -- option for first time to call the function for a specific plot
+        dets -- option to plot detector sensitivites (available are LISA, SKA, DECIGO, BBO, PTA, ET)
+        kGWp -- value of the peak of the GW spectrum given as a fraction of the Hubble scale
+                at the time of generation (default is 10)
+        T -- temperature scale at the time of generation
+        g -- relativistic dofs at the time of generation
+        kc -- wave number at which the numerical results are cut
+        kdisc -- number of k discretizations to be used in the resulting arrays from combining
+                 two runs with different size of the domain (default 1000 between 1e-7 and 1e-3)
+        fact -- numerical spectral amplitude used to normalize the results
+        epoch -- choice of epoch of generation (options are 'EWPT' and 'QCDPT')
+    """
+    
+    if newf:
+        
+        fig, ax = plt.subplots(1, figsize=(8, 5))
+        plt.loglog()
+        plot_sets.axes_lines()
+        plt.xlim(1e-10, 1e1)
+        plt.ylim(1e-19, 1e-5)
+        plt.xticks(np.logspace(-10, 0, 6))
+        plt.yticks(np.logspace(-18, -6, 7))
+        plt.xlabel(r'$f$ [Hz]')
+        plt.ylabel(r'$h^2 \, \Omega_{\rm GW} (f)$')
+        
+        if txt and epoch=='EWPT':
+            xx = np.logspace(-6.5, -5.5)
+            plt.plot(xx, 1e-20*(xx/1e-7)**3, color='black', lw=.8)
+            xx = np.logspace(-5, -3.5)
+            plt.plot(xx, 2e-14*(xx/1e-4), color='black', lw=.8)
+            xx = np.logspace(-1.5, .1)
+            plt.plot(xx, 2.5e-18*xx**(-8/3), color='black', lw=.8)
+            plt.text(1.5e-6, 1e-17, r'$\sim\!f^3$', fontsize=20)
+            plt.text(4e-5, 2e-15, r'$\sim\!f$', fontsize=20)
+            plt.text(4e-1, 3e-17, r'$\sim\!f^{-{8\over3}}$', fontsize=18)
+        
+        if dets:
+            ### read GW detectors sensitivities and plot
+            os.chdir(HOME)
+            fs, LISA_Om, LISA_OmPLS = inte.read_sens(SNR=10, T=4, interf='LISA', Xi=False)
+            fSKA, OmSKA = inte.read_detector_PLIS_Schmitz(det='SKA', SNR=10, T=4)
+            fBBO, OmBBO = inte.read_detector_PLIS_Schmitz(det='BBO', SNR=10, T=4)
+            fDECIGO, OmDECIGO = inte.read_detector_PLIS_Schmitz(det='DECIGO', SNR=10, T=4)
+            fET, OmET = inte.read_detector_PLIS_Schmitz(det='ET', SNR=10, T=4)
+            os.chdir(dir0)
+            plt.plot(fs, LISA_OmPLS, alpha=.7, color='grey', lw=2)
+            plt.plot(fSKA, OmSKA, alpha=.7, color='grey', lw=2)
+            plt.plot(fBBO, OmBBO, alpha=.7, color='grey', lw=2)
+            plt.plot(fDECIGO, OmDECIGO, alpha=.7, color='grey', lw=2)
+            plt.plot(fET, OmET, alpha=.7, color='grey', lw=2)
+
+            # plot PTA data from observations
+            betas = np.linspace(1, 5, 100)
+            pta.plot_PTA_all(ff='Om', betas=betas, lines=False, alp_bl=.1, alp_E=.1, alp_g=0,
+                             alp_I=.1, alp_P=.1, ret=False, plot=True)
+            if txt:
+                if epoch == 'QCDPT':
+                    plt.text(1.5e-8, 1e-13, 'SKA', fontsize=22, color='gray')
+                    plt.text(2e-6, 1e-9, 'LISA', fontsize=22, color='gray')
+                    plt.text(2e-9, 1e-7, 'PTA', fontsize=22, color='gray')
+                    
+                else:
+                    plt.text(5e-6, 1e-10, 'LISA', fontsize=22, color='gray')
+                    plt.text(1.5e-7, 1e-8, 'SKA', fontsize=22, color='gray')
+                    plt.text(3e-2, 5e-14, 'DECIGO', fontsize=16, color='gray')
+                    plt.text(3e-3, 2e-17, 'BBO', fontsize=22, color='gray')
+                    plt.text(3e-1, 1e-9, 'ET', fontsize=22, color='gray')
+                    plt.text(5e-10, 1e-8, 'PTA', fontsize=22, color='gray')
+        
+        if epoch == 'QCDPT':
+            plt.ylim(1e-18, 1e-4)
+            plt.xlim(1e-14, 1e-4)
+            plt.yticks(np.logspace(-18, -4, 8))
+            plt.xticks(np.logspace(-14, -4, 6))
+
+            from matplotlib.patches import Rectangle
+            plt.gca().add_patch(Rectangle((5e-10,1e-12),5e-9-5e-10,5e-9-1e-12,
+                                edgecolor='black',
+                                facecolor='none',
+                                lw=4, alpha=.5))
+
+            ax.annotate("", xy=(3e-10, 3e-7), xytext=(1e-9, 1e-8),
+                        arrowprops=dict(arrowstyle="->"))
+
+            from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+            iax = inset_axes(ax, width="40%", height=1.75, loc=2)
+            plot_sets.axes_lines(ax=iax)
+            iax.loglog()
+            plt.xlim(5e-10, 5e-9)
+            plt.ylim(1e-12, 5e-9)
+            plt.yticks([])
+            iax.set_xticks([])
+            iax.set_xticks([], minor=True)
+            for i in iax.get_xticklabels() + iax.get_yticklabels():
+                i.set_fontsize(14)
+            if dets:
+                pta.plot_PTA_all(ff='Om', betas=betas, lines=False, alp_bl=.4, alp_E=.2, alp_g=0,
+                                 alp_I=.3, alp_P=.2, ret=False, plot=True)
+                if txt:
+                    plt.text(2e-9, 1.5e-11, 'PTA', fontsize=22, color='gray')
+                    
+    ## generate analytical spectrum using double power law
+    ## A_sp and kGW_sp are the parameters used in the model to get
+    ## a resulting spectra with integrated value EEGW_st and that
+    ## peaks at kGWp
+    kk = np.logspace(-4, 8, 50000)
+    A_sp, kGW_sp, Skk = compute_spectra(kk, kGW=kGWp, EEGW=EEGW_st)
+
+    ## cut the numerical results at k = 5
+    if ch == '0' or ch == 'III':
+        for i in range(0, len(runs_ng)):
+            A = runs_ng[i]
+            if i < 4: spectra = spectraneg
+            else: spectra = spectrapos
+            ks = np.array(spectra.get('k'))
+            SA, WKBA, ksA, envA, klimA, kspcA, envcA = \
+                    read_values_spectra(spectra, A=A)
+            kks, envvs = combine_runs(ksA, kspcA, envA, envcA, kdisc=kdisc)
+            plt.sca(ax)
+            plot_present_time(kks, .5*envvs*A_sp/fact, g=g, T=T, h0=1.,
+                              col=cols_g[i], kc=kc, cut=True, plot=True,
+                              ret=False)
+            if i == 0:
+                OmGW_GR = plot_present_time(kk, Skk, g=g, T=T, h0=1., col='black',
+                                            cut=False, plot=True, ret=True)
+            if epoch=='QCDPT':
+                plt.sca(iax)
+                plot_present_time(kks, .5*envvs*A_sp/fact, g=g, T=T, h0=1.,
+                                  col=cols_g[i], kc=kc, cut=True, plot=True,
+                                  ret=False)
+                if i == 0:
+                    OmGW_GR = plot_present_time(kk, Skk, g=g, T=T, h0=1., col='black',
+                                                cut=False, plot=True, ret=True)
+                plt.sca(ax)
+    
+    if save:
+        fll = 'plots/OmGW_detectors' + epoch + '.pdf'
+        print('Saving figure in %s'%fll)
+        plt.savefig(fll, bbox_inches='tight')
+        
+    if newf: return ax, iax
+    
+def plot_amplification_damping(Q, Q_QCD, alpsM0, txt=True, save=True):
+    
+    """
+    Function that plots the amplification (damping) for the 4 different choices
+    of alpM parameterization from the time of generation until present time
+    given the temperature scale within the RD at which the signal was generated.
+    
+    It considers the EWPT and the QCDPT as the initial times of generation.
+    
+    It generates the plots corresponding to figure 9 of
+    Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
+    gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    Figures saved in 'plots/OmGW_detectorsEWPT.pdf' and 'plots/OmGW_amplification.pdf'
+    
+    Arguments:
+        Q -- array of reference amplifications for alpM0 for the 4 choices
+             produced at the EWPT
+        Q_QCD -- array of reference amplifications for alpM0 for the 4 choices
+                 produced at the QCDPT
+        alpsM0 -- array of values of alpM at present time
+        
+    """
+    
+    fig, ax = plt.subplots(figsize=(8, 5))
+    plt.yscale('log')
+    plt.ylim(1e-9, 1e9)
+    plt.yticks(np.logspace(-8, 8, 9))
+    plt.xlim(.55, -.55)
+    plt.xlabel(r'$\alpha_{{\rm M}, 0}$')
+    plt.ylabel(r'$e^{-2 {\cal D}} (\eta_0)$')
+    plot_sets.axes_lines()
+
+    if txt:
+        plt.hlines(1, -1, 1, color='black', lw=.8)
+        plt.text(-.22, 3e5, 'EW', color='blue')
+        plt.text(-.4, 1e3, 'QCD', color='green')
+        plt.text(-.18, 3.e-2, r'$|\alpha_{{\rm M}, 0}|$')
+
+    plt.plot([], [], color='black', label='choice 0')
+    plt.plot([], [], color='black', ls='dashed', label='choice III')
+    plt.plot([], [], color='black', ls='dotted', label='choices I and II')
+    plt.legend(frameon=False, fontsize=24)
+
+    lss = np.array(['solid', 'dotted', 'dotted', 'dashed'])
+    for i in range(0, 4):
+        plt.plot(alpsM0, Q[i]**alpsM0, color='blue', ls=lss[i])
+        plt.plot(alpsM0, Q_QCD[i]**alpsM0, color='green', ls=lss[i])
+
+    from matplotlib.patches import Rectangle
+
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+    iax = inset_axes(ax, width="50%", height=1.2, loc=4)
+    iax.loglog()
+    plt.ylim(1e-2, 1e2)
+    plt.yticks(np.logspace(-2, 2, 5))
+    plt.xlim(5e-3, 2e-1)
+    iax.xaxis.tick_top()
+    for i in iax.get_xticklabels() + iax.get_yticklabels():
+        i.set_fontsize(16)
+    iax.set_xticks(np.logspace(-2, -1, 2))
+    iax.set_yticks(np.logspace(-2, 2, 5))
+    plot_sets.axes_lines()
+    
+    if txt:
+        plt.hlines(1, -1, 1, color='black', lw=.8)
+    
+    for i in range(0, 4):
+        plt.plot(abs(alpsM0), Q[i]**alpsM0, color='blue', ls=lss[i])
+        plt.plot(abs(alpsM0), Q_QCD[i]**alpsM0, color='green', ls=lss[i])
+
+    if save:
+        fll = 'plots/OmGW_amplification.pdf'
+        print('Saving figure in %s'%fll)
+        plt.savefig(fll, bbox_inches='tight')
