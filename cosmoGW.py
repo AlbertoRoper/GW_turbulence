@@ -161,9 +161,9 @@ def shift_onlyOmGW_today(OmGW, g=10, d=1, h0=1.):
     https://arxiv.org/pdf/2201.05630.pdf (2022); eq. 27.
     """
 
-    Hs_f = Hs_fact()*u.MeV**2
-    as_f = as_fact()/u.MeV
-    g0, g0s, T0, H0 = values_0(h0=h0)
+    Hs_f = co.Hs_fact()*u.MeV**2
+    as_f = co.as_fact()/u.MeV
+    g0, g0s, T0, H0 = co.values_0(h0=h0)
     OmGW_f = Hs_f**2/H0**2*as_f**4
     OmGW0 = OmGW*OmGW_f*g**(-1/3)
     if d==-1: OmGW0 = OmGW/OmGW_f/g**(-1/3)
@@ -195,8 +195,8 @@ def shift_frequency_today(k, g=10, T=100*u.MeV, d=1):
     hydromagnetic turbulence," https://arxiv.org/pdf/1807.05479.pdf (2020); eq. B.13.
     """
 
-    Hs_f = Hs_fact()
-    as_f = as_fact()
+    Hs_f = co.Hs_fact()
+    as_f = co.as_fact()
     f_f = Hs_f*as_f/2/np.pi
     T = T.to(u.MeV)
     f = k*f_f*g**(1/6)*T
@@ -273,7 +273,7 @@ def shift_hc_today(k, hc, g=10, T=100*u.MeV, d=1):
     hydromagnetic turbulence," https://arxiv.org/pdf/1807.05479.pdf (2020); eq. B.12.
     """
 
-    as_f = as_fact()
+    as_f = co.as_fact()
     T = T.to(u.MeV)
     hc0 = hc*as_f*g**(-1/3)/T
     if d == -1: hc0 = hc/as_f/g**(-1/3)*T
