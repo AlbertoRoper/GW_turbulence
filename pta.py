@@ -19,6 +19,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cosmoGW
 
+### duration of PTA observations
+T_NG = 12.5
+T_P = 15
+T_E = 24
+T_I = 31
+
 def get_gamma_A(file, beta_b=False, Omega_b=False, fref=0, disc=1000,
                 plot=False, color='blue', alpha=.4, return_all=False,
                 fill=True):
@@ -94,7 +100,7 @@ def get_gamma_A(file, beta_b=False, Omega_b=False, fref=0, disc=1000,
     if return_all:
         return gamma, A, gammas, A1, A2
     else: return gamma, A
-    
+
 def gammas_As(gamma, A, disc=1000):
 
     """
@@ -291,6 +297,57 @@ def read_PTA_data(beta_b=True, Omega_b=True, fref=0, return_all=False,
             gamma_P_b_2s, A_P_b_2s, gamma_P_b_1s, A_P_b_1s, gamma_E_2s_old,
             A_E_2s_old, gamma_E_1s_old, A_E_1s_old, gamma_E_2s, A_E_2s,
             gamma_E_1s, A_E_1s, gamma_I_2s, A_I_2s, gamma_I_1s, A_I_1s)
+    
+def single_CP(f, gamma, A1, A2, beta=0, broken=True, plot=False, alpha=.1,
+              T=12.5, color='blue'):
+
+    """
+    Function to compute the GW spectral maxima and minima at each frequency
+    from the allowed amplitudes and slopes from the PTA results.
+
+    Arguments:
+        f -- array of frequencies to compute the background
+        gamma -- slopes of the power spectral density allowed by PTA data
+        A1 -- minimum amplitude allowed by PTA data for the slope gamma
+        A2 -- maximum amplitude allowed by PTA data for the slope gamma
+        beta -- slope used to compute the GW energy density spectrum
+                (default is 0)
+        broken -- option to plot the broken power law fit (default is True)
+        plot -- option to plot the resulting spectra (default False)
+        alpha -- transparency of the plot (default 1)
+        color -- color of the plot (default 'blue')
+        T -- duration of the mission (default is 12.5 years for NANOGrav)
+
+    Returns:
+        Sf -- power spectral density as a function of frequency
+        hc -- characteristic strain spectrum
+        OmGW -- GW energy density spectrum
+            a, b indicate minima and maxima at each frequency
+    """
+
+    T = T*u.yr
+    T = T.to(u.s)
+    f1yr = 1/u.yr
+    f1yr = f1yr.to(u.Hz)
+    gam = 5 - beta
+    inside = True
+    if gam < min(gamma) or gam > max(gamma): inside = False
+    As = np.linspace(np.interp(gam, gamma, A1), np.interp(gam, gamma, A2), 10)
+    if not inside: As = np.zeros(10)
+    ACP = np.sqrt(As[0]*As[-1])
+    Sf_a, hc_a, OmGW_a = Sf_PL_PTA(As[0], f, gam, broken=broken)
+    Sf_b, hc_b, OmGW_b = Sf_PL_PTA(As[-1], f, gam, broken=broken)
+    Sf_c, hc_c, OmGW_c = Sf_PL_PTA(ACP, f, gam, broken=broken)
+
+    if plot:
+        if alpha < 1:
+            plt.plot(f, np.sqrt(Sf_c/T), color=color)
+            plt.plot(f, np.sqrt(Sf_a/T), color=color, ls='dashed', lw=1)
+            plt.plot(f, np.sqrt(Sf_b/T), color=color, ls='dashed', lw=1)
+        plt.fill_between(f, np.sqrt(Sf_a/T), np.sqrt(Sf_b/T),
+                         alpha=alpha, color=color)
+
+    return Sf_a, hc_a, OmGW_a, Sf_b, hc_b, OmGW_b
 
 def CP_delay(betas, colors=[], obs='NANOGrav_brokenPL_1s',
              plot=False, alpha=.1):
@@ -312,14 +369,10 @@ def CP_delay(betas, colors=[], obs='NANOGrav_brokenPL_1s',
     gamma_I_1s, A1_I_1s, A2_I_1s = [_[33], _[34], _[35]]
 
     # time of data considered for each of the PTA collaborations (in years)
-    Tdata_EPTA = 24
-    Tdata_PPTA = 15
-    Tdata_NG = 12.5
-    Tdata_IPTA = 31
-    if 'NANOGrav' in obs: Tdata = Tdata_NG
-    if 'PPTA' in obs: Tdata = Tdata_PPTA
-    if 'EPTA' in obs: Tdata = Tdata_EPTA
-    if 'IPTA' in obs: Tdata = Tdata_IPTA
+    if 'NANOGrav' in obs: Tdata = T_NG
+    if 'PPTA' in obs: Tdata = T_P
+    if 'EPTA' in obs: Tdata = T_E
+    if 'IPTA' in obs: Tdata = T_I
 
     # duration of NANOGrav observations
     broken = True
@@ -415,57 +468,6 @@ def CP_delay(betas, colors=[], obs='NANOGrav_brokenPL_1s',
                                       T=Tdata)
 
     return f, Sf_a, hc_a, OmGW_a, Sf_c, hc_c, OmGW_c
-  
-def single_CP(f, gamma, A1, A2, beta=0, broken=True, plot=False, alpha=.1,
-              T=12.5, color='blue'):
-
-    """
-    Function to compute the GW spectral maxima and minima at each frequency
-    from the allowed amplitudes and slopes from the PTA results.
-
-    Arguments:
-        f -- array of frequencies to compute the background
-        gamma -- slopes of the power spectral density allowed by PTA data
-        A1 -- minimum amplitude allowed by PTA data for the slope gamma
-        A2 -- maximum amplitude allowed by PTA data for the slope gamma
-        beta -- slope used to compute the GW energy density spectrum
-                (default is 0)
-        broken -- option to plot the broken power law fit (default is True)
-        plot -- option to plot the resulting spectra (default False)
-        alpha -- transparency of the plot (default 1)
-        color -- color of the plot (default 'blue')
-        T -- duration of the mission (default is 12.5 years for NANOGrav)
-
-    Returns:
-        Sf -- power spectral density as a function of frequency
-        hc -- characteristic strain spectrum
-        OmGW -- GW energy density spectrum
-            a, b indicate minima and maxima at each frequency
-    """
-
-    T = T*u.yr
-    T = T.to(u.s)
-    f1yr = 1/u.yr
-    f1yr = f1yr.to(u.Hz)
-    gam = 5 - beta
-    inside = True
-    if gam < min(gamma) or gam > max(gamma): inside = False
-    As = np.linspace(np.interp(gam, gamma, A1), np.interp(gam, gamma, A2), 10)
-    if not inside: As = np.zeros(10)
-    ACP = np.sqrt(As[0]*As[-1])
-    Sf_a, hc_a, OmGW_a = Sf_PL_PTA(As[0], f, gam, broken=broken)
-    Sf_b, hc_b, OmGW_b = Sf_PL_PTA(As[-1], f, gam, broken=broken)
-    Sf_c, hc_c, OmGW_c = Sf_PL_PTA(ACP, f, gam, broken=broken)
-
-    if plot:
-        if alpha < 1:
-            plt.plot(f, np.sqrt(Sf_c/T), color=color)
-            plt.plot(f, np.sqrt(Sf_a/T), color=color, ls='dashed', lw=1)
-            plt.plot(f, np.sqrt(Sf_b/T), color=color, ls='dashed', lw=1)
-        plt.fill_between(f, np.sqrt(Sf_a/T), np.sqrt(Sf_b/T),
-                         alpha=alpha, color=color)
-
-    return Sf_a, hc_a, OmGW_a, Sf_b, hc_b, OmGW_b
 
 def OmGW_PTA(betas, ff='Om'):
 
@@ -574,7 +576,8 @@ def OmGW_PTA(betas, ff='Om'):
             max_OmGW_sPL_P, f_sPL_E_old, min_OmGW_sPL_E_old, max_OmGW_sPL_E_old,
             f_sPL_E, min_OmGW_sPL_E, max_OmGW_sPL_E, f_sPL_I, min_OmGW_sPL_I,
             max_OmGW_sPL_I)
-  
+
+
 def Sf_PL_PTA(A, f, gamma, fbend=0, kappa=0.1, broken=True):
 
     """
@@ -614,3 +617,111 @@ def Sf_PL_PTA(A, f, gamma, fbend=0, kappa=0.1, broken=True):
     OmGW = cosmoGW.hc_OmGW(f, hc, d=-1)
 
     return Sf, hc, OmGW
+
+def plot_PTA_all(ff='tdel', betas=[], lines=True, alp_bl=0.3, alp_E=0.2, alp_g=0.1,
+                 alp_P=0.1, alp_I=0.1, plot=True, ret=False):
+
+    """
+    Function that overplots the GW spectra Omega_GW (f) = Omyr (f/fyr)^beta
+    for the values of beta and Omyr reported by the PTA collaborations.
+
+    Arguments:
+        ff -- option to chose what function to plot (default 'tdel' for time
+              delay in seconds, 'Sf' for power spectral density, 'hc' for
+              characteristic amplitude spectrum, and 'Om' for GW energy density
+              spectrum, from -2 to 5)
+        betas -- range of slopes considered for the plot (default is all
+                 possible values)
+        lines -- option to explicitly plot the boundaring lines on top of the
+                 allowed region.
+        alp_bl, _E, _g, _P, _I -- alpha of the contour plots for NG broken PL
+                                  (bl for blue), NG single PL (g for green),
+                                  EPTA (E), PPTA (P) and IPTA (I)
+        plot -- option to plot the results
+        ret -- option to return the resulting OmGW spectra
+    """
+
+    if len(betas) == 0: betas = np.linspace(-2, 5, 100)
+
+    if ff == 'tdel': ff2 = 'Sf'
+    else: ff2 = ff
+
+    (f_bPL_NG, min_OmGW_bPL_NG, max_OmGW_bPL_NG, f_sPL_NG, min_OmGW_sPL_NG,
+    max_OmGW_sPL_NG, f_sPL_P, min_OmGW_sPL_P, max_OmGW_sPL_P, f_sPL_E_old,
+    min_OmGW_sPL_E_old, max_OmGW_sPL_E_old, f_sPL_E, min_OmGW_sPL_E,
+    max_OmGW_sPL_E, f_sPL_I, min_OmGW_sPL_I, max_OmGW_sPL_I) = \
+                    OmGW_PTA(betas, ff=ff2)
+
+    # duration of observations for NANOGrav
+    TNG = T_NG*u.yr
+    TNG = TNG.to(u.s)
+    # duration of observations for PPTA
+    TP = T_P*u.yr
+    TP = TP.to(u.s)
+    # duration of observations for EPTA
+    TE = T_E*u.yr
+    TE = TE.to(u.s)
+    # duration of observations for IPTA
+    TI = T_I*u.yr
+    TI = TI.to(u.s)
+
+    if ff == 'tdel':
+        min_OmGW_bPL_NG = np.sqrt(min_OmGW_bPL_NG/T_NG)
+        max_OmGW_bPL_NG = np.sqrt(max_OmGW_bPL_NG/T_NG)
+        min_OmGW_sPL_NG = np.sqrt(min_OmGW_sPL_NG/T_NG)
+        max_OmGW_sPL_NG = np.sqrt(max_OmGW_sPL_NG/T_NG)
+        min_OmGW_sPL_P = np.sqrt(min_OmGW_sPL_P/T_P)
+        max_OmGW_sPL_P = np.sqrt(max_OmGW_sPL_P/T_P)
+        min_OmGW_sPL_E_old = np.sqrt(min_OmGW_sPL_E_old/T_E)
+        max_OmGW_sPL_E_old = np.sqrt(max_OmGW_sPL_E_old/T_E)
+        min_OmGW_sPL_E = np.sqrt(min_OmGW_sPL_E/T_E)
+        max_OmGW_sPL_E = np.sqrt(max_OmGW_sPL_E/T_E)
+        min_OmGW_sPL_I = np.sqrt(min_OmGW_sPL_I/T_I)
+        max_OmGW_sPL_I = np.sqrt(max_OmGW_sPL_I/T_I)
+
+    flim = 1.25e-8*u.Hz
+    good = np.where(f_bPL_NG.value < flim.value)
+    
+    if plot:
+        # NG single PL
+        plt.fill_between(f_sPL_NG, min_OmGW_sPL_NG, max_OmGW_sPL_NG,
+                         color='darkgreen', alpha=alp_g)
+        if lines:
+            plt.plot(f_sPL_NG, min_OmGW_sPL_NG, color='darkgreen', lw=2)
+            plt.plot(f_sPL_NG, max_OmGW_sPL_NG, color='darkgreen', lw=2)
+        
+        # NG broken PL
+        plt.fill_between(f_bPL_NG[good], min_OmGW_bPL_NG[good],
+                         max_OmGW_bPL_NG[good], color='blue', alpha=alp_bl,
+                         label='NG bPL')
+        if lines:
+            plt.plot(f_bPL_NG[good], min_OmGW_bPL_NG[good], color='blue', lw=2)
+            plt.plot(f_bPL_NG[good], max_OmGW_bPL_NG[good], color='blue', lw=2)
+    
+        # PPTA
+        plt.fill_between(f_sPL_P, min_OmGW_sPL_P, max_OmGW_sPL_P,
+                         color='red', alpha=alp_P)
+        if lines:
+            plt.plot(f_sPL_P, min_OmGW_sPL_P, color='red', lw=2)
+            plt.plot(f_sPL_P, max_OmGW_sPL_P, color='red', lw=2)
+
+        # EPTA
+        plt.fill_between(f_sPL_E, min_OmGW_sPL_E, max_OmGW_sPL_E,
+                         color='purple', alpha=alp_E)
+        if lines:
+            plt.plot(f_sPL_E, min_OmGW_sPL_E, color='purple', lw=2)
+            plt.plot(f_sPL_E, max_OmGW_sPL_E, color='purple', lw=2)
+
+        # IPTA
+        plt.fill_between(f_sPL_I, min_OmGW_sPL_I, max_OmGW_sPL_I,
+                         color='black', alpha=alp_I)
+        if lines:
+            plt.plot(f_sPL_I, min_OmGW_sPL_I, color='black', lw=2)
+            plt.plot(f_sPL_I, max_OmGW_sPL_I, color='black', lw=2)
+
+    if ret:
+        return (f_bPL_NG, min_OmGW_bPL_NG, max_OmGW_bPL_NG, f_sPL_NG,
+                min_OmGW_sPL_NG, max_OmGW_sPL_NG, f_sPL_P, min_OmGW_sPL_P,
+                max_OmGW_sPL_P, f_sPL_E_old, min_OmGW_sPL_E_old, max_OmGW_sPL_E_old,
+                f_sPL_E, min_OmGW_sPL_E, max_OmGW_sPL_E, f_sPL_I, min_OmGW_sPL_I,
+                max_OmGW_sPL_I)
