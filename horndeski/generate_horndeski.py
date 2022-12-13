@@ -1451,7 +1451,7 @@ def plot_present_time(k, EGW, g=gref, T=Tref, h0=h0_ref, col='blue',
     if plot: plt.plot(f, OmGW, color=col)
     if ret: return OmGW
     
-def compute_spectra(kk, kGW=10, EEGW=1.):#, q2=10):
+def compute_spectra_OmGW(kk, kGW=10, EEGW=1.):#, q2=10):
     
     # get spectral peak and recompute such that the final peak is at kss
     # and integrated value is EEGW
@@ -1598,7 +1598,7 @@ def plot_OmegaGW_mod_today(spectrapos, spectraneg, DDs, ch='0', EEGW_st=1, newf=
     ## a resulting spectra with integrated value EEGW_st and that
     ## peaks at kGWp
     kk = np.logspace(-4, 8, 50000)
-    A_sp, kGW_sp, Skk = compute_spectra(kk, kGW=kGWp, EEGW=EEGW_st)
+    A_sp, kGW_sp, Skk = compute_spectra_OmGW(kk, kGW=kGWp, EEGW=EEGW_st)
 
     ## cut the numerical results at k = 5
     if ch == '0' or ch == 'III':
