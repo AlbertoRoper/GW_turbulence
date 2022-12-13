@@ -69,18 +69,24 @@ def read_spectra_runs(dir0, dir_run, opt=0):
 
     # read the wave number from power_krms.dat and normalize it using the
     # size of the box length L (assuming a cubic domain)
-    k = read_k()
-    Nk = len(k)
-    if np.isnan(k[0]): k = np.linspace(0, Nk-1, num=Nk)
     L = read_L()
     k0 = 2*np.pi/L
-    k = k*k0
+    print('k0 = ', k0)
+    failed_k = False
+    try:
+        k = read_k()
+        Nk = len(k)
+        if np.isnan(k[0]): k = np.linspace(0, Nk-1, num=Nk)
+        k = k*k0
+        spectra.update({'k':k})  # add the wave number array to the dictionary
+    except:
+        failed_k = True
 
     # read and add to the dictionary spectra all the spectra to be read
     # from the list 'matching'
     spectra = {}                # initialize the dictionary spectra
-    spectra.update({'k':k})     # add the wave number array to the dictionary
     spectra.update({'k0':k0})   # add smallest wave number
+    lenk = 0
     for i in matching:
         aux = i.replace('power_', '')
         aux = aux.replace('.dat', '')
@@ -89,6 +95,12 @@ def read_spectra_runs(dir0, dir_run, opt=0):
         sps = np.asarray(sps/k0, dtype=object)
         spectra.update({aux:sps})
         spectra.update({'t_' + aux:times})
+        if lenk != np.shape(sps)[1] and failed_k:
+            print('assigning k')
+            lenk = np.shape(sps)[1]
+    if failed_k:
+        k = np.array(range(0, lenk))*k0
+        spectra.update({'k':k})  # add the wave number array to the dictionary
 
     # read and add to the dictionary spectra all the helical spectra to be
     # read from the list 'matchinghel'
@@ -125,6 +137,7 @@ def take_exception(s, db=False):
 
     neg = False
     if db: print(s)
+
     if s[0] == '-':
         neg = True
         s0 = s[1:]
@@ -158,6 +171,7 @@ def take_exception(s, db=False):
                     s3 = s3[ind + 1:]
         else: s2 = s0
     if neg: s2 = '-' + s2
+    if len(s3) == 0: divided = False
 
     return s2, divided, s3
 
@@ -494,7 +508,7 @@ def read_L(dir_data='.', debug=False):
 
     return L
 
-## This function might be obsolete (to be checked)
+## This function might be obsolete (check)
 def sensitivity(file, dir='detector_sensitivity'):
 
     """
