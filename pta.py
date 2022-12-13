@@ -687,37 +687,37 @@ def plot_PTA_all(ff='tdel', betas=[], lines=True, alp_bl=0.3, alp_E=0.2, alp_g=0
         plt.fill_between(f_sPL_NG.value, min_OmGW_sPL_NG, max_OmGW_sPL_NG,
                          color='darkgreen', alpha=alp_g)
         if lines:
-            plt.plot(f_sPL_NG, min_OmGW_sPL_NG, color='darkgreen', lw=2)
-            plt.plot(f_sPL_NG, max_OmGW_sPL_NG, color='darkgreen', lw=2)
+            plt.plot(f_sPL_NG.value, min_OmGW_sPL_NG, color='darkgreen', lw=2)
+            plt.plot(f_sPL_NG.value, max_OmGW_sPL_NG, color='darkgreen', lw=2)
         
         # NG broken PL
         plt.fill_between(f_bPL_NG[good].value, min_OmGW_bPL_NG[good],
                          max_OmGW_bPL_NG[good], color='blue', alpha=alp_bl,
                          label='NG bPL')
         if lines:
-            plt.plot(f_bPL_NG[good], min_OmGW_bPL_NG[good], color='blue', lw=2)
-            plt.plot(f_bPL_NG[good], max_OmGW_bPL_NG[good], color='blue', lw=2)
+            plt.plot(f_bPL_NG[good].value, min_OmGW_bPL_NG[good], color='blue', lw=2)
+            plt.plot(f_bPL_NG[good].value, max_OmGW_bPL_NG[good], color='blue', lw=2)
     
         # PPTA
         plt.fill_between(f_sPL_P.value, min_OmGW_sPL_P, max_OmGW_sPL_P,
                          color='red', alpha=alp_P)
         if lines:
-            plt.plot(f_sPL_P, min_OmGW_sPL_P, color='red', lw=2)
-            plt.plot(f_sPL_P, max_OmGW_sPL_P, color='red', lw=2)
+            plt.plot(f_sPL_P.value, min_OmGW_sPL_P, color='red', lw=2)
+            plt.plot(f_sPL_P.value, max_OmGW_sPL_P, color='red', lw=2)
 
         # EPTA
         plt.fill_between(f_sPL_E.value, min_OmGW_sPL_E, max_OmGW_sPL_E,
                          color='purple', alpha=alp_E)
         if lines:
-            plt.plot(f_sPL_E, min_OmGW_sPL_E, color='purple', lw=2)
-            plt.plot(f_sPL_E, max_OmGW_sPL_E, color='purple', lw=2)
+            plt.plot(f_sPL_E.value, min_OmGW_sPL_E, color='purple', lw=2)
+            plt.plot(f_sPL_E.value, max_OmGW_sPL_E, color='purple', lw=2)
 
         # IPTA
         plt.fill_between(f_sPL_I.value, min_OmGW_sPL_I, max_OmGW_sPL_I,
                          color='black', alpha=alp_I)
         if lines:
-            plt.plot(f_sPL_I, min_OmGW_sPL_I, color='black', lw=2)
-            plt.plot(f_sPL_I, max_OmGW_sPL_I, color='black', lw=2)
+            plt.plot(f_sPL_I.value, min_OmGW_sPL_I, color='black', lw=2)
+            plt.plot(f_sPL_I.value, max_OmGW_sPL_I, color='black', lw=2)
 
     if ret:
         return (f_bPL_NG, min_OmGW_bPL_NG, max_OmGW_bPL_NG, f_sPL_NG,
