@@ -289,7 +289,7 @@ def read_dirs(proj, dirs={}):
                 dirs.update({'M0F' : '46000cosmo_1D_alpM_p03'})
                 dirs.update({'M0F_LD2' : '46000cosmo_1D_alpM_p03_LD2'})
 
-            else:
+            if 'lowk' in proj or proj == 'horndeski':
                 
                 dirs.update({'M0A_lowk' : '46000cosmo_1D_alpM_m05_wav1e7'})
                 dirs.update({'M0A_lowk_LD2' : '46000cosmo_1D_alpM_m05_wav1e7_LD2'})
@@ -347,7 +347,7 @@ def read_dirs(proj, dirs={}):
                 dirs.update({'M3F' : '46000cosmo_1D_alpM_p03_mat'})
                 dirs.update({'M3F_LD2' : '46000cosmo_1D_alpM_p03_mat_LD2'})
 
-            else:
+            if 'lowk' in proj or proj == 'horndeski':
                 
                 dirs.update({'M3A_lowk' : '46000cosmo_1D_alpM_m05_mat_wav1e7'})
                 dirs.update({'M3A_lowk_LD2' : '46000cosmo_1D_alpM_m05_mat_wav1e7_LD2'})
