@@ -268,8 +268,6 @@ def read_dirs(proj, dirs={}):
         dirs.update({'E4': 'M512_k6_sig0_OmM8em3_k0_0075'})
         dirs.update({'E5': 'M512_k6_sig0_OmM8em3_k0_0033'})
 
-    return dirs
-
     ############################### horndeski #################################
     
     if 'horndeski' in proj:
@@ -363,3 +361,5 @@ def read_dirs(proj, dirs={}):
                 dirs.update({'M3E_lowk_LD2' : '46000cosmo_1D_alpM_p01_mat_wav1e7_LD2'})
                 dirs.update({'M3F_lowk' : '46000cosmo_1D_alpM_p03_mat_wav1e7'})
                 dirs.update({'M3F_lowk_LD2' : '46000cosmo_1D_alpM_p03_mat_wav1e7_LD2'})
+
+    return dirs
