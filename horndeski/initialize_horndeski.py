@@ -87,4 +87,5 @@ def save_runs(runs):
 
     for i in runs:
         run = runs.get(i)
-        run.save(dir0=dir0)
+        dir1 = dir0 + 'dir_runs/'
+        run.save(dir0=dir1)
