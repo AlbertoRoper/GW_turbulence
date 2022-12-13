@@ -23,6 +23,7 @@ os.chdir(HOME)
 
 import run as r
 from dirs import read_dirs as rd
+import spectra
 
 os.chdir(dir0)
 
