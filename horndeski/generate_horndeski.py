@@ -149,8 +149,9 @@ def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L
         plt.ylim(1e-60, 1e1)
         plt.text(1e10, 1e-6, 'RD', color='black')
         plt.text(3e11, 1e-6, 'MD', color='black')
-        plt.title(r'$\Bigl(\alpha_{\rm M}/\alpha_{{\rm M}, 0}\Bigr) \, {\cal H}$',
-                  pad = 15)
+#        plt.title(r'$\Bigl(\alpha_{\rm M}/\alpha_{{\rm M}, 0}\Bigr) \, {\cal H}$',
+#                  pad = 15)
+        plt.ylabel(r'$\Bigl(\alpha_{\rm M}/\alpha_{{\rm M}, 0}\Bigr) \, {\cal H}$')
     else:
         plt.text(1e12, 1e-11, '0', color='darkblue')
         plt.text(1e10, 3e-15, 'I', color='purple')
@@ -250,7 +251,9 @@ def plot_late_time_WKB(save=True):
     plt.xticks(np.logspace(-5, 1, 7))
     plt.yticks(np.logspace(-6, 1, 8))
     plt.xlabel(r'$k$')
-    plt.title(r"$e^{2 {\cal D}} \, S_{h'}^{\rm WKB} (k)/S_{h'}^*$", pad=15)
+    #plt.title(r"$e^{2 {\cal D}} \, S_{h'}^{\rm WKB} (k)/S_{h'}^*$", pad=15)
+    plt.ylabel(r"$e^{2 {\cal D}} \, S_{h'}^{\rm WKB} (k)/S_{h'}^*$",
+              labelpad=10)
 
     for i in range(0, len(alpsM0)):
         ls = 'solid'
@@ -319,7 +322,8 @@ def plot_late_time_WKB(save=True):
     for i in range(0, 4):
         plt.vlines(np.sqrt(abs(alpsM0[i])/2*(1 + .5*alpsM0[i])), 1e-7, 1e2, color=cols[i],
                    lw=.8)
-    plt.title(r"$\xi^{\rm WKB} (k)$", pad=15)
+    #plt.title(r"$\xi^{\rm WKB} (k)$", pad=15)
+    plt.ylabel(r"$\xi^{\rm WKB} (k)$", labelpad=10)
     
     if save:
         plt.savefig('plots/spectrum_WKB_normalized.pdf',
@@ -409,7 +413,7 @@ def run(rsd='all', dirs={}):
     R = [s for s in dirs]
 
     # read the runs stored in the pickle variables
-    runs = r.load_runs(R, dir0, dirs, quiet=False)
+    runs = r.load_runs(R, dir0 + 'dir_runs/', dirs, quiet=False)
     os.chdir(dir0)
 
     return runs
@@ -1126,7 +1130,8 @@ def plot_all_spectra(spectra, neg=True, app=0, kspcD=0, envcD=0, ch='0', save=Tr
         plt.loglog()
         plot_sets.axes_lines()
         plt.xlabel(r'$k$')
-        plt.title(r"$e^{2 {\cal D}} \, S_{h'}^{\rm num} (k)/S_{h'}^*$", pad=15)
+        #plt.title(r"$e^{2 {\cal D}} \, S_{h'}^{\rm num} (k)/S_{h'}^*$", pad=15)
+        plt.ylabel(r"$e^{2 {\cal D}} \, S_{h'}^{\rm num} (k)/S_{h'}^*$", labelpad=10)
         plt.vlines(np.sqrt(app), 1e-20, 1e3, color='black')
         plt.ylim(3e-8, 3)
         plt.xlim(1e-7, 1e1)
@@ -1223,7 +1228,8 @@ def plot_all_spectra_norm(spectrapos, spectraneg, ch='0', save=True, txt=True, n
         plt.loglog()
         plot_sets.axes_lines()
         plt.xlabel(r'$k$')
-        plt.title(r"$\xi^{\rm num} (k)$", pad=15)
+        #plt.title(r"$\xi^{\rm num} (k)$", pad=15)
+        plt.ylabel(r"$\xi^{\rm num} (k)$", labelpad=10)
         plt.ylim(1e-1, 1e11)
         plt.xlim(1e-7, 4)
         plt.xticks(np.logspace(-6, 0, 4))
@@ -1332,8 +1338,10 @@ def plot_spectra_slopes(spectrapos, spectraneg, ch='0', txt=True, newf=True,
         plt.xticks(np.logspace(-6, 0, 7))
         plt.yticks([0, 1, 2, 3])
         plt.xlabel(r'$k$')
-        plt.title(r"$\beta \equiv - \frac{\partial  \log \xi^{\rm num} (k)}" + 
-                  r"{\partial \log k}$", pad=20)
+        #plt.title(r"$\beta \equiv - \frac{\partial  \log \xi^{\rm num} (k)}" + 
+        #          r"{\partial \log k}$", pad=20)
+        plt.ylabel(r"$\beta \equiv - \frac{\partial  \log \xi^{\rm num} (k)}" + 
+                  r"{\partial \log k}$", labelpad=5)
         plot_sets.axes_lines()
         
         if txt:
@@ -1517,6 +1525,7 @@ def plot_OmegaGW_mod_today(spectrapos, spectraneg, DDs, ch='0', EEGW_st=1, newf=
             plt.text(1.5e-6, 1e-17, r'$\sim\!f^3$', fontsize=20)
             plt.text(4e-5, 2e-15, r'$\sim\!f$', fontsize=20)
             plt.text(4e-1, 3e-17, r'$\sim\!f^{-{8\over3}}$', fontsize=18)
+            plt.text(5e-7, 3e-12, r'$h^2 e^{2{\cal D}} \, \Omega_{\rm GW} (f)$', fontsize=16)
         
         if dets:
             ### read GW detectors sensitivities and plot
@@ -1556,6 +1565,7 @@ def plot_OmegaGW_mod_today(spectrapos, spectraneg, DDs, ch='0', EEGW_st=1, newf=
             plt.xlim(1e-14, 1e-4)
             plt.yticks(np.logspace(-18, -4, 8))
             plt.xticks(np.logspace(-14, -4, 6))
+            plt.text(1e-13, 1e-13, r'$h^2 e^{2{\cal D}} \, \Omega_{\rm GW} (f)$', fontsize=16)
 
             from matplotlib.patches import Rectangle
             plt.gca().add_patch(Rectangle((5e-10,1e-12),5e-9-5e-10,5e-9-1e-12,
