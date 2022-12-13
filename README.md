@@ -53,4 +53,4 @@ Roper Pol, A. Brandenburg, *Modified propagation of gravitational waves from the
 
 * The run directories and results in [**horndeski**](horndeski) correspond to the paper Y. He, A. Roper Pol,
 A. Brandenburg, *Modified propagation of gravitational waves from the early radiation era,*
-in preparation (2022). The datasets are also available in [Zenodo](https://zenodo.org/record/7408601).
+**submitted to JCAP**, [arXiv:2212.06082](https://arxiv.org/abs/2212.06082) (2022). The datasets are also available in [Zenodo](https://zenodo.org/record/7408601).
