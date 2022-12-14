@@ -49,7 +49,7 @@ The datasets are also available in [Zenodo](https://zenodo.org/record/5782752).
 of the Universe and contains a solver to Friedmann equations.
 This has been used to generate input results for the Pencil Code, in particular, for the results of Y. He, A.
 Roper Pol, A. Brandenburg, *Modified propagation of gravitational waves from the early radiation era,*
-*in preparation* (2022).
+*submitted to JCAP*, [arXiv:2212.06082](https://arxiv.org/abs/2212.06082) (2022).
 
 * The run directories and results in [**horndeski**](horndeski) correspond to the paper Y. He, A. Roper Pol,
 A. Brandenburg, *Modified propagation of gravitational waves from the early radiation era,*
