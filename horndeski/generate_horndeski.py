@@ -116,17 +116,17 @@ def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L
 
     if primes:
         if n1:
-            plt.plot(eta_n, (comp*abs(alpM_prime_I))**nn_exp,
+            plt.plot(eta_n, (comp*abs(alpM_prime_I)/HH_n)**nn_exp,
                  color='purple', ls='dashed',  lw=2)
         if n2:
-            plt.plot(eta_n, (comp*abs(alpM_prime_I_2))**nn_exp,
+            plt.plot(eta_n, (comp*abs(alpM_prime_I_2)/HH_n)**nn_exp,
                      color='purple', ls='dashed',  lw=2)
         if n04:
-            plt.plot(eta_n, (comp*abs(alpM_prime_I_04))**nn_exp,
+            plt.plot(eta_n, (comp*abs(alpM_prime_I_04)/HH_n)**nn_exp,
                      color='purple', ls='dashed',  lw=2)
         plt.plot(eta_n, (comp*abs(alpM_prime_II))**nn_exp,
                      color='red', ls='dashed',   lw=2)
-        plt.plot(eta_n, (comp*abs(alpM_prime_III))**nn_exp,
+        plt.plot(eta_n, (comp*abs(alpM_prime_III)/HH_n)**nn_exp,
                  color='cyan', ls='dashed',   lw=2)
       
     plt.plot(eta_n, (alpM_0*comp)**nn_exp, lw=2, color='darkblue')
@@ -147,6 +147,7 @@ def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L
         plt.text(1e7, 1e-6, 'III', color='cyan')
         plt.text(1e6, 1e-34, 'II', color='red')
         plt.ylim(1e-60, 1e1)
+        plt.yticks(np.logspace(-60, 0, 4))
         plt.text(1e10, 1e-6, 'RD', color='black')
         plt.text(3e11, 1e-6, 'MD', color='black')
 #        plt.title(r'$\Bigl(\alpha_{\rm M}/\alpha_{{\rm M}, 0}\Bigr) \, {\cal H}$',
@@ -165,6 +166,7 @@ def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L
                        r" \, {\alpha_{{\rm M}, 0}^{-{1\over2}}}$")
         plt.legend(fontsize=16, framealpha=1, edgecolor='white')
         plt.ylim(1e-28, 2)
+        plt.yticks(np.logspace(-24, 0, 4))
         plt.text(1e10, 1e-26, 'RD', color='black')
         plt.text(1e12, 1e-26, 'MD', color='black')
 
@@ -216,6 +218,29 @@ def plot_parameterizations_alpM(eta_n, a, Omega, Om_mat, HH_n, eta_n_EQ, eta_n_L
         else: lsave = 'params_WKB_lims_EWPT'
         plt.savefig('plots/' + lsave + '.pdf',
                     bbox_inches='tight')
+    
+def plot_spectral_shape(save=True):
+    
+    """
+    Function that plots the spectral shape used in the numerical simulations,
+    based on a smoothed double broken power law.
+    """
+    
+    S = an.smoothed_dbpl(k, A=1, kb=1, ks=10, a=2, b=0, c=11/3, alpha1=2, alpha2=2)
+    plt.plot(k, S, color='blue')
+    plt.loglog()
+    plot_sets.axes_lines()
+    plt.xlim(1e-2, 1e2)
+    plt.ylim(1e-4, 5)
+    plt.xlabel(r'$k$')
+    plt.ylabel(r"$S_{h'} (k)/S_{h'}^*$")
+    plt.xticks(np.logspace(-2, 2, 5))
+    plt.yticks(np.logspace(-4, 0, 5))
+    
+    if save:
+        ffl = 'plots/S_vs_k.pdf'
+        print('Saving figure %s'%ffl)
+        plt.savefig(ffl, bbox_inches='tight')
         
 def plot_late_time_WKB(save=True):
     
@@ -260,25 +285,26 @@ def plot_late_time_WKB(save=True):
         if alpsM0[i] < 0: ls = 'dashed'
         plt.plot(k, S*TT_lt_ct[:, i], color=cols[i], ls=ls)
 
-    plt.text(2e-5, 4e-5, r'$\alpha_{{\rm M}, 0} = \pm 0.01$',
+    plt.text(2e-5, 3e-5, r'$\alpha_{{\rm M}, 0} = \pm 0.01$',
              color='magenta', fontsize=26)
-    plt.text(2e-5, 4e-4, r'$\alpha_{{\rm M}, 0} = \pm 0.1$',
+    plt.text(2e-5, 2.5e-4, r'$\alpha_{{\rm M}, 0} = \pm 0.1$',
              color='red', fontsize=26)
-    plt.text(2e-5, 4e-3, r'$\alpha_{{\rm M}, 0} = \pm 0.3$',
+    plt.text(2e-5, 2.5e-3, r'$\alpha_{{\rm M}, 0} = \pm 0.3$',
              color='green', fontsize=26)
-    plt.text(2e-5, 8e-2, r'$\alpha_{{\rm M}, 0} = \pm 0.5$',
+    plt.text(2e-5, 5.5e-2, r'$\alpha_{{\rm M}, 0} = \pm 0.5$',
              color='blue', fontsize=26)
+    plt.hlines(1, 1e-6, 1e2, color='black', lw=.7)
 
     for i in range(0, 4):
         plt.vlines(np.sqrt(abs(alpsM0[i])/2*(1 + .5*alpsM0[i])), 1e-7,
                    1e2, color=cols[i], lw=.8)
 
-    plt.gca().add_patch(Rectangle((0.7,1),9.3,.6,
+    plt.gca().add_patch(Rectangle((0.7,.7),9.3,.42,
                         edgecolor='black',
                         facecolor='none',
                         lw=4, alpha=.5))
 
-    ax.annotate("", xy=(3, .8), xytext=(1, 2.5e-3),
+    ax.annotate("", xy=(3, .6), xytext=(1, 2e-3),
                 arrowprops=dict(arrowstyle="->"))
 
     from mpl_toolkits.axes_grid1.inset_locator import inset_axes
@@ -290,17 +316,18 @@ def plot_late_time_WKB(save=True):
     plt.plot(k, S, color='black')
     plt.loglog()
     plt.xlim(7e-1, 1e1)
-    plt.ylim(1, 2)
+    plt.ylim(.7, 1.5)
     iax.set_yticks([])
     iax.get_yaxis().set_visible(False)
     plt.xticks([])
     plt.yticks([])
     xx = np.logspace(.3, .8)
-    plt.plot(xx, 1.75*xx**(-0.06), color='black', lw=.8)
+    plt.plot(xx, 1.23*xx**(-0.06), color='black', lw=.8)
     xx = np.logspace(.35, .75)
-    plt.plot(xx, 1.12*xx**(.08), color='black', lw=.8)
-    plt.text(3, 1.7, r'$k^{-0.06}$')
-    plt.text(3, 1.1, r'$k^{0.08}$')
+    plt.plot(xx, .79*xx**(.08), color='black', lw=.8)
+    plt.text(3, 1.2, r'$k^{-0.06}$')
+    plt.text(3, .75, r'$k^{0.08}$')
+    plt.hlines(1, 1e-6, 1e2, color='black', lw=.7)
     
     if save:
         plt.savefig('plots/spectrum_WKB_late_times.pdf',
@@ -531,8 +558,8 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
 
     if plot:
         if choice == '0' or choice == 'III':
-            ax.set_ylim(1e-5, 1e9)
-            ax.set_yticks(np.logspace(-5, 9, 8))
+            ax.set_ylim(1e-6, 1e9)
+            ax.set_yticks(np.logspace(-6, 8, 8))
             ax.set_ylabel(r'${\cal E}_{\rm GW} (\eta)/{\cal E}_{\rm GW}^*$')
         if choice == 'I' or choice == 'II':
             ax.set_ylim(4.5e-1, 1.6)
@@ -556,18 +583,18 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
 
     if plot and txt:
         if choice == '0':
-            plt.text(1e8, 1e6, r'$\alpha_{{\rm M}, 0} = -0.5$',
-                     color='blue', fontsize=30)
-            plt.text(3e7, 2e3, r'$\alpha_{{\rm M}, 0} = -0.3$',
-                     color='green', fontsize=30)
-            plt.text(1e10, 5e1, r'$\alpha_{{\rm M}, 0} = -0.1$',
-                     color='red', fontsize=30)
+            plt.text(5e8, 1e6, r'$\alpha_{{\rm M}, 0} = -0.5$',
+                     color='blue', fontsize=26)
+            plt.text(4e8, 5e3, r'$\alpha_{{\rm M}, 0} = -0.3$',
+                     color='green', fontsize=26)
+            plt.text(1e10, 7e1, r'$\alpha_{{\rm M}, 0} = -0.1$',
+                     color='red', fontsize=26)
             plt.text(5e9, 2.5, r'$\alpha_{{\rm M}, 0} = -0.01$',
-                     color='magenta', fontsize=30)
-            plt.text(1e10, 5e-3, r'$\alpha_{{\rm M}, 0} = 0.1$',
-                     color='purple', fontsize=30)
-            plt.text(1e7, 1.5e-4, r'$\alpha_{{\rm M}, 0} = 0.3$',
-                     color='orange', fontsize=30)
+                     color='magenta', fontsize=26)
+            plt.text(1e10, 7e-3, r'$\alpha_{{\rm M}, 0} = 0.1$',
+                     color='purple', fontsize=26)
+            plt.text(3e7, 1.5e-4, r'$\alpha_{{\rm M}, 0} = 0.3$',
+                     color='orange', fontsize=26)
             # place a text box in upper left in axes coords
             plt.text(5, 5e6, 'choice 0', fontsize=28,
                      bbox=dict(boxstyle='round', facecolor='white',
@@ -576,26 +603,26 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
             xx = np.logspace(3, 10)
             plt.plot(xx, 3*xx**(.5), color='blue', ls='dashed')
             xx = np.logspace(12, 14)
-            plt.plot(xx, 5e-7*xx**(.5*2), color='blue', ls='dashed')
+            plt.plot(xx, 4e-6*xx**(.5*2), color='blue', ls='dashed')
             xx = np.logspace(3, 7)
             plt.plot(xx, 2*xx**(.3), color='green', ls='dashed')
             xx = np.logspace(12, 14)
-            plt.plot(xx, 2e-4*xx**(.3*2), color='green', ls='dashed')
+            plt.plot(xx, 6e-4*xx**(.3*2), color='green', ls='dashed')
             xx = np.logspace(3, 10)
             plt.plot(xx, 1.7*xx**(.1), color='red', ls='dashed')
             xx = np.logspace(12, 14)
-            plt.plot(xx, 5e-2*xx**(.1*2), color='red', ls='dashed')
+            plt.plot(xx, 1.e-1*xx**(.1*2), color='red', ls='dashed')
             xx = np.logspace(3, 10)
             plt.plot(xx, 1.7*xx**(-.1), color='purple', ls='dashed')
             xx = np.logspace(12, 14)
-            plt.plot(xx, 1e1*xx**(-.1*2), color='purple', ls='dashed')
+            plt.plot(xx, 2.5e1*xx**(-.1*2), color='purple', ls='dashed')
             xx = np.logspace(3, 10)
             plt.plot(xx, 1.7*xx**(-.3), color='orange', ls='dashed')
             xx = np.logspace(12, 14)
-            plt.plot(xx, 2e3*xx**(-.3*2), color='orange', ls='dashed')
+            plt.plot(xx, 6e3*xx**(-.3*2), color='orange', ls='dashed')
             plt.text(1e5, 1e4, r'$\sim\!\eta^{-\alpha_{{\rm M}, 0}}$',
                      fontsize=26, color='black')
-            plt.text(3e11, 1.3e5, r'$\sim\!\eta^{-2 \alpha_{{\rm M}, 0}}$',
+            plt.text(1e11, 3e7, r'$\sim\!\eta^{-2 \alpha_{{\rm M}, 0}}$',
                      fontsize=26, color='black')
             
         if choice == 'I':
@@ -603,10 +630,12 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
                      color='blue', fontsize=26)
             iax.text(6e12, 1.1, r'$\alpha_{{\rm M}, 0} = -0.3$, $n = 2$',
                      color='green', fontsize=26)
-            iax.text(1.5e12, 1.05, r'$\alpha_{{\rm M}, 0} = -0.1$, $n = 2$',
+            iax.text(1.5e12, 1.08, r'$\alpha_{{\rm M}, 0} = -0.1$, $n = 2$',
                      color='red', fontsize=26)
             iax.text(7e12, .67, r'$\alpha_{{\rm M}, 0} = 0.1$, $n = 0.4$',
-                     color='purple', fontsize=26)
+                     color='purple', fontsize=26,
+                     bbox=dict(boxstyle='round', facecolor='white', edgecolor='white',
+                               alpha=1, pad=.1))
             iax.text(2e12, 6.5e-1, r'$\alpha_{{\rm M}, 0} = 0.3$, $n = 0.4$',
                      color='orange', fontsize=26)
             # place a text box in upper left in axes coords
@@ -614,11 +643,11 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
                      bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
             
         if choice == 'II':
-            iax.text(1.05e13, 1.22, r'$\alpha_{{\rm M}, 0} = -0.5$',
+            iax.text(1.11e13, 1.29, r'$\alpha_{{\rm M}, 0} = -0.5$',
                      color='blue', fontsize=26)
-            iax.text(8e12, 1.06, r'$\alpha_{{\rm M}, 0} = -0.3$',
+            iax.text(8e12, 1.07, r'$\alpha_{{\rm M}, 0} = -0.3$',
                      color='green', fontsize=26)
-            iax.text(3e12, 1.05, r'$\alpha_{{\rm M}, 0} = -0.1$',
+            iax.text(3e12, 1.07, r'$\alpha_{{\rm M}, 0} = -0.1$',
                      color='red', fontsize=26)
             iax.text(1.1e13, .83, r'$\alpha_{{\rm M}, 0} = 0.1$',
                      color='purple', fontsize=26)
@@ -630,17 +659,17 @@ def plot_time_evolution_EGW(DDs, eta_nn, DDs2=0, value0=False, choice='0', runs=
             
         if choice == 'III':
             ax.text(1e8, 2e5, r'$\alpha_{{\rm M}, 0} = -0.5$',
-                    color='blue', fontsize=30)
+                    color='blue', fontsize=26)
             ax.text(5e7, 8e2, r'$\alpha_{{\rm M}, 0} = -0.3$',
-                    color='green', fontsize=30)
+                    color='green', fontsize=26)
             ax.text(1e10, 1e2, r'$\alpha_{{\rm M}, 0} = -0.1$',
-                    color='red', fontsize=30)
-            ax.text(5e9, 2.5, r'$\alpha_{{\rm M}, 0} = -0.01$',
-                    color='magenta', fontsize=30)
+                    color='red', fontsize=26)
+            ax.text(5e9, 3.5, r'$\alpha_{{\rm M}, 0} = -0.01$',
+                    color='magenta', fontsize=26)
             ax.text(5e6, 5e-3, r'$\alpha_{{\rm M}, 0} = 0.1$',
-                    color='purple', fontsize=30)
+                    color='purple', fontsize=26)
             ax.text(1e4, 1.5e-4, r'$\alpha_{{\rm M}, 0} = 0.3$',
-                     color='orange', fontsize=30)
+                     color='orange', fontsize=26)
             xx = np.logspace(3, 10)
             ax.plot(xx, 3*xx**(.5*1.5), color='blue', ls='dashed')
             xx = np.logspace(12, 14)
@@ -1133,13 +1162,14 @@ def plot_all_spectra(spectra, neg=True, app=0, kspcD=0, envcD=0, ch='0', save=Tr
         #plt.title(r"$e^{2 {\cal D}} \, S_{h'}^{\rm num} (k)/S_{h'}^*$", pad=15)
         plt.ylabel(r"$e^{2 {\cal D}} \, S_{h'}^{\rm num} (k)/S_{h'}^*$", labelpad=10)
         plt.vlines(np.sqrt(app), 1e-20, 1e3, color='black')
-        plt.ylim(3e-8, 3)
+        plt.ylim(2e-8, 3)
         plt.xlim(1e-7, 1e1)
         plt.xticks(np.logspace(-7, 1, 9))
         plt.yticks(np.logspace(-7, 0, 8))
         if txt:
             plt.text(2.2e-6, 1e-10/fact, r"$k_{{\rm lim}, a''}^{\rm EW}$", fontsize=30)
             plt.text(6e-1, 1e-12/fact, r'$k_{{\rm lim}, \alpha_{\rm M}}$', fontsize=30)
+            plt.hlines(1, 1e-8, 1e2, color='black', lw=.8)
             
             if neg:
                 plt.text(1e-3, 4e-11/fact, r'$\alpha_{\rm M} = -0.5$',
@@ -1245,6 +1275,7 @@ def plot_all_spectra_norm(spectrapos, spectraneg, ch='0', save=True, txt=True, n
             xx = np.logspace(-6.5, -4)
             plt.plot(xx, 2*xx**(-.5), color='black', lw=.8)
             plt.text(3e-6, 2e3, r'$\sim\!k^{-{1\over 2}}$', fontsize=24)
+            plt.hlines(1, 1e-8, 1e2, color='black', lw=.8)
         
         # inset
         from matplotlib.patches import Rectangle
@@ -1271,6 +1302,7 @@ def plot_all_spectra_norm(spectrapos, spectraneg, ch='0', save=True, txt=True, n
             inds2 = np.where(k[inds1]>.135)
             plt.plot(k[inds1][inds2], .15/k[inds1][inds2]**2, color='black', lw=.8)
             plt.text(.2, 5, r'$\sim\!k^{-2}$', fontsize=24)
+            plt.hlines(1, 1e-8, 1e2, color='black', lw=.8)
     
     kkc = np.logspace(-7, -3, 100)
     
@@ -1317,7 +1349,7 @@ def combine_runs(k1, k2, env1, env2, kdisc=100):
     return kks, envvs
     
 def plot_spectra_slopes(spectrapos, spectraneg, ch='0', txt=True, newf=True,
-                        save=True, lss='solid', kdisc=100):
+                        save=True, lss='solid', kdisc=100, print_kbeta=True):
     
     """
     Function that plots the slopes of the spectra after averaging over
@@ -1326,6 +1358,8 @@ def plot_spectra_slopes(spectrapos, spectraneg, ch='0', txt=True, newf=True,
     It generates the plots corresponding to figure 6 of
     Y. He, A. Roper Pol, and A. Brandenburg, "Modified propagation of
     gravitational waves from the early radiation era," submitted to JCAP (2022).
+    
+    If print_kbeta is selected, it prints the numerical values of k_{\beta = 2}
     
     Figure saved in 'plots/slopes_choices0_III.pdf'
     """
@@ -1349,6 +1383,11 @@ def plot_spectra_slopes(spectrapos, spectraneg, ch='0', txt=True, newf=True,
             plt.hlines(2, 1e-6, 1e1, color='black', lw=.7)
     
     if ch == '0' or ch == 'III':
+        if print_kbeta:
+            print('\n')
+            print(r'Values of $k_{\beta = 2}^{\rm crit}$ and $\beta_0$',
+                  ' for runs of choice %s: '%ch)
+            print('\n')
         for i in range(0, len(runs_ng)):
             A = runs_ng[i]
             if i < 4: spectra = spectraneg
@@ -1363,10 +1402,31 @@ def plot_spectra_slopes(spectrapos, spectraneg, ch='0', txt=True, newf=True,
             slope = spec.slopes_loglog(kks, envsA/Sks)
             plt.plot(kks, -slope, color=cols_g[i], ls=lss)
             
+            # For negative alphaM compute numerical k_crit
+            kks_good = kks[np.where(kks > 1e-6)]
+            slopes_good = slope[np.where(kks > 1e-6)]
+            slopes_good = slopes_good[np.where(kks_good < 1e-4)]
+            kks_good = kks_good[np.where(kks_good < 1e-4)]
+            slope0 = np.trapz(slopes_good, kks_good)/(kks_good[-1] - kks_good[0])
+            if alpsM0_g[i] < 0 and print_kbeta:
+                k_crit0 =  kks[np.where(slope <= -2)][-1]/1.2
+                kks_good = kks[np.where(kks > k_crit0)]
+                slopes_good = slope[np.where(kks > k_crit0)]
+                k_crit = np.interp(-2, slopes_good, kks_good)
+                k_crit0 =  kks[np.where(slope <= -2)][0]*1.2
+                kks_good = kks[np.where(kks < k_crit0)]
+                slopes_good = slope[np.where(kks < k_crit0)]
+                k_crit2 = np.interp(-2, slopes_good, kks_good)
+            else:
+                k_crit = 0
+                k_crit2 = 0
+            print(A, k_crit, k_crit2, -slope0)
+            
             if newf:
                 if alpsM0_g[i] == -0.5 or alpsM0_g[i] == 0.3:
                     slWKB = spec.slopes_loglog(ks, WKBA/SA)
-                    plt.plot(ks, -slWKB, color=cols_g[i], ls='dotted')
+                    slWKB = ho.WKB_slopes(ks, alpsM0_g[i])
+                    plt.plot(ks, slWKB, color=cols_g[i], ls='dotted')
 
     if newf: plt.plot([], [], color='black', ls='dotted', label='WKB (choice %s)'%ch)
     plt.plot([], [], color='black', ls=lss, label='numerical (choice %s)'%ch)
@@ -1374,6 +1434,7 @@ def plot_spectra_slopes(spectrapos, spectraneg, ch='0', txt=True, newf=True,
 
     if save:
         fll = 'plots/slopes_choices0_III.pdf'
+        print('\n')
         print('Saving figure in %s'%fll)
         plt.savefig(fll, bbox_inches='tight')
     
