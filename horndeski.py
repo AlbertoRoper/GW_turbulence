@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 import spectra as sp
 import cosmology as co
+import matplotlib.pyplot as plt
 
 ### reference values for cosmology
 OmM0_ref = .3159
@@ -233,6 +234,40 @@ def damping_amplification(eta, H, a=[], Omega=[], Omega_mat=[], OmM0=0, n=1, ch=
     Q = np.exp(-2*D)
     
     return Q
+
+def WKB_slopes(k, alpM):
+    
+    """
+    Function that computes the slopes of the spectral modification due to
+    reduced Horndeski theories under the WKB approximation.
+    
+    Reference is Y. He, A. Roper Pol, A. Brandenburg, "Modified propagation
+    of gravitational waves from the early radiation era," submitted to JCAP (2022),
+    eq. 5.4.
+    """
+    
+    beta = 2*alpM*(alpM + 2*k)/(8*k**2 + alpM**2 + 4*k*alpM)
+    
+    return beta
+
+def plot_radicand_slopes():
+    
+    """
+    Function that plots the radicand that appears in WKB slopes.
+    """
+    
+    betas = np.linspace(-3, 3, 1000)
+    plt.plot(betas, 2*betas - betas**2 + 1, color='blue')
+    plt.ylim(-1, 3)
+    plt.xlim(-1, 3)
+    plot_sets.axes_lines()
+    plt.hlines(0, -2, 3, color='black', ls='dashed', lw=.9)
+    plt.hlines(2, -2, 3, color='black', ls='dashed', lw=.9)
+    plt.vlines(1 - np.sqrt(2), -2, 3, color='black', ls='dashed', lw=.9)
+    plt.vlines(1 + np.sqrt(2), -2, 3, color='black', ls='dashed', lw=.9)
+    plt.text(-.35, 2.3, '$-1 - \sqrt{2}$')
+    plt.text(1.65, 2.3, '$1 + \sqrt{2}$')
+    plt.xticks([-1, 0, 1, 2, 3])
 
 def compute_Qs(a, eta, ap_a, app_a, T=T_ref, OmM0=OmM0_ref, h0=h0_ref):
     

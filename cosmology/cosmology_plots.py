@@ -628,7 +628,7 @@ def plot_app_a_n_vs_etan(eta_n, app_a_n, eta_n_0, eta_n_EQ, ast,
     if save:
         plt.savefig('friedmann/plots/app_n_vs_etan_' + epoch +'.pdf',
                     bbox_inches='tight')
-        
+
 def plot_factor_app_a_normalized(a, app_a_n, fact_app, epoch='EWPT', save=True):
     
     plt.figure(figsize=(8, 5))
@@ -636,15 +636,15 @@ def plot_factor_app_a_normalized(a, app_a_n, fact_app, epoch='EWPT', save=True):
     plt.plot(a, fact_app, color='blue', ls='dashed')
     plt.loglog()
     plt.xlim(1e-18, 1e0)
-    plt.ylim(.5, 1e4)
+    plt.ylim(.5, 1.5e4)
     plot_sets.axes_lines()
     plt.xlabel(r'$\frac{a}{a_0}$', fontsize=34)
     plt.ylabel(r"$\frac{a''}{a} \, \frac{a_0}{a_*} \, \frac{1}{{\cal H}}$", fontsize=34)
-    plt.text(1e-9, 6e2, r'$\frac{\Omega_{{\rm mat}, 0}}' + \
+    plt.text(1e-11, 4e2, r'${1\over 2} \frac{\Omega_{{\rm mat}, 0}}' + \
              r'{\Omega_{{\rm rad}, 0}} \frac{g_*}{g_*^0}' + \
              r' \biggl(\frac{g_{\rm S}}{g_{\rm S}}^0\biggr)^{-{4\over3}}$', fontsize=30)
     plt.hlines(4.5e3, 1e-18, 1, color='black', ls='dashed', lw=.8)
-    plt.text(5e-9, 5.5e3, r'$4.5 \times 10^3$')
+    plt.text(3e-10, 5.5e3, r'$4.5 \times 10^3$')
     if save:
         print("saved figure 'friedmann/plots/factor_app_normalized_%s.pdf'"%epoch)
         plt.savefig('friedmann/plots/factor_app_normalized_' + epoch +'.pdf',
