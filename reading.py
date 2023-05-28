@@ -9,7 +9,10 @@ Author: Alberto Roper Pol
 created: 01/09/2021
 """
 
-def read_spectra_runs(dir0, dir_run, opt=0):
+import os
+import numpy as np
+
+def read_spectra_runs(dir_data='.', opt=0):
 
     """
     Function that reads all the spectra files stored in the run directory.
@@ -17,8 +20,8 @@ def read_spectra_runs(dir0, dir_run, opt=0):
     (with the exeption of power_krms).
 
     Arguments:
-        dir0 -- directory that contains the runs to be read
-        dir_run -- directory of the specific run to be read
+        dir_data -- data directory where the time_series.dat file is stored
+                    (default current directory)
         opt -- option to choose some reading routines (default is 0 and 1 can
                be chosen if 0 gives warnings)
 
@@ -26,11 +29,15 @@ def read_spectra_runs(dir0, dir_run, opt=0):
         spectra -- dictionary that contains the different spectra of the run
 
     To restore the spectra values from the dictionary one should use:
+
         spectra.get('#sp')
+
     where #sp corresponds to a specific spectrum, which can be one of the
     following:
+
         GWs -- time derivatives of the GW strains
         GWh -- GW strains
+        GWm -- mixed GW strains
         mag -- magnetic field
         kin -- velocity field
         Tpq -- unprojected turbulent stress tensor
@@ -42,6 +49,7 @@ def read_spectra_runs(dir0, dir_run, opt=0):
     of them or it could add some other spectra computed.
 
     To print the resulting spectra one can use:
+
         print([s for s in spectra.keys()])
 
     The helical spectra can be restored using:
@@ -58,8 +66,10 @@ def read_spectra_runs(dir0, dir_run, opt=0):
     import os
     import numpy as np
 
-    dir_data = dir0 + dir_run + '/data'
-    os.chdir(dir_data)
+    HOME = os.getcwd()
+    
+    # change to dir_data if it is given, otherwise stay in current directory
+    if dir_data != '.': os.chdir(dir_data)
 
     # define the list of power spectra to be read in matching and matchinghel
     # (for helical spectra)
@@ -116,7 +126,8 @@ def read_spectra_runs(dir0, dir_run, opt=0):
         spectra.update({'hel' + aux:sps})
         spectra.update({'t_hel' + aux:times})
 
-    os.chdir(dir0)
+    # return to initial directory
+    if dir_data != '.': os.chdir(HOME)
 
     return spectra
 
@@ -216,10 +227,7 @@ def read_ts(dir_data='.', opt=0, debug=False):
         ts -- dictionary that contains the variables of the time series data
     """
 
-    import os
-    import numpy as np
-
-    cwd = os.getcwd()
+    HOME = os.getcwd()
 
     # change to dir_data if it is given, otherwise stay in current directory
     if dir_data != '.': os.chdir(dir_data)
@@ -294,7 +302,7 @@ def read_ts(dir_data='.', opt=0, debug=False):
     for i in range(0, Nts): ts.update({leg[i]:(af[:, i])})
 
     # return to initial directory
-    if dir_data != '.': os.chdir(cwd)
+    if dir_data != '.': os.chdir(HOME)
 
     return ts
 
@@ -320,12 +328,10 @@ def read_spectrum(spectrum, dir_data='.', hel=False, opt=0, debug=False,
               each time
     """
 
-    import os
-    import numpy as np
-
     # change to dir_data if it is given, otherwise stay current directory
-    cwd = os.getcwd()
+    HOME = os.getcwd()
     if dir_data != '.': os.chdir(dir_data)
+
     power = 'power_'
     if hel: power = 'powerhel_'
     file = power + spectrum + '.dat'
@@ -426,7 +432,7 @@ def read_spectrum(spectrum, dir_data='.', hel=False, opt=0, debug=False,
     sps = np.array(sps, dtype=object)
 
     # return to initial directory
-    if dir_data != '.': os.chdir(cwd)
+    if dir_data != '.': os.chdir(HOME)
 
     return times, sps
 
@@ -445,14 +451,10 @@ def read_k(dir_data='.'):
     Returns:
         k -- array of the wave numbers of the spectral functions
     """
-
-    import os
-    import numpy as np
-
+    
     # change to dir_data if it is given, otherwise stay current directory
-    if dir_data != '.':
-        cwd = os.getcwd()
-        os.chdir(dir_data)
+    HOME = os.getcwd()
+    if dir_data != '.': os.chdir(dir_data)
 
     # the values of the wave numbers are stored in power_krms.dat
     # read file and store in numpy array k
@@ -467,7 +469,7 @@ def read_k(dir_data='.'):
     k = np.array(k, dtype='double')
 
     # return to initial directory
-    if dir_data != '.': os.chdir(dir0)
+    if dir_data != '.': os.chdir(HOME)
 
     return k
 
@@ -488,10 +490,8 @@ def read_L(dir_data='.', debug=False):
         L -- size of the domain in one direction
     """
 
-    import os
-
-    cwd = os.getcwd()
     # change to dir_data if it is given, otherwise stay current directory
+    HOME = os.getcwd()
     if dir_data != '.': os.chdir(dir_data)
 
     # read length from the file 'param.nml'
@@ -508,56 +508,56 @@ def read_L(dir_data='.', debug=False):
     L = float(LXYZ.split('*')[1])
 
     # return to initial directory
-    if dir_data != '.': os.chdir(cwd)
+    if dir_data != '.': os.chdir(HOME)
 
     return L
 
-## This function might be obsolete (check)
-def sensitivity(file, dir='detector_sensitivity'):
+# ## This function might be obsolete (commented out)
+# def sensitivity(file, dir='detector_sensitivity'):
 
-    """
-    Function that reads the sensitivity .csv files.
+#     """
+#     Function that reads the sensitivity .csv files.
 
-    Arguments:
-        file -- name of the file to be read
-        dir -- directory where the file is stored
-               (default is 'detector_sensitivity')
+#     Arguments:
+#         file -- name of the file to be read
+#         dir -- directory where the file is stored
+#                (default is 'detector_sensitivity')
 
-    Returns:
-        f -- array of frequencies
-        OmGW -- spectrum of GW energy density
-    """
+#     Returns:
+#         f -- array of frequencies
+#         OmGW -- spectrum of GW energy density
+#     """
 
-    import os
-    import numpy as np
+#     import os
+#     import numpy as np
 
-    # move to directory where the detector files are stored
-    cwd = os.getcwd()
-    os.chdir(dir)
+#     # move to directory where the detector files are stored
+#     cwd = os.getcwd()
+#     os.chdir(dir)
 
-    f = []
-    OmGW = []
-    with open(file) as fp:
-        line = fp.readline()
-        x = line.split(';')
-        f.append(x[0].replace(',', '.'))
-        x1_aux = x[1].replace('\n', '')
-        x1_aux = x1_aux.replace(',', '.')
-        OmGW.append(x1_aux)
-        while line:
-            line = fp.readline()
-            x = line.split(';')
-            try:
-                x1_aux = x[1].replace('\n', '')
-                x1_aux = x1_aux.replace(',', '.')
-                OmGW.append(x1_aux)
-                f.append(x[0].replace(',', '.'))
-            except: print('end')
-    f = np.array(f, dtype='float')
-    OmGW = np.array(OmGW, dtype='float')
-    inds = np.argsort(f)
-    f = f[inds]
-    OmGW = OmGW[inds]
-    os.chdir(cwd)
+#     f = []
+#     OmGW = []
+#     with open(file) as fp:
+#         line = fp.readline()
+#         x = line.split(';')
+#         f.append(x[0].replace(',', '.'))
+#         x1_aux = x[1].replace('\n', '')
+#         x1_aux = x1_aux.replace(',', '.')
+#         OmGW.append(x1_aux)
+#         while line:
+#             line = fp.readline()
+#             x = line.split(';')
+#             try:
+#                 x1_aux = x[1].replace('\n', '')
+#                 x1_aux = x1_aux.replace(',', '.')
+#                 OmGW.append(x1_aux)
+#                 f.append(x[0].replace(',', '.'))
+#             except: print('end')
+#     f = np.array(f, dtype='float')
+#     OmGW = np.array(OmGW, dtype='float')
+#     inds = np.argsort(f)
+#     f = f[inds]
+#     OmGW = OmGW[inds]
+#     os.chdir(cwd)
 
-    return f, OmGW
+#     return f, OmGW
