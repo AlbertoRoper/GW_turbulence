@@ -1,11 +1,19 @@
 """
-spectra.py is a Python routine that contains postprocessing routines for
-spectral functions and other mathematical routines.
+spectra.py is a Python routine that contains description for specific spectral templates,
+postprocessing routines for numerical spectra, and other mathematical routines.
+
+Author: Alberto Roper Pol
+Date: 01/2021
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import argrelextrema
+import plot_sets
 
-def compute_kpeak(k, E, tol=.01, quiet=False):
+################### GENERAL FUNCTIONS FOR NUMERICAL SPECTRA ###################
+
+def compute_kpeak(k, E, tol=.01, quiet=False, exp=1):
 
     """
     Function that computes the maximum of the spectrum E and its spectral
@@ -18,6 +26,8 @@ def compute_kpeak(k, E, tol=.01, quiet=False):
                (default 1%)
         quiet -- option to print out the result if quiet is False
                  (default False)
+        exp -- exponent used to compensate the spectrum by k^exp to define the max in
+               flat spectra (default is 1)
 
     Return:
         kpeak -- position of the spectral peak
@@ -31,7 +41,7 @@ def compute_kpeak(k, E, tol=.01, quiet=False):
         Emax = 0
         kpeak = 0
     else:
-        max2 = np.argmax(k*E)
+        max2 = np.argmax(k**exp*E)
         # if the maximum of the spectrum is within tol of the maximum of k*E,
         # then we take as the maximum value where k*E is maximum, to take into
         # account flat and nearly flat spectra
@@ -55,6 +65,10 @@ def max_E_kf(k, E, exp=0):
         k -- array of wave numbers
         E -- array of spectral values
         exp -- exponent of k (default 0)
+        
+    Returns:
+        max_k -- value of k at the peak of k^exp*E
+        max_E -- value of E at the peak of k^exp*E
     """
 
     indmax = np.argmax(k**exp*E)
@@ -66,7 +80,7 @@ def max_E_kf(k, E, exp=0):
 def characteristic_k(k, E, exp=1):
 
     """
-    Function that computes the characteristic wave number.
+    Function that computes the characteristic wave number from the spectrum.
 
     Arguments:
         k -- array of wave numbers
@@ -80,17 +94,17 @@ def characteristic_k(k, E, exp=1):
     """
 
     k = k[np.where(k != 0)]
-    E = abs(E[np.where(k != 0)])
+    E = E[np.where(k != 0)]
     spec_mean = np.trapz(E, k)
-    int = np.trapz(E*k**exp, k)
+    integ = np.trapz(E*k**exp, k)
     # avoid zero division
     if exp >= 0 and spec_mean == 0: spec_mean = 1e-30
-    if exp < 0 and int == 0: int = 1e-30
-    kch = (int/spec_mean)**(1/exp)
+    if exp < 0 and integ == 0: integ = 1e-30
+    kch = (integ/spec_mean)**(1/exp)
 
     return kch
 
-def min_max_stat(t, k, E, abs_b=True, indt=0, plot=False, hel=False):
+def min_max_stat(t, k, E, abs_b=True, indt=0, indtf=-1, plot=False, hel=False):
 
     """
     Function that computes the minimum, the maximum, and the averaged
@@ -100,10 +114,10 @@ def min_max_stat(t, k, E, abs_b=True, indt=0, plot=False, hel=False):
         t -- time array
         k -- wave number array
         E -- spectrum 2d array (first index t, second index k)
-        indt -- index of time array to perform the average
-                from t[indt] to t[-1]
-        plot -- option to overplot all spectral functions
-                from t[indt] to t[-1]
+        abs_b -- option to take absolute value of spectrum (default True)
+        indt, indtf -- indices of time array to perform the average
+                           from t[indt] to t[indtf] (default is 0 to final time)
+        plot -- option to overplot all spectral functions from t[indt] to t[indtf]
         hel -- option for helical spectral functions where positive and
                negative values can appear (default False)
                It then returns min_E_pos, min_E_neg, max_E_pos, max_E_neg
@@ -115,22 +129,24 @@ def min_max_stat(t, k, E, abs_b=True, indt=0, plot=False, hel=False):
         max_E -- maximum values of the spectral function over time
         stat_E -- averaged values of the spectral function over time
                    from t[indt] to t[-1]
+        if hel return positive and negative values separately
+            min_E_neg, min_E_pos, max_E_neg, max_E_pos
     """
-
-    import matplotlib.pyplot as plt
 
     if hel:
         min_E_neg = np.zeros(len(k)) + 1e30
-        max_E_neg = np.zeros(len(k))
+        max_E_neg = np.zeros(len(k)) - 1e30
         min_E_pos = np.zeros(len(k)) + 1e30
-        max_E_pos = np.zeros(len(k))
+        max_E_pos = np.zeros(len(k)) - 1e30
     else:
         min_E = np.zeros(len(k)) + 1e30
-        max_E = np.zeros(len(k))
-    for i in range(indt, len(t)):
+        max_E = np.zeros(len(k)) - 1e30
+
+    if indtf == -1: indtf = len(t) - 1
+    for i in range(indt, indtf + 1):
+        # split between positive and negative values
         if hel:
             if plot: plt.plot(k, abs(E[i,:]))
-            # split between positive and negative values
             x_pos, x_neg, f_pos, f_neg, color = red_blue_func(k, E[i, :])
             for j in range(0, len(k)):
                 if k[j] in x_pos:
@@ -146,26 +162,30 @@ def min_max_stat(t, k, E, abs_b=True, indt=0, plot=False, hel=False):
             if plot: plt.plot(k, E[i,:])
             min_E = np.minimum(E[i,:], min_E)
             max_E = np.maximum(E[i,:], max_E)
+
     # averaged spectrum
-    stat_E = np.trapz(E[indt:,:], t[indt:], axis=0)/(t[-1] - t[indt])
+    stat_E = np.trapz(E[indt:indtf, :], t[indt:indtf], axis=0)/(t[indtf] - t[indt])
+    if plot: plt.plot(k, stat_E, lw=4, color='black')
+    
+    # correct min and max values with averaged values when have not been found
     if hel:
         min_E_pos[np.where(min_E_pos == 1e30)] = \
                 abs(stat_E[np.where(min_E_pos == 1e30)])
         min_E_neg[np.where(min_E_neg == 1e30)] = \
                 abs(stat_E[np.where(min_E_neg == 1e30)])
-        max_E_pos[np.where(max_E_pos == 0)] = \
-                abs(stat_E[np.where(max_E_pos == 0)])
-        max_E_neg[np.where(max_E_neg == 0)] = \
-                abs(stat_E[np.where(max_E_neg == 0)])
+        max_E_pos[np.where(max_E_pos == -1e30)] = \
+                abs(stat_E[np.where(max_E_pos == -1e30)])
+        max_E_neg[np.where(max_E_neg == -1e30)] = \
+                abs(stat_E[np.where(max_E_neg == -1e30)])
     else:
         min_E[np.where(min_E == 1e30)] = \
                 abs(stat_E[np.where(min_E == 1e30)])
         if abs_b:
-            max_E[np.where(max_E == 0)] = \
-                    abs(stat_E[np.where(max_E == 0)])
+            max_E[np.where(max_E == -1e30)] = \
+                    abs(stat_E[np.where(max_E == -1e30)])
         else:
-            max_E[np.where(max_E == 0)] = \
-                    (stat_E[np.where(max_E == 0)])
+            max_E[np.where(max_E == -1e30)] = \
+                    (stat_E[np.where(max_E == -1e30)])
     if plot:
         plt.xscale('log')
         plt.yscale('log')
@@ -174,10 +194,53 @@ def min_max_stat(t, k, E, abs_b=True, indt=0, plot=False, hel=False):
     if hel: return min_E_pos, min_E_neg, max_E_pos, max_E_neg, stat_E
     else: return min_E, max_E, stat_E
 
+def red_blue_func(x, f, col=0):
+
+    """
+    Function that splits an array into positive and negative values, and
+    assigns colors (red to positive and blue to negative).
+
+    Arguments:
+        x -- array of x
+        f -- array of the function values
+        col -- option to choose blue and red (default 0 is red for positive
+               and blue for negative, 1 is swapped)
+
+    Returns:
+        x_pos -- array of x values where f is positive
+        x_neg -- array of x values where f is negative
+        f_pos -- array of f values where f is positive
+        f_neg -- array of f values where f is negative
+        color -- array of colors assigned (blue and red)
+    """
+
+    N = len(f)
+    color = []
+    f_pos=[]; x_pos=[]
+    f_neg=[]; x_neg=[]
+    for i in range(0, N):
+        sgn = np.sign(f[i])
+        if sgn > 0:
+            if col == 0: color.append('red')
+            if col == 1: color.append('blue')
+            f_pos.append(f[i])
+            x_pos.append(x[i])
+        else:
+            if col == 0: color.append('blue')
+            if col == 1: color.append('red')
+            f_neg.append(f[i])
+            x_neg.append(x[i])
+    f_pos = np.array(f_pos)
+    f_neg = np.array(f_neg)
+    x_pos = np.array(x_pos)
+    x_neg = np.array(x_neg)
+
+    return x_pos, x_neg, f_pos, f_neg, color
+
 def local_max(k, E, order=1):
 
     """
-    Function that computes the local maxima of a spectrum.
+    Function that computes the local maxima of the spectrum.
 
     Arguments:
         k -- array of wave numbers
@@ -190,15 +253,104 @@ def local_max(k, E, order=1):
         Emax -- values of the local maxima
     """
 
-    from scipy.signal import argrelextrema
-
-    inds_model_max = argrelextrema(E,
-                 np.greater, order=order)
+    inds_model_max = argrelextrema(E, np.greater, order=order)
     kmax = k[inds_model_max]
     Emax = E[inds_model_max]
 
     return kmax, Emax
 
+def mean_pos_loglog(k, E):
+
+    """
+    Function that computes the loglog middle values km, EM of the intervals
+    of the arrays k, E
+
+    Arguments:
+        k -- array of wave numbers
+        E -- array of spectrum values
+
+    Returns:
+        km -- array of middle log values of the k intervals
+        Em -- array of middle log values of the E intervals
+    """
+
+    N = len(k)
+    km = np.zeros(N + 1)
+    Em = np.zeros(N + 1)
+    km[0] = k[0]
+    Em[0] = E[0]
+    for i in range(1, N):
+        km[i] = np.sqrt(k[i + 1]*k[i])
+        Em[i] = np.sqrt(E[i + 1]*E[i])
+    km[-1] = k[-1]
+    Em[-1] = E[-1]
+
+    return km, Em
+
+def combine(k1, k2, E1, E2, fact=1., klim=10, exp=2):
+
+    """
+    Function that combines the spectra and wave number of two runs and uses
+    the ratio between their magnetic amplitudes (facM) to compensate the
+    spectrum by facM^exp.
+    
+    It uses E2/fact^exp at k < klim and E1 at k >= klim 
+
+    Arguments:
+        k1, k2 -- wave number arrays of runs 1 and 2
+        E1, E2 -- spectral values arrays of runs 1 and 2
+        fact -- ratio of the spectra amplitudes (default 1)
+        klim -- wave number at which we switch from run2 to run 1
+                (default 10)
+        exp -- exponent used in fact to compensate the spectra (default 2,
+               which correspond to GW spectra compensated by ratio
+               between magnetic spectra)
+
+    Returns:
+        k -- combined wave number array
+        E -- combined spectra
+    """
+
+    k = np.append(k2[np.where(k2 <= klim)], k1[np.where(k1 > klim)])
+    E = np.append(E2[np.where(k2 <= klim)]/fact**exp, E1[np.where(k1 > klim)])
+
+    return k, E
+
+def slopes_loglog(k, E):
+
+    """
+    Function that computes numerically the power law slope of a function
+    E(k), taken to be the exponent of the tangent power law, i.e.,
+    (\partial \ln E)/(\partial \ln k)
+
+    Arguments:
+        k -- independent variable
+        E -- dependent variable
+
+    Returns:
+        slopes -- slope of E at each k in a loglog plot
+    """
+
+    slopes = np.zeros(len(k))
+    slopes[0] = (np.log10(E[1]) - np.log10(E[0]))/ \
+                        (np.log10(k[1]) - np.log10(k[0]))
+    slopes[1] = (np.log10(E[2]) - np.log10(E[0]))/ \
+                        (np.log10(k[2]) - np.log10(k[0]))
+    for i in range(2, len(k) - 2):
+         slopes[i] = (np.log10(E[i + 2]) + np.log10(E[i + 1]) \
+                            - np.log10(E[i - 2]) - np.log10(E[i - 1]))/\
+                            (np.log10(k[i + 1])+ \
+                            np.log10(k[i + 2])-np.log10(k[i - 1]) - \
+                            np.log10(k[i - 2]))
+    slopes[-1] = (np.log10(E[-1]) - np.log10(E[-2]))/\
+                        (np.log10(k[-1]) - np.log10(k[-2]))
+    slopes[-2] = (np.log10(E[-1]) - np.log10(E[-3]))/\
+                        (np.log10(k[-1]) - np.log10(k[-3]))
+    return slopes
+
+################################ TO BE CHECKED! ################################
+
+# functions below need to be checked and see whether they are used somewhere!
 def compute_yks(k, E, N):
 
     """
@@ -230,35 +382,9 @@ def compute_yks(k, E, N):
         Eksss = ksss**akss[i - 1]*10**c[i - 1]
         kss = np.append(kss, ksss)
         Ekss = np.append(Ekss, Eksss)
-    #km, Em = mean_pos_loglog(np.append(kps[0], kps[2:]),
-    #                         np.append(Ess[0], Ess[2:]))
     km, Em = mean_pos_loglog(kps, Ekss)
 
     return kss, Ekss, akss, km, Em, kps, c
-
-def mean_pos_loglog(k, E):
-
-    """
-    Function that computes the loglog middle values km, EM of the intervals
-    of the arrays k, E
-
-    Arguments:
-        k -- array of wave numbers
-        E -- array of spectrum values
-
-    Returns:
-        km -- array of middle log values of the k intervals
-        Em -- array of middle log values of the E intervals
-    """
-
-    N = len(k)
-    km = np.zeros(N - 1)
-    Em = np.zeros(N - 1)
-    for i in range(1, N):
-        km[i - 1] = np.sqrt(k[i - 1]*k[i])
-        Em[i - 1] = np.sqrt(E[i - 1]*E[i])
-
-    return km, Em
 
 def slope(y1, y2, x1, x2):
 
@@ -304,49 +430,6 @@ def slope_A(x1, y1, x2, y2):
 
     return a, A
 
-def red_blue_func(x, f, col=0):
-
-    """
-    Function that splits an array into positive and negative values, and
-    assigns colors (red to positive and blue to negative).
-
-    Arguments:
-        x -- array of x
-        f -- array of the function values
-        col -- option to choose blue and red (default 0 is red for positive
-               and blue for negative, 1 is swapped)
-
-    Returns:
-        x_pos -- array of x values where f is positive
-        x_neg -- array of x values where f is negative
-        f_pos -- array of f values where f is positive
-        f_neg -- array of f values where f is negative
-        color -- array of colors assigned (blue and red)
-    """
-
-    N = len(f)
-    color = []
-    f_pos=[]; x_pos=[]
-    f_neg=[]; x_neg=[]
-    for i in range(0, N):
-        sgn = np.sign(f[i])
-        if sgn > 0:
-            if col == 0: color.append('red')
-            if col == 1: color.append('blue')
-            f_pos.append(f[i])
-            x_pos.append(x[i])
-        else:
-            if col == 0: color.append('blue')
-            if col == 1: color.append('red')
-            f_neg.append(f[i])
-            x_neg.append(x[i])
-    f_pos = np.array(f_pos)
-    f_neg = np.array(f_neg)
-    x_pos = np.array(x_pos)
-    x_neg = np.array(x_neg)
-
-    return x_pos, x_neg, f_pos, f_neg, color
-
 def plot_neg_pos(x, f, ls1='solid', lw1=1, ls2=':', lw2=2, col='black'):
 
     """
@@ -359,8 +442,6 @@ def plot_neg_pos(x, f, ls1='solid', lw1=1, ls2=':', lw2=2, col='black'):
         col -- option to choose blue and red (default 0 is red for positive
                and blue for negative, 1 is swapped)
     """
-
-    import matplotlib.pyplot as plt
 
     # plot positive and negative values with different line styles
     sgn = np.sign(f)
@@ -420,65 +501,6 @@ def str_exp(exp, ak, den, diff=0.05):
 
     return exp, diff
 
-def combine(k1, k2, E1, E2, facM, klim=10, exp=2):
-
-    """
-    Function that combines the spectra and wave number of two runs and uses
-    the ratio between their magnetic amplitudes (facM) to compensate the
-    GW spectrum by facM^2.
-
-    Arguments:
-        k1, k2 -- wave number arrays of runs 1 and 2
-        E1, E2 -- GW spectral values arrays of runs 1 and 2
-        facM -- ratio of the magnetic spectra amplitudes A2/A1
-        klim -- wave number at which we switch from run2 to run 1
-                (default 10)
-        exp -- exponent used in facM to compensate the spectra (default 2,
-               which correspond to that for GW spectra compensated by ratio
-               between magnetic spectra)
-
-    Returns:
-        k -- combined wave number array
-        E -- combined spectra
-    """
-
-    k = np.append(k2[np.where(k2 <= klim)], k1[np.where(k1 > klim)])
-    E = np.append(E2[np.where(k2 <= klim)]/facM**exp, E1[np.where(k1>klim)])
-
-    return k, E
-
-def slopes_loglog(k, E):
-
-    """
-    Function that computes numerically the power law slope of a function
-    E(k), taken to be the exponent of the tangent power law, i.e.,
-    (\partial \ln E)/(\partial \ln k)
-
-    Arguments:
-        k -- independent variable
-        E -- dependent variable
-
-    Returns:
-        slopes -- slope of E at each k in a loglog plot
-
-    """
-    slopes = np.zeros(len(k))
-    slopes[0] = (np.log10(E[1]) - np.log10(E[0]))/ \
-                        (np.log10(k[1]) - np.log10(k[0]))
-    slopes[1] = (np.log10(E[2]) - np.log10(E[0]))/ \
-                        (np.log10(k[2]) - np.log10(k[0]))
-    for i in range(2, len(k) - 2):
-         slopes[i] = (np.log10(E[i + 2]) + np.log10(E[i + 1]) \
-                            - np.log10(E[i - 2]) - np.log10(E[i - 1]))/\
-                            (np.log10(k[i + 1])+ \
-                            np.log10(k[i + 2])-np.log10(k[i - 1]) - \
-                            np.log10(k[i - 2]))
-    slopes[-1] = (np.log10(E[-1]) - np.log10(E[-2]))/\
-                        (np.log10(k[-1]) - np.log10(k[-2]))
-    slopes[-2] = (np.log10(E[-1]) - np.log10(E[-3]))/\
-                        (np.log10(k[-1]) - np.log10(k[-3]))
-    return slopes
-
 def get_min_max(f, E_a, E_b):
 
     """
@@ -512,6 +534,10 @@ def envelope_avg(k, t, ft, GWs, lk=10, tini=1):
     Function that computes the average and the envelope over a GW
     spectrum for a range of wave numbers k > lk/(t - tini), where
     the modes are already oscillating.
+    
+    Arguments:
+        k -- array of wave numbers
+        t -- array of times
     """
 
     env = np.zeros(len(k))
@@ -524,4 +550,80 @@ def envelope_avg(k, t, ft, GWs, lk=10, tini=1):
         dt = ts[-1] - ts[0]
         avg[i] = np.trapz(GWs[inds1, i][inds2],
                           t[inds1][inds2])/dt
+
     return env, avg
+
+############# COMMON ANALYTICAL TEMPLATES FOR THE SPECTRUM #############
+'''
+Alberto Roper Pol, added 01/12/2022
+'''
+
+def smoothed_double_bpl(k, A=1, kb=1, ks=10, a=2, b=0, c=11/3, alpha1=2, alpha2=2):
+    
+    """
+    Function that computes the smoothed double broken power law useful to reproduce
+    SGWB templates.
+    
+    Reference: Y. He, A. Roper Pol, A. Brandenburg, "Modified propagation of gravitational
+    waves from the early radiation era," in press, JCAP (2022), arXiv:2212.06082, see eq. 5.1
+    """
+        
+    S = A*(k/ks)**a/(1 + (k/kb)**((a - b)*alpha1))**(1/alpha1)
+    S = S/(1 + (k/ks)**((b + c)*alpha2))**(1/alpha2)
+    S *= (1 + (ks/kb)**(a - b))
+    
+    return S
+
+################################ TO BE CHECKED! ################################
+
+def integrated_peak_Sk_smoothed_double_bpl(plot=True, ret=True, save=True):
+    
+    """
+    Function that computes the relation between the integral of the spectrum and
+    its spectral amplitude and the relation between the position of the maximum of 
+    k x S (k) and the parameter k_*, where S(k) is the smoothed double broken power
+    law defined in the function smoothed_double_bpl.
+    
+    It plots the dependence of these relations as a function of k_*.
+    """
+    
+    kss = np.logspace(0, np.log10(6000), 1000)
+    ints = np.zeros(len(kss))
+    krat = np.zeros(len(kss))
+    k = np.logspace(-3, 4, 20000)
+    for i in range(0, len(kss)):
+        S = smoothed_double_bpl(k, A=1, kb=1, ks=kss[i], a=2, b=0,
+                                c=11/3, alpha1=2, alpha2=2)
+        ints[i] = np.trapz(S, k)
+        krat[i] = kss[i]/k[np.argmax(k*S)]
+    
+    if plot:
+        plt.plot(kss, ints/kss, color='blue')
+        plt.xscale('log')
+        plt.xlabel(r'$k_*$')
+        plt.ylabel(r'$(\int S (k) {\rm \, d} k)/k_*$')
+        plt.ylim(1.05, 1.35)
+        plt.xlim(1, 1e3)
+        plt.xticks(np.logspace(0, 3, 4))
+        plot_sets.axes_lines()
+        if save:
+            ffl = 'plots/intS_vs_ks.pdf'
+            print('Saving figure %s'%ffl)
+            plt.savefig(ffl, bbox_inches='tight')
+        plt.figure()
+        plt.plot(kss, krat, color='blue')
+        plt.xscale('log')
+        plt.xlabel(r'$k_*$')
+        plt.ylabel(r'$k_{\rm max}/k_*$')
+        plt.xlim(1, 1e3)
+        plt.xticks(np.logspace(0, 3, 4))
+        plt.ylim(.98, 1.2)
+        plt.yticks([1, 1.05, 1.1, 1.15, 1.2])
+        plt.hlines(1.143, 1e0, 1e3, color='black', lw=.8)
+        plot_sets.axes_lines()
+        if save:
+            ffl = 'plots/kpeak_vs_ks.pdf'
+            print('Saving figure %s'%ffl)
+            plt.savefig(ffl, bbox_inches='tight')
+ 
+    if ret: return kss, ints, krat
