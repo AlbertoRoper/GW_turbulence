@@ -215,7 +215,7 @@ class run():
         print('Reading run ' + name_run + '\n')
 
         # Reading spectra
-        self.spectra = re.read_spectra_runs(dir0, self.dir_run, opt=opt)
+        self.spectra = re.read_spectra_runs(dir_data=dir0 + self.dir_run + '/data/', opt=opt)
         keys = self.spectra.keys()
         self.spectra_avail = [s for s in self.spectra.keys() if not s=="k"]
         self.spectra_avail = [s for s in self.spectra_avail if not s=="k0"]
