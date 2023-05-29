@@ -8,8 +8,8 @@ using the routine
 [interferometry.py](https://github.com/AlbertoRoper/GW_turbulence/blob/master/interferometry.py),
 following the methodology of the appendix B in:
 A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, "Polarization
-of gravitational waves from helical MHD turbulent sources," JCAP, in press
-(2022), [arXiv:2107.05356](https://arxiv.org/pdf/2107.05356.pdf).
+of gravitational waves from helical MHD turbulent sources," JCAP 04 (2022), 019,
+[arXiv:2107.05356](https://arxiv.org/pdf/2107.05356.pdf).
 
   - 'LISA_Omega.csv' 
   - 'LISA_Omega_PLS.csv'
@@ -26,8 +26,8 @@ of gravitational waves from helical MHD turbulent sources," JCAP, in press
 [interferometry.py](https://github.com/AlbertoRoper/GW_turbulence/blob/master/interferometry.py),
 following the methodology of the appendix B in:
 A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, "Polarization
-of gravitational waves from helical MHD turbulent sources," JCAP, in press
-(2022), [arXiv:2107.05356](https://arxiv.org/pdf/2107.05356.pdf).
+of gravitational waves from helical MHD turbulent sources," JCAP 04 (2022), 019,
+[arXiv:2107.05356](https://arxiv.org/pdf/2107.05356.pdf).
 
   - 'LISA_response_f.csv'
   - 'Taiji_response_f.csv'
