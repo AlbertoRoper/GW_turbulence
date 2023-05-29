@@ -510,6 +510,13 @@ def friedmann(a, dir0='', a0=1, h0=h0_ref, OmL0=OmL0_ref, dofs=True, Neff=Neff_r
         OmL0 -- present-time content of dark energy
         dofs -- option to compensate the rad energy density using dofs during RD era
         dir0 -- directory where file for dofs during RD era is stored
+        
+    Returns:
+        w -- equation of state (p = w\rho)
+        ad -- cosmic time derivative of the scale factor
+        add -- second cosmic time derivative of the scale factor
+        ap -- conformal time derivative of the scale factor
+        app -- second conformal time derivative of the scale factor
     
     Reference: Y. He, A. Roper Pol, A. Brandenburg, "Modified propagation of gravitational
     waves from the early radiation era," in press, JCAP (2022), arXiv:2212.06082,
