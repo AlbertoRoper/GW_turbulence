@@ -31,6 +31,10 @@ The main routines of the GH project are the following:
 * [run.py](run.py): contains the class **run** used to store all the variables associated to a specific run of the Pencil Code, as well as functions to initialize and postprocess the results of a set of runs given by an array of directories.
 * [spectra.py](spectra.py): contains description for specific spectral templates, postprocessing routines for numerical spectra, and other mathematical routines.
 
+Some data files are available within the GH project that are useful for some or all of the Python routines:
+* [cosmology](cosmology): includes files relevant for cosmological calculations
+* [detector_sensitivity](detector_sensitivity): includes the sensitivity of various detectors (ground-based, space-based, and pulsar timing arrays, among others), see the [README](detector_sensitivity/README.md) file for info and references.
+
 ## Projects
 
 Each specific project is contained in a separate directory and corresponds to a publication. Note that there are other authors involved in most of the collected projects. The Python routine [dirs.py](dirs.py) returns a dictionary that link the name of the directories for each of the runs for the specific projects listed below. The dictionary can be used to directly read the simulations of a specific project (see Jupyter notebooks contained in each project directory).
