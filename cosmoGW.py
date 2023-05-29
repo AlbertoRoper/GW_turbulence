@@ -47,7 +47,8 @@ def hc_OmGW(f, OmGW, d=1, h0=1.):
 
     """
     Function that transforms the  GW energy density OmGW (f) to the
-    characteristc strain spectrum function hc(f) away from the source.
+    characteristic strain spectrum function hc(f) away from the source.
+    Careful with the different notations (can be confusing!!), see below.
     
     Arguments:
         f -- frequency array (in units of frequency, e.g. Hz)
@@ -60,8 +61,25 @@ def hc_OmGW(f, OmGW, d=1, h0=1.):
     Returns:
         hc -- strain spectrum
 
-    Reference: M. Maggiore, "Gravitational wave experiments and early universe cosmology,"
-    Phys.Rept. 331 (2000) 283-367, arXiv:gr-qc/9909001, eq. 17
+    References (comment on notations):
+
+    Main reference here is M. Maggiore, "Gravitational wave experiments and
+    early universe cosmology," Phys.Rept. 331 (2000) 283-367, arXiv:gr-qc/9909001,
+    eq. 17:
+
+    OmGW(f) = (2 \pi^2)/(3 H0)^2 f^2 hc^2 (f).
+
+    hc2 (f) is then defined as the spectrum in log(f) of h+^2 + hx^2 and
+    Maggiore defines Sh(f) in eq. B12 such that hc^2 (f) = 2 f Sh_Mag (f).
+
+    Note that this is different than the notation in  A. Roper Pol, S. Mandal,
+    A. Brandenburg, T. Kahniashvili, "Polarization of gravitational waves from
+    helical MHD turbulent sources," JCAP 04 (2022), 019, arXiv:2107.05356, eq. B.18,
+    used in interferometry.py, where hc^2 (f) = f Sh^\pm (f), such that this is
+    Sh^\pm (f) = 2 Sh_Mag (f).
+
+    Hence, from hc^2 (f) we can compute Sh_Mag (f) = hc^2 (f)/2f and
+    Sh^\pm (f) = hc^2 (f)/f.
     """
 
     f = f.to(u.Hz)
