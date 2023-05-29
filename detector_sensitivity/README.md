@@ -1,14 +1,11 @@
 This directory contains numerical values of the sensitivities of
 different detectors to gravitational wave (GW) signals.
 
-- The sensitivities (given in ratio of GW energy density to
-present time critical energy density, Omega_GW) and power
-law sensitivities (PLS) for LISA and Taiji are computed
-using the routine
+- The sensitivities (given in ratio of GW energy density to present time critical energy density,
+Omega_GW) and power law sensitivities (PLS) for LISA and Taiji are computed using the routine
 [interferometry.py](https://github.com/AlbertoRoper/GW_turbulence/blob/master/interferometry.py),
-following the methodology of the appendix B in:
-A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, "Polarization
-of gravitational waves from helical MHD turbulent sources," JCAP 04 (2022), 019,
+following the methodology of the appendix B in A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili,
+"Polarization of gravitational waves from helical MHD turbulent sources," JCAP 04 (2022), 019,
 [arXiv:2107.05356](https://arxiv.org/abs/2107.05356).
 
   - 'LISA_Omega.csv' 
@@ -24,9 +21,8 @@ of gravitational waves from helical MHD turbulent sources," JCAP 04 (2022), 019,
 
 - The monopole and dipole response functions of LISA and Taiji are computed using the routine
 [interferometry.py](https://github.com/AlbertoRoper/GW_turbulence/blob/master/interferometry.py),
-following the methodology of the appendix B in:
-A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, "Polarization
-of gravitational waves from helical MHD turbulent sources," JCAP 04 (2022), 019,
+following the methodology of the appendix B in A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili,
+"Polarization of gravitational waves from helical MHD turbulent sources," JCAP 04 (2022), 019,
 [arXiv:2107.05356](https://arxiv.org/abs/2107.05356).
 
   - 'LISA_response_f.csv'
