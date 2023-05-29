@@ -12,11 +12,12 @@ see GW_turbulence project (https://github.com/AlbertoRoper/GW_turbulence)
 for details.
 
 Author: Alberto Roper Pol
-created: 01/01/2021
+Created: 01/01/2021
+Updated: 29/05/2022 (new release of the cosmoGW code)
 """
 
 import os
-HOME = os.getcwd()
+HOME = os.getcwd() + '/'
 import reading as re
 from dirs import read_dirs as rd
 import numpy as np
@@ -24,8 +25,8 @@ import pandas as pd
 import pickle
 import spectra as spec
 
-def initialize_runs(R=[], dir0=HOME, dirs={}, quiet=True, opt=0, debug=False, project='',
-                    char=False, load=False):
+def initialize_runs(R=[], dir0=HOME, dirs='', quiet=True, opt=0, debug=False, project='',
+                    char=False, load=False, ext=''):
 
     """
     Function to initialize the dictionary with the list of runs pointing to
@@ -47,17 +48,27 @@ def initialize_runs(R=[], dir0=HOME, dirs={}, quiet=True, opt=0, debug=False, pr
         load -- option to load the runs from previously generated pickle files, which
                 already contains the results from the simulations (faster than reading
                 from the files, but this needs to be done at least once)
+        ext -- possible extension to select a subset of runs of the specified project
 
     Returns:
         runs -- dictionary with the initialized values of the runs
     """
 
     # if dirs is not given, it looks for it in dirs.py from the specific project
-    if len(dirs) == 0 and project != '':
-        dirs = rd(project, dirs)
-        R = [s for s in dirs]
+    if dirs=='':
+        if  project != '':
+            dir0 = HOME + project + '/'
+            dirs = {}
+            dirs = rd(project, dirs, ext=ext)
+            R = [s for s in dirs]
+            print("\n dirs is being set up for project: ", project)
+            if ext != '': print('extension: ', ext)
+            print('\n', dirs, '\n')
+        else:
+            print('A valid project name needs to be given to initialize_runs function!')
     else:
-        print('A valid project name needs to be given to initialize_runs function!')
+        print('dirs is read from the input (needs to be correct)')
+        print(dirs)
 
     runs = {}
     for i in R:
@@ -70,16 +81,16 @@ def initialize_runs(R=[], dir0=HOME, dirs={}, quiet=True, opt=0, debug=False, pr
                           debug=debug, project=project)
 
         else:
-            print('Reading pickle variables generated from simulations')
+            print('Reading pickle variables generated from simulations: ', i)
             f = open(dir0 + dir_run + '/' + i + '.pckl', 'rb')
             run_var = pickle.load(f)
             f.close()
 
-        if char: run.characterize_run(quiet=quiet)
+        if char: run_var.characterize_run(quiet=quiet)
         runs.update({i:run_var})
 
     if not quiet:
-        print('The runs that have been read are:')
+        print('\n The runs that have been read are:')
         print([s for s in runs.keys()])
 
     return runs
@@ -117,49 +128,6 @@ def save_runs(runs, dir0=''):
     for i in runs:
         run = runs.get(i)
         run.save(dir0=dir0)
-
-# this function is included in initialize_runs as an alternative option
-# obsolete (to be removed)
-def load_runs(R=[], dir0=HOME, dirs={}, quiet=True, project=''):
-
-    """
-    Function to initialize the dictionary with the list of runs pointing to
-    the variables of the class run, which contains the spectra, the time
-    series, and direct calculations (among other and potential additions).
-    
-    It reads the stored pickle variable containing the data in run.
-
-    Arguments:
-        R -- array with the name of the runs to be loaded
-        dir0 -- directory that contains the runs to be loaded
-        dirs -- dictionary with the name of each of the runs to be loaded
-        quiet -- prints the list of read runs if False (default True)
-        project -- name of the specific project (if dirs, R are not given, they can be
-                   read from the specific project if it exists in dirs.py)
-
-    Returns:
-        runs -- dictionary with the values of the runs read from the pickle
-                variables
-    """
-
-    # if dirs is not given, it looks for it in dirs.py from the specific project
-    if len(dirs) == 0 and project != '':
-        dirs = rd(project, dirs)
-        R = [s for s in dirs]
-    else:
-        print('A valid project name needs to be given to initialize_runs function!')
-
-    runs = {}
-    for i in R:
-        dir_run = dirs.get(i)
-        f = open(dir0 + dir_run + '/' + i + '.pckl', 'rb')
-        run_var = pickle.load(f)
-        f.close()
-        runs.update({i:run_var})
-    if not quiet:
-        print('The runs that have been read are:')
-        print([s for s in runs.keys()])
-    return runs
 
 class run():
 
@@ -280,7 +248,7 @@ class run():
                           (if comp_max is True) (default are 'b' and 'u' for MHD turbulence)
         """
 
-        # compute the spectrum of the stresses Pi and the GW spectra
+        # compute the spectrum of the stresses Pi = Str/k^2 and the GW spectra
         # these functions are adapted for RD runs (needs to be adapted for
         # other cases)
         if upd_Pi: self.update_Pi()
@@ -320,64 +288,6 @@ class run():
                 ind_max = np.argmax(self.Om_max)
                 self.type = ts_max[ind_max]
                 self.Ommax = self.Om_max[ind_max]
-
-        # obsolete (to be deleted)
-        # move to external function!
-        #self.OmMmax = 0
-        #self.OmKmax = 0
-        #self.OmEMmax = 0
-        #self.OmMmax, self.tmaxM, self.kfM = \
-        #        self.check_max_spectra_ts('mag', 'EEM')
-        #self.OmKmax, self.tmaxK, self.kfK = \
-        #        self.check_max_spectra_ts('kin', 'EEK')
-        #self.OmEMmax, self.tmaxEM, self.kfEM = \
-        #        self.check_max_spectra_ts('ele', 'EEEM')
-        # set maximum allowed Om to consider it a correct value and show a
-        # warning if the value is over the allowed one
-        #max_allowed_OmM = 1e0
-        #if self.OmMmax > max_allowed_OmM:
-        #    print('Maximum value of the magnetic energy density is too',
-        #          ' large: EEM = ', self.OmMmax, ' > ',
-        #          max_allowed_OmM, '(max allowed EEM).')
-        #max_allowed_OmK = 1e0
-        #if self.OmKmax > max_allowed_OmK:
-        #    print('Maximum value of the kinetic energy density is too',
-        #          ' large: EEK = ', self.OmKmax, ' > ',
-        #          max_allowed_OmK, '(max allowed EEK).')
-        #max_allowed_OmEM = 1e0
-        #if self.OmEMmax > max_allowed_OmEM:
-        #    print('Maximum value of the electromagnetic energy density is too',
-        #          ' large: EEEM = ', self.OmEMmax, ' > ',
-        #          max_allowed_OmEM, '(max allowed EEEM).')
-
-        # maximum Alfven and velocity speeds
-        #self.vA = np.sqrt(1.5*self.OmMmax)
-        #self.vK = np.sqrt(2*self.OmKmax)
-
-        # eddy turnover times
-        # if self.kfM != 0 and self.vA != 0: self.teM = 1/self.kfM/self.vA
-        # else: self.teM = 1e10
-        # if self.kfK != 0 and self.vK != 0: self.teK = 1/self.kfK/self.vK
-        # else: self.teK = 1e10
-
-        # check the nature of the turbulence (m for magnetic or
-        # k for kinetic) based on Ommax, and define tini as the time at which
-        # the dominant turbulent energy density is maximum
-        #self.turb = 'k'
-        # self.tini = self.tmaxK
-        # self.kf = self.kfK
-        # self.v = self.vK
-        # self.te = self.teK
-        # if self.OmMmax > self.OmKmax:
-        #    self.turb = 'm'
-        #    self.tini = self.tmaxM
-        #    self.kf = self.kfM
-        #    self.v = self.vA
-        #    self.te = self.teM
-        # if self.OmEMmax > self.OmMmax:
-        #    self.turb = 'em'
-        # self.Ommax = max(self.OmMmax, self.OmKmax)
-        # self.Ommax = max(self.Ommax, self.OmEMmax)
 
         # compute energy density time series
         if comp_rho: self.compute_rho()
@@ -706,56 +616,14 @@ class run():
             # if some field is available, we return total energy density
             if j > 0:
                 self.ts.update({'EEtot': tot_E})
-
-        # obsolete (to be deleted)
-        #if 'EEM' in self.ts_avail and 'EEK' in self.ts_avail:
-        #    EEK = self.ts.get('EEK')
-        #    EEM = self.ts.get('EEM')
-        #    self.ts.update({'EEtot': EEK + EEM})
-        #    self.ts_avail.append('EEtot')
         
         # compute max energy density from fields in max_fields if available
         for i in max_fields:
             if ('EEmax_' + i) not in self.ts_avail:
                 if (i + 'max') in self.ts_avail:
                     EEmax = self.ts.get(i + 'max')**2/2
-                    self.ts.update({'EEmax_' + i}: EEmax)
+                    self.ts.update({'EEmax_' + i: EEmax})
                     self.ts_avail.append('EEmax' + i)
-              
-        # obsolete (to be deleted)
-        #if 'EEtotmax' not in self.ts_avail:
-        #    
-        #    # compute EEKmax, EEMmax and EEtotmax
-        #    if 'umax' in self.ts_avail:
-        #        EEKmax = self.ts.get('umax')**2/2
-        #        self.ts.update({'EEKmax': EEKmax})
-        #        self.ts_avail.append('EEKmax')
-        #
-        #    if 'bmax' in self.ts_avail:
-        #        EEMmax = self.ts.get('bmax')**2/2
-        #        self.ts.update({'EEMmax': EEMmax})
-        #        self.ts_avail.append('EEMmax')
-        #        if 'umax' in self.ts_avail:
-        #            self.ts.update({'EEtotmax': EEMmax + EEKmax})
-        #            self.ts_avail.append('EEtotmax')
-
-# obsolete (to be deleted)
-#    def print_characterize(self):
-#
-#        """
-#        Function that prints some of the output computed in the function
-#        characterize_run of the run.
-#        """
-#
-#        if self.turb == 'm':
-#            print(self.name_run, '(', self.turb, '): Omega max: ', self.OmMmax,
-#                  ', kf: ', self.kfM, ', vA:', self.vA, ', te: ', self.teM)
-#        elif self.turb == 'k':
-#            print(self.name_run, '(', self.turb, '): Omega max: ', self.OmKmax,
-#                  ', kf: ', self.kfK, ', vA:', self.vK, ', te: ', self.teK)
-#        elif self.turb == 'em':
-#            print(self.name_run, '(', self.turb, '): Omega max: ', self.OmEMmax,
-#                  ', kf: ', self.kfEM, ', vA:', self.vA, ', te (m): ', self.teM)
 
     def compute_pol(self, sp='EGW', A=1., exp=0):
 
@@ -785,8 +653,8 @@ class run():
                     Ak[kij == 0] = 1e-20
                 PP = np.zeros((np.shape(EE)))
                 PP[EE != 0] = Ak*hel_EE[EE != 0]/EE[EE != 0]
-                self.spectra.update({P_sp}: PP)
-                self.spectra.update({'t_' + P_sp}: t)
+                self.spectra.update({P_sp: PP})
+                self.spectra.update({'t_' + P_sp: t})
                 self.spectra_avail.append(P_sp)
 
         # obsolete (to be deleted)
