@@ -9,7 +9,7 @@ cosmoGW (updated version of *GW_turbulence*) is a project to produce results rel
 Some of the routines use results from large-scale numerical simulations using the [Pencil Code](https://github.com/pencil-code);
 see [Pencil Code Collaboration], *The Pencil Code, a modular MPI code for partial differential equations and particles: multipurpose and multiuser-maintained,* J. Open Source Softw. **6**, 2807 (2021), [arXiv:2009.08231](https://arxiv.org/abs/2009.08231), [DOI:10.21105/joss.02807](https://joss.theoj.org/papers/10.21105/joss.02807).
 
-Other routines are part of cosmoGW, which include postprocessing calculations, lower-scale numerical simulations, and plotting routines.
+Other routines are part of cosmoGW, including postprocessing calculations, lower-scale numerical simulations, and plotting routines.
 
 If you use any of the cosmoGW results, please cite this [repository](https://zenodo.org/record/6045844), the relevant reference/s listed in the routines, and the [Pencil Code paper](https://joss.theoj.org/papers/10.21105/joss.02807) and [code](https://github.com/pencil-code) when the results are based on Pencil Code simulations. I would also love to hear about your work, so don't dout to send me an email and tell me about your project!
 
@@ -17,26 +17,26 @@ If you have any issues, comments, suggestions, or you are just interested in dis
 
 ## Routines
 
-The main routines of the GH project are the following:
+The main routines of cosmoGW are:
 
-* [**cosmoGW.py**](cosmoGW.py): contains functions relevant for cosmological stochastic gravitational wave backgrounds (SGWB).
-* [**cosmoMF.py**](cosmoMF.py): contains functions relevant for the cosmological magnetic fields: bounds from different experiments, observations or projected sensitivities, and expectations from theory, among others.
-* [**cosmology.py**](cosmology.py): contains functions relevant for cosmological calculations, including a solver to Friedmann equations (see tutorial on Friedmann equations in [cosmology.ipnyb](cosmology/cosmology.ipynb) that can be used to generate the solution files that are then read for some simulations of the Pencil Code (see tutorial [cosmology_PC.ipnyb](cosmology/cosmology_PC.ipynb)).
-* [**horndeski.py**](horndeski.py): contains functions relevant for GW production in the context of general theories of modified gravity.
-* [**interferometry.py**](interferometry.py): contains functions to compute the response and sensitivity functions of interferometer space-based GW detectors, e.g., LISA and Taiji, to the detection of SGWB (see tutorial on LISA interferometry in [interferometry.ipynb](interferometry/interferometry.ipynb), which studies the detectability to a SGWB and to its polarization, also including the space-based network LISA-Taiji to detect polarization).
-* [**pta.py**](pta.py): contains functions used in the analysis of observations by pulsar timing array (PTA) collaborations: NANOGrav, PPTA, EPTA, and IPTA.
-* [**reading.py**](reading.py): contains functions that are used to read the output files of a specific run of the Pencil Code.
-* [**run.py**](run.py): contains the class **run** used to store all the variables associated to a specific run of the Pencil Code, as well as functions to initialize and postprocess the results of a set of runs given by an array of directories.
+* [**cosmoGW.py**](cosmoGW.py): functions relevant for cosmological stochastic gravitational wave backgrounds (SGWB).
+* [**cosmoMF.py**](cosmoMF.py): functions relevant for cosmological magnetic fields: bounds from different experiments, observations or projected sensitivities, and expectations from theory, among others.
+* [**cosmology.py**](cosmology.py): functions relevant for cosmological calculations, including a Friedmann equations solver (see tutorial on Friedmann equations in [cosmology.ipnyb](cosmology/cosmology.ipynb)) that can generate the solution files being read in some PEncil Code simulations (see tutorial [cosmology_PC.ipnyb](cosmology/cosmology_PC.ipynb)).
+* [**horndeski.py**](horndeski.py): functions relevant for GW production in the context of general theories of modified gravity.
+* [**interferometry.py**](interferometry.py): functions to compute the response and sensitivity functions of interferometer space-based GW detectors (e.g., LISA and Taiji) to the detection of SGWBs (see tutorial on LISA interferometry in [interferometry.ipynb](interferometry/interferometry.ipynb)) energy density and polarization, including the space-based network LISA-Taiji to detect polarization.
+* [**pta.py**](pta.py): functions used in the analysis of observations by pulsar timing array (PTA) collaborations: NANOGrav, PPTA, EPTA, and IPTA.
+* [**reading.py**](reading.py): functions to read the output files of a specific set of runs (project) of the Pencil Code.
+* [**run.py**](run.py): contains the class **run**, used to store all the variables computed in the Pencil Code and in cosmoGW from the Pencil Code solitions. It includes functions to initialize and postprocess the results of a set of runs.
 * [**spectra.py**](spectra.py): contains description for specific spectral templates, postprocessing routines for numerical spectra, and other mathematical routines.
 
-Some data files are available within the GH project that are useful for some or all of the Python routines:
+Some data files are available in cosmoGW that are useful in some of the projects:
 * [**cosmology**](cosmology): includes files relevant for the cosmological evolution of the Universe and contains a tutorial on solving Friedmann equations.
 * [**interferometry**](interferometry): includes files relevant for space-based GW interferometry calculations and contains a tutorial on computing the response functions, sensitivities and power law sensitivities to SGWB energy density and polarization.
 * [**detector_sensitivity**](detector_sensitivity): includes the sensitivity of various detectors (ground-based, space-based, and pulsar timing arrays, among others), see the [README](detector_sensitivity/README.md) file for info and references.
 
 ## Projects
 
-Each specific project is contained in a separate directory and corresponds to a publication. Note that there are other authors involved in most of the collected projects. The Python routine [dirs.py](dirs.py) returns a dictionary that link the name of the directories for each of the runs for the specific projects listed below. The dictionary can be used to directly read the simulations of a specific project (see Jupyter notebooks contained in each project directory).
+Each specific project is contained in a separate directory and (usually) corresponds to a publication. They all include a Jupyter notebook that allows to reproduce the results and plots of the publication. Note that (obviously) there are other authors involved in most of the collected projects so I am not the only one to credit when using these results! The Python routine [dirs.py](dirs.py) returns a dictionary linking common names of the run to their specific directories. The dictionary can be used to directly read the simulations of a specific project (see Jupyter notebooks contained in each project directory).
 
 * The run directories and results in [**PRD_1903_08585**](PRD_1903_08585) (datasets also available in [Zenodo](https://zenodo.org/record/3692072)) correspond to:
 > **A. Roper Pol, S. Mandal, A. Brandenburg, T. Kahniashvili, A. Kosowsky,** *Numerical Simulations of Gravitational Waves from Early-Universe Turbulence,* Phys. Rev. D **102**, 083512 (2020), [arXiv:1903.08585](https://arxiv.org/abs/1903.08585),
