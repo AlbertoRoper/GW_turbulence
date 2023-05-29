@@ -10,6 +10,7 @@ Date: 27/11/2022
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import astropy.units as u
 
 # get working directory, where the runs and routines should be stored
 dir0 = os.getcwd() + '/'
@@ -271,8 +272,6 @@ def plot_eta_vs_t(t, eta, t0, eta0, tEQ, etaEQ, save=True):
         etaEQ -- conformal time at equipartition
         save -- option to save the plot under 'friedmann/plots/eta_vs_t.pdf'
     """
-    
-    import astropy.units as u
     
     plt.figure(figsize=(8, 5))
     plt.plot(t, eta, color='blue')
