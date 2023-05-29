@@ -21,19 +21,20 @@ you can contact me: alberto.roperpol@unige.ch
 
 The main routines of the GH project are the following:
 
-* [cosmoGW.py](cosmoGW.py): contains functions relevant for cosmological stochastic gravitational wave backgrounds (SGWB).
-* [cosmoMF.py](cosmoMF.py): contains functions relevant for the cosmological magnetic fields: bounds from different experiments, observations or projected sensitivities, and expectations from theory, among others.
-* [cosmology.py](cosmology.py): contains functions relevant for cosmological calculations, including a solver to Friedmann equations (see tutorial on Friedmann equations in [cosmology.ipnyb](cosmology/cosmology.ipynb) that can be used to generate the solution files that are then read for some simulations of the Pencil Code (see tutorial [cosmology_PC.ipnyb](cosmology/cosmology_PC.ipynb)).
-* [horndeski.py](horndeski.py): contains functions relevant for GW production in the context of general theories of modified gravity.
-* [interferometry.py](interferometry.py): contains functions to compute the response and sensitivity functions of interferometer space-based GW detectors, e.g., LISA and Taiji, to the detection of SGWB (see tutorial on LISA interferometry in [interferometry.ipynb](interferometry/interferometry.ipynb), which studies the detectability to a SGWB and to its polarization, also including the space-based network LISA-Taiji to detect polarization).
-* [pta.py](pta.py): contains functions used in the analysis of observations by pulsar timing array (PTA) collaborations: NANOGrav, PPTA, EPTA, and IPTA.
-* [reading.py](reading.py): contains functions that are used to read the output files of a specific run of the Pencil Code.
-* [run.py](run.py): contains the class **run** used to store all the variables associated to a specific run of the Pencil Code, as well as functions to initialize and postprocess the results of a set of runs given by an array of directories.
-* [spectra.py](spectra.py): contains description for specific spectral templates, postprocessing routines for numerical spectra, and other mathematical routines.
+* [**cosmoGW.py**](cosmoGW.py): contains functions relevant for cosmological stochastic gravitational wave backgrounds (SGWB).
+* [**cosmoMF.py**](cosmoMF.py): contains functions relevant for the cosmological magnetic fields: bounds from different experiments, observations or projected sensitivities, and expectations from theory, among others.
+* [**cosmology.py**](cosmology.py): contains functions relevant for cosmological calculations, including a solver to Friedmann equations (see tutorial on Friedmann equations in [cosmology.ipnyb](cosmology/cosmology.ipynb) that can be used to generate the solution files that are then read for some simulations of the Pencil Code (see tutorial [cosmology_PC.ipnyb](cosmology/cosmology_PC.ipynb)).
+* [**horndeski.py**](horndeski.py): contains functions relevant for GW production in the context of general theories of modified gravity.
+* [**interferometry.py**](interferometry.py): contains functions to compute the response and sensitivity functions of interferometer space-based GW detectors, e.g., LISA and Taiji, to the detection of SGWB (see tutorial on LISA interferometry in [interferometry.ipynb](interferometry/interferometry.ipynb), which studies the detectability to a SGWB and to its polarization, also including the space-based network LISA-Taiji to detect polarization).
+* [**pta.py**](pta.py): contains functions used in the analysis of observations by pulsar timing array (PTA) collaborations: NANOGrav, PPTA, EPTA, and IPTA.
+* [**reading.py**](reading.py): contains functions that are used to read the output files of a specific run of the Pencil Code.
+* [**run.py**](run.py): contains the class **run** used to store all the variables associated to a specific run of the Pencil Code, as well as functions to initialize and postprocess the results of a set of runs given by an array of directories.
+* [**spectra.py**](spectra.py): contains description for specific spectral templates, postprocessing routines for numerical spectra, and other mathematical routines.
 
 Some data files are available within the GH project that are useful for some or all of the Python routines:
-* [cosmology](cosmology): includes files relevant for cosmological calculations
-* [detector_sensitivity](detector_sensitivity): includes the sensitivity of various detectors (ground-based, space-based, and pulsar timing arrays, among others), see the [README](detector_sensitivity/README.md) file for info and references.
+* [**cosmology**](cosmology): includes files relevant for the cosmological evolution of the Universe and contains a tutorial on solving Friedmann equations.
+* [**interferometry**](interferometry): includes files relevant for space-based GW interferometry calculations and contains a tutorial on computing the response functions, sensitivities and power law sensitivities to SGWB energy density and polarization.
+* [**detector_sensitivity**](detector_sensitivity): includes the sensitivity of various detectors (ground-based, space-based, and pulsar timing arrays, among others), see the [README](detector_sensitivity/README.md) file for info and references.
 
 ## Projects
 
@@ -65,12 +66,6 @@ The datasets are also available in [Zenodo](https://zenodo.org/record/5603013).
 C. Caprini, A. Neronov, D. Semikoz, *The gravitational wave signal from primordial magnetic fields in the Pulsar
 Timing Array frequency band,* Phys. Rev. D **105**, 123502 (2022), [arXiv:2201.05630](https://arxiv.org/abs/2201.05630).
 The datasets are also available in [Zenodo](https://zenodo.org/record/5782752).
-
-* The run directory in [**cosmology**](cosmology) contains the calculations to study the cosmological evolution
-of the Universe and contains a solver to Friedmann equations.
-This has been used to generate input results for the Pencil Code, in particular, for the results of Y. He, A.
-Roper Pol, A. Brandenburg, *Modified propagation of gravitational waves from the early radiation era,*
-*in press, JCAP* (2023), [arXiv:2212.06082](https://arxiv.org/abs/2212.06082).
 
 * The run directories and results in [**horndeski**](horndeski) correspond to the paper Y. He, A. Roper Pol,
 A. Brandenburg, *Modified propagation of gravitational waves from the early radiation era,*
