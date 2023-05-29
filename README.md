@@ -1,6 +1,8 @@
 # cosmoGW
 
 Author: Alberto Roper Pol (alberto.roperpol@unige.ch)
+Created: 01/11/2021
+Latest stable release: [*v1.0.0 (11/02/2022)*](https://zenodo.org/record/6045844)
 
 This GitHub project produces results related to the production of cosmological gravitational wave backgrounds from different sources in the early Universe (especially from MHD turbulence).
 
