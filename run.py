@@ -74,6 +74,7 @@ def initialize_runs(R=[], dir0=HOME, dirs='', quiet=True, opt=0, debug=False, pr
     for i in R:
 
         dir_run = dirs.get(i)
+        rd_pick = True
 
         if not load:
             print('Reading files from the simulations')
@@ -82,12 +83,17 @@ def initialize_runs(R=[], dir0=HOME, dirs='', quiet=True, opt=0, debug=False, pr
 
         else:
             print('Reading pickle variables generated from simulations: ', i)
-            f = open(dir0 + dir_run + '/' + i + '.pckl', 'rb')
-            run_var = pickle.load(f)
-            f.close()
-
-        if char: run_var.characterize_run(quiet=quiet)
-        runs.update({i:run_var})
+            try:
+                f = open(dir0 + dir_run + '/' + i + '.pckl', 'rb')
+                run_var = pickle.load(f)
+                f.close()
+            except:
+                rd_pick = False
+                print('reading pickle file for ', i, ' failed! make sure you first initialize and',
+                      ' generate the pickle files from the run directories')
+        if rd_pick:
+            if char: run_var.characterize_run(quiet=quiet)
+            runs.update({i:run_var})
 
     if not quiet:
         print('\n The runs that have been read are:')
