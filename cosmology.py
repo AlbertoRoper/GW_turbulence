@@ -606,7 +606,7 @@ def friedmann_solver(a, dir0='', a0=1., h0=h0_ref, OmL0=OmL0_ref, dofs=True, Nef
                            'ap/a': ap/a, 'app/a' : app/a})
         df.to_csv('friedmann/solution' + nm_fl + '.csv')
         with open('friedmann/README' + nm_fl + '.txt', 'w') as f:
-            f.write("The file solution" + nm_fl + ".csv contains the")
+            f.write("The file solution" + nm_fl + ".csv contains the ")
             f.write("solutions from the Friedmann solver using the parameters:\n")
             f.write("a0 = %.4e, h0 = %.4f, OmL0 = %.4f, Neff = %.4f \n"%(a0, h0, OmL0, Neff))
             f.write("The solution contains 'a', 't', 'eta', 'ap/a' and 'app/a'")
