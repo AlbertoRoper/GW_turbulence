@@ -253,7 +253,6 @@ def thermal_g(dir0='', T=Tref, s=0, file=True):
 
     # read the file if it exists
     if file:
-        import pandas as pd
         try:
             if dir0 == '': dir0 = HOME + '/cosmology/'
             df = pd.read_csv(dir0 + 'T_gs.csv')
@@ -271,18 +270,20 @@ def thermal_g(dir0='', T=Tref, s=0, file=True):
     if not file:
         T = T.to(u.MeV)
         T = T.value
-        # Check value of T in MeV and assign g_*
-        if T < 0.1:
-            if s == 0: g = g0
-            if s == 1: g = g0s
-        elif T < 0.5: g = 7.25
-        elif T <= 100: g = 10.75
-        elif T <= 150: g = 17.25
-        elif T < 1e3: g = 61.75
-        elif T < 4e3: g = 75.75
-        elif T < 8e4: g = 86.25
-        elif T < 1.7e5: g = 96.25
-        else: g = 106.75
+        g = np.zeros(len(T))
+        for i in range(0, len(T)):
+            # Check value of T in MeV and assign g_*
+            if T[i] < 0.1:
+                if s == 0: g[i] = g0
+                if s == 1: g[i] = g0s
+            elif T[i] < 0.5: g[i] = 7.25
+            elif T[i] <= 100: g[i] = 10.75
+            elif T[i] <= 150: g[i] = 17.25
+            elif T[i] < 1e3: g[i] = 61.75
+            elif T[i] < 4e3: g[i] = 75.75
+            elif T[i] < 8e4: g[i] = 86.25
+            elif T[i] < 1.7e5: g[i] = 96.25
+            else: g[i] = 106.75
 
     return g
 
