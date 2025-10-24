@@ -8,17 +8,18 @@ literature.
 
 The runs correspond to Pencil Code simulations of gravitational waves from
 different sources in the early universe, for example, from MHD turbulence,
-see GW_turbulence project (https://github.com/AlbertoRoper/GW_turbulence)
+see cosmoGW project (https://github.com/AlbertoRoper/cosmoGW)
 for details.
 
 Author: Alberto Roper Pol
 Created: 01/01/2021
-Updated: 29/05/2022 (new release of the cosmoGW code)
+Updated: 01/11/2023 (release of the cosmoGW code)
 """
 
 import os
 HOME = os.getcwd() + '/'
 import reading as re
+import warnings
 from dirs import read_dirs as rd
 import numpy as np
 import pandas as pd
@@ -178,11 +179,21 @@ class run():
 
         # Option to ignore warnings
         if quiet_war:
-            np.warnings.filterwarnings('ignore',
-                                       category=np.VisibleDeprecationWarning)
+            # VisibleDeprecationWarning was removed in newer numpy versions
+            # Using generic deprecation warning instead
+            try:
+                warnings.filterwarnings('ignore',
+                                        category=np.VisibleDeprecationWarning)
+            except AttributeError:
+                warnings.filterwarnings('ignore',
+                                        category=DeprecationWarning)
         else:
-            np.warnings.filterwarnings('error',
-                                       category=np.VisibleDeprecationWarning)
+            try:
+                warnings.filterwarnings('error',
+                                        category=np.VisibleDeprecationWarning)
+            except AttributeError:
+                warnings.filterwarnings('error',
+                                        category=DeprecationWarning)
 
         self.name_run = name_run
         self.dir_run = dir_run
@@ -517,6 +528,11 @@ class run():
             E = self.spectra.get(m)
             for i in range(0, Nt):
                 kpeak[i], Emax[i] = spec.compute_kpeak(k[1:], E[i, 1:], quiet=True)
+                # Use trapezoid instead of deprecated trapz
+            try:
+                Emean[i] = np.trapezoid(E[i, :], k)
+            except AttributeError:
+                # Fallback for older numpy versions
                 Emean[i] = np.trapz(E[i, :], k)
             self.spectra.update({m + '_kpeak': kpeak})
             self.spectra.update({m + '_max': Emax})
@@ -651,6 +667,14 @@ class run():
                 EE = self.spectra.get(sp)
                 hel_EE = self.spectra.get(sp_hel)
                 t = self.spectra.get('t_' + sp_hel)
+                t2 = self.spectra.get('t_' + sp)
+                if len(t) != len(t2):
+                    print('spectrum ', sp, ' and ', sp_hel, ' of run ', self.name_run, 'do not have same number of',
+                          ' data points in time')
+                    inds = range(0, min(len(t), len(t2)))
+                    EE = EE[inds, :]
+                    hel_EE = hel_EE[inds, :]
+                    t = t[inds]
                 Ak = A
                 if exp != 0:
                     k = self.spectra.get('k')
@@ -658,70 +682,11 @@ class run():
                     Ak *= kij**exp
                     Ak[kij == 0] = 1e-20
                 PP = np.zeros((np.shape(EE)))
-                PP[EE != 0] = Ak*hel_EE[EE != 0]/EE[EE != 0]
+                inds = np.where(EE != 0)[0]
+                PP[inds] = Ak*hel_EE[inds]/EE[inds]
                 self.spectra.update({P_sp: PP})
                 self.spectra.update({'t_' + P_sp: t})
                 self.spectra_avail.append(P_sp)
-
-        # obsolete (to be deleted)
-        #if 'EGW' in self.spectra_avail and 'helEGW' in self.spectra_avail:
-        #    EGW = self.spectra.get('EGW')
-        #    helEGW = self.spectra.get('helEGW')
-        #    t = self.spectra.get('t_helEGW')*1
-        #    PGW = np.zeros((np.shape(EGW)))
-        #    good = np.where(EGW != 0)
-        #    PGW[good] = helEGW[good]/EGW[good]
-        #    self.spectra.update({'PGW': PGW})
-        #    self.spectra.update({'t_PGW': t})
-        #    if 'PGW' not in self.spectra_avail:
-        #        self.spectra_avail.append('PGW')
-        #if 'GWh' in self.spectra_avail and 'helGWh' in self.spectra_avail:
-        #    GWh = self.spectra.get('GWh')
-        #    helGWh = self.spectra.get('helGWh')
-        #    t = self.spectra.get('t_helGWh')*1
-        #    Ph = np.zeros((np.shape(GWh)))
-        #    good = np.where(GWh != 0)
-        #    Ph[good] = helGWh[good]/GWh[good]
-        #    self.spectra.update({'Ph': Ph})
-        #    self.spectra.update({'t_Ph': t})
-        #    if 'Ph' not in self.spectra_avail:
-        #        self.spectra_avail.append('Ph')
-        #if 'mag' in self.spectra_avail and 'helmag' in self.spectra_avail:
-        #    EM = self.spectra.get('mag')
-        #    HM = self.spectra.get('helmag')
-        #    k = self.spectra.get('k')
-        #    t = self.spectra.get('t_helmag')
-        #    tij, kij = np.meshgrid(t, k, indexing='ij')
-        #    HkM = .5*kij*HM
-        #    self.spectra.update({'helmag_comp': HkM})
-        #    if 'helmag_comp' not in self.spectra_avail:
-        #        self.spectra_avail.append('helmag_comp')
-        #    PM = np.zeros((np.shape(EM)))
-        #    good = np.where(EM != 0)
-        #    PM[good] = HkM[good]/EM[good]
-        #    self.spectra.update({'PM': PM})
-        #    self.spectra.update({'t_PM': t})
-        #    if 'PM' not in self.spectra_avail:
-        #        self.spectra_avail.append('PM')
-        #if 'kin' in self.spectra_avail and 'helkin' in self.spectra_avail:
-        #    EK = self.spectra.get('kin')
-        #    HK = self.spectra.get('helkin')
-        #    k = self.spectra.get('k')
-        #    t = self.spectra.get('t_helkin')
-        #    tij, kij = np.meshgrid(t, k, indexing='ij')
-        #    good = np.where(kij != 0)
-        #    HkK = .5*HK
-        #    HkK[good] = HkK[good]/kij[good]
-        #    self.spectra.update({'helkin_comp': HkK})
-        #    if 'helkin_comp' not in self.spectra_avail:
-        #        self.spectra_avail.append('helkin_comp')
-        #    PK = np.zeros((np.shape(EK)))
-        #    good = np.where(EK != 0)
-        #    PK[good] = HkK[good]/EK[good]
-        #    self.spectra.update({'PK': PK})
-        #    self.spectra.update({'t_PK': t})
-        #    if 'PK' not in self.spectra_avail:
-        #        self.spectra_avail.append('PK')
 
     def min_max_stat(self, abs_b=True, sp='GWs', indt=0, indtf=-1,
                      plot=False, hel=False):
@@ -806,32 +771,3 @@ class run():
 
         # return to initial directory
         os.chdir(cwd)
-                
-def interpolate_ts(t1, t2, sp1, sp2):
-
-    """
-    Function that compares 2 series to compare them and interpolates both
-    to the same time array. They should have same initial time.
-
-    Arguments:
-        t1, t2 -- time arrays of spectra 1 and 2
-        sp1, sp2 -- spectrum arrays of spectra 1 and 2
-    Returns:
-        t_i -- common time array
-        sp1, sp2 -- spectrum arrays of spectra 1 and 2 after interpolating
-                    to have a common time array
-    """
-
-    import numpy as np
-
-    # compare the end time of both runs
-    end_t1 = t1[-1]
-    end_t2 = t2[-1]
-    if end_t1 < end_t2:
-        sp2 = np.interp(t1, t2, sp2)
-        t_i = t1*1
-    else:
-        sp1 = np.interp(t2, t1, sp1)
-        t_i = t2*1
-
-    return t_i, sp1, sp2
